@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerManager.API", "SoccerManager.API\SoccerManager.API.csproj", "{6A4F38DA-A2D5-438C-8366-503CA3D8E492}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{580D6740-CF6C-49D9-98A1-D3A905AA868D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C37F4D71-B062-45F0-B873-E17B6D04592A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerManager.Application", "SoccerManager.Application\SoccerManager.Application.csproj", "{6C505FC0-B39E-483A-8100-FF6BF0CBE646}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerManager.Domain", "SoccerManager.Domain\SoccerManager.Domain.csproj", "{17F3B682-6EC8-46A3-AD97-967EA4967AAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerManager.Infrastructure", "SoccerManager.Infrastructure\SoccerManager.Infrastructure.csproj", "{3CEEFFE3-3B07-437F-B17A-0A93AE647C46}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6A4F38DA-A2D5-438C-8366-503CA3D8E492}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A4F38DA-A2D5-438C-8366-503CA3D8E492}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A4F38DA-A2D5-438C-8366-503CA3D8E492}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A4F38DA-A2D5-438C-8366-503CA3D8E492}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C505FC0-B39E-483A-8100-FF6BF0CBE646}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C505FC0-B39E-483A-8100-FF6BF0CBE646}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C505FC0-B39E-483A-8100-FF6BF0CBE646}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C505FC0-B39E-483A-8100-FF6BF0CBE646}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17F3B682-6EC8-46A3-AD97-967EA4967AAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17F3B682-6EC8-46A3-AD97-967EA4967AAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17F3B682-6EC8-46A3-AD97-967EA4967AAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17F3B682-6EC8-46A3-AD97-967EA4967AAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CEEFFE3-3B07-437F-B17A-0A93AE647C46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CEEFFE3-3B07-437F-B17A-0A93AE647C46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CEEFFE3-3B07-437F-B17A-0A93AE647C46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CEEFFE3-3B07-437F-B17A-0A93AE647C46}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6A4F38DA-A2D5-438C-8366-503CA3D8E492} = {580D6740-CF6C-49D9-98A1-D3A905AA868D}
+		{6C505FC0-B39E-483A-8100-FF6BF0CBE646} = {580D6740-CF6C-49D9-98A1-D3A905AA868D}
+		{17F3B682-6EC8-46A3-AD97-967EA4967AAD} = {580D6740-CF6C-49D9-98A1-D3A905AA868D}
+		{3CEEFFE3-3B07-437F-B17A-0A93AE647C46} = {580D6740-CF6C-49D9-98A1-D3A905AA868D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {100EE3B0-CA2C-428F-B2F8-CD309F7FE9B1}
+	EndGlobalSection
+EndGlobal
