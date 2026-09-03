@@ -1,0 +1,28 @@
+# Local Keycloak, pointed at the Azure SQL 'keycloak' database.
+#
+# There is no local SQL Server container by design: the Azure database is the
+# single store for both local and deployed Keycloak. Two consequences worth
+# knowing before you run this - your machine's public IP needs a firewall rule
+# on the SQL server, and realm changes you make locally are visible to everyone.
+#
+# Copy .env.example to .env and fill it in first. .env is git-ignored.
+
+services:
+  keycloak:
+    build:
+      context: ./keycloak
+    image: soccermanager-keycloak:local
+    container_name: soccermanager-keycloak
+    environment:
+      KC_DB: mssql
+      KC_DB_URL: "jdbc:sqlserver://${SQL_SERVER_FQDN};databaseName=${SQL_DATABASE};encrypt=true;trustServerCertificate=false;loginTimeout=30"
+      KC_DB_USERNAME: ${SQL_USERNAME}
+      KC_DB_PASSWORD: ${SQL_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      # Local HTTP only. The deployed Container App terminates TLS itself.
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+    ports:
+      - "8080:8080"
+      - "9000:9000"
