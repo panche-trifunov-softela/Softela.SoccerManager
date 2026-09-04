@@ -10,3 +10,7 @@ param sqlAdministratorLogin = readEnvironmentVariable('SQL_USERNAME')
 param sqlAdministratorPassword = readEnvironmentVariable('SQL_PASSWORD')
 param keycloakAdminUsername = readEnvironmentVariable('KEYCLOAK_ADMIN_USERNAME')
 param keycloakAdminPassword = readEnvironmentVariable('KEYCLOAK_ADMIN_PASSWORD')
+
+// A .bicepparam cannot be combined with inline -p arguments, so the registry
+// name is read here too rather than passed on the command line.
+param registryName = readEnvironmentVariable('ACR_NAME', 'soccermanageracr')

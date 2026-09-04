@@ -77,6 +77,11 @@ curl -d client_id=soccermanager-dev -d grant_type=password \
      http://localhost:8080/realms/soccermanager/protocol/openid-connect/token
 ```
 
+The realm ships with no users, deliberately. Create one in the admin console and
+give it an email, first name and last name — Keycloak's user profile requires
+all three, and a token request for an incomplete account fails with
+`Account is not fully set up` rather than anything more obvious.
+
 ### Deploying to Azure
 
 [`infra/main.bicep`](infra/main.bicep) creates the container registry, Log
@@ -88,11 +93,16 @@ comes first. `az acr build` builds in the cloud, so a local Docker daemon is not
 required:
 
 ```bash
-az acr create -g soccerteambuilder -n <registry> --sku Basic --admin-enabled true
-az acr build -r <registry> -t soccermanager-keycloak:latest ./keycloak
-az deployment group create -g soccerteambuilder \
-  -f infra/main.bicep -p infra/main.bicepparam -p registryName=<registry>
+az acr create -g soccerteambuilder -n soccermanageracr --sku Basic --admin-enabled true
+az acr build -r soccermanageracr -t soccermanager-keycloak:latest ./keycloak
+
+set -a; . ./.env; set +a   # credentials, read by main.bicepparam
+az deployment group create -g soccerteambuilder --parameters infra/main.bicepparam
 ```
+
+The parameter file reads every credential from the environment, so nothing
+secret is passed on the command line or written to disk. Override the registry
+name with `ACR_NAME` if you use a different one.
 
 The deployment's `keycloakAuthority` output is the value for
 `Keycloak:Authority` in
