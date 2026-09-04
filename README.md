@@ -10,6 +10,8 @@ A soccer team management API built on .NET 10, laid out in clean-architecture la
 
 - [.NET SDK 10.0](https://dotnet.microsoft.com/download) or later
 - Visual Studio 2022/2026, JetBrains Rider, or VS Code with the C# Dev Kit (optional)
+- [Docker](https://www.docker.com/products/docker-desktop/), to run Keycloak locally
+- [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli), to deploy it
 
 ## Solution layout
 
@@ -40,6 +42,75 @@ The API launches with Swagger UI enabled in the Development environment:
 
 Ports are defined in
 [`SoccerManager.API/Properties/launchSettings.json`](SoccerManager.API/Properties/launchSettings.json).
+
+## Keycloak
+
+The API authenticates with Keycloak-issued JWT bearer tokens. The realm is
+defined in
+[`keycloak/realm/soccermanager-realm.json`](keycloak/realm/soccermanager-realm.json)
+and baked into the image, so the same realm applies locally and in Azure.
+
+Two clients, split by job:
+
+| Client | Type | Purpose |
+| --- | --- | --- |
+| `soccermanager-api` | bearer-only | The audience the API validates against. No secret, no enabled flow. |
+| `soccermanager-dev` | public | Issues test tokens while no frontend exists. Direct access grants only; retire it once a real frontend client is added. |
+
+### Running Keycloak locally
+
+Keycloak's store is the `keycloak` database on the shared Azure SQL server, so
+there is no local SQL container. Two consequences: your machine's public IP
+needs a firewall rule on that server, and realm changes you make locally are
+visible to everyone.
+
+```bash
+cp .env.example .env   # then fill in the SQL and admin credentials
+docker compose up --build
+```
+
+The admin console is at <http://localhost:8080>. To fetch a token:
+
+```bash
+curl -d client_id=soccermanager-dev -d grant_type=password \
+     -d username=<user> -d password=<pass> \
+     http://localhost:8080/realms/soccermanager/protocol/openid-connect/token
+```
+
+The realm ships with no users, deliberately. Create one in the admin console and
+give it an email, first name and last name — Keycloak's user profile requires
+all three, and a token request for an incomplete account fails with
+`Account is not fully set up` rather than anything more obvious.
+
+### Deploying to Azure
+
+[`infra/main.bicep`](infra/main.bicep) creates the container registry, Log
+Analytics workspace, Container Apps environment and the Keycloak container app,
+and declares the SQL database and its firewall rule.
+
+The image has to exist before the container app can pull it, so the registry
+comes first. `az acr build` builds in the cloud, so a local Docker daemon is not
+required:
+
+```bash
+az acr create -g soccerteambuilder -n soccermanageracr --sku Basic --admin-enabled true
+az acr build -r soccermanageracr -t soccermanager-keycloak:latest ./keycloak
+
+set -a; . ./.env; set +a   # credentials, read by main.bicepparam
+az deployment group create -g soccerteambuilder --parameters infra/main.bicepparam
+```
+
+The parameter file reads every credential from the environment, so nothing
+secret is passed on the command line or written to disk. Override the registry
+name with `ACR_NAME` if you use a different one.
+
+The deployment's `keycloakAuthority` output is the value for
+`Keycloak:Authority` in
+[`SoccerManager.API/appsettings.json`](SoccerManager.API/appsettings.json);
+`Keycloak:Audience` is `soccermanager-api`.
+
+Keycloak runs on a single replica — more than one needs Infinispan cache
+clustering, which is not configured.
 
 ## Next steps
 
