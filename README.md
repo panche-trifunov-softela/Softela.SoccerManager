@@ -17,13 +17,61 @@ A soccer team management API built on .NET 10, laid out in clean-architecture la
 
 | Project | Type | Purpose |
 | --- | --- | --- |
-| `SoccerManager.API` | ASP.NET Core Minimal API | HTTP entry point, Swagger/OpenAPI, composition root |
-| `SoccerManager.Application` | Class library | Use cases, application services, DTOs |
+| `SoccerManager.API` | ASP.NET Core Web API | HTTP entry point, controllers, Swagger/OpenAPI, composition root |
+| `SoccerManager.Application` | Class library | Commands, queries, handlers, DTOs, validation |
 | `SoccerManager.Domain` | Class library | Entities, value objects, domain rules |
 | `SoccerManager.Infrastructure` | Class library | Persistence, external integrations |
 
 All four projects target `net10.0` with nullable reference types and implicit
-usings enabled.
+usings enabled. References run inwards: `API` → `Application` + `Infrastructure`,
+`Infrastructure` → `Application` + `Domain`, `Application` → `Domain`. The
+domain project references nothing.
+
+## CQRS with MediatR
+
+Every use case is a MediatR request with one handler. Controllers never depend
+on MediatR directly — they inject `ICommandDispatcher` / `IQueryDispatcher`
+from `Application/Core`, which are thin wrappers over `IMediator`.
+
+Each operation gets its own folder holding only that operation's parts:
+
+```
+SoccerManager.Application/
+  Core/
+    Command/     ICommandDispatcher, CommandDispatcher
+    Query/       IQueryDispatcher, QueryDispatcher
+    User/        ICurrentUser — the caller's id, implemented in the API project
+    Behaviors/   ValidationBehavior — runs FluentValidation before the handler
+  Commands/<Entity>/<Operation>/   Request, Validator, Mapper, Handler
+  Queries/<Entity>/<Operation>/    Request, Response, Mapper, Handler
+  Dtos/                            one record per DTO
+  Repositories/                    interfaces only; implementations sit in Infrastructure
+```
+
+Handlers are registered by assembly scanning, so a new operation needs no DI
+change. Mapping is hand-written in a static `Mapper` class per operation — there
+is no AutoMapper or Mapster in this solution.
+
+`League` is the reference slice: read it before adding an entity of your own.
+
+### Errors
+
+Handlers throw and `ExceptionHandlingMiddleware` translates:
+
+| Exception | Response |
+| --- | --- |
+| `ValidationException` (FluentValidation) | 400 with the per-property failures |
+| `KeyNotFoundException` | 404 |
+| anything else | 500, logged, with no exception detail in the body |
+
+### Persistence
+
+`InMemoryLeagueRepository` is a temporary stand-in that holds rows in process
+memory and is registered as a **singleton** — a scoped registration would
+discard every row between requests. Data does not survive a restart. Replacing
+it with a real implementation is a one-line change in
+`SoccerManager.Infrastructure/BuilderExtensions.cs`; nothing in the application
+layer changes.
 
 ## Getting started
 
@@ -114,7 +162,8 @@ clustering, which is not configured.
 
 ## Next steps
 
-- Wire the layers together with project references (API → Application → Domain,
-  Infrastructure → Domain)
+- Replace `InMemoryLeagueRepository` with a real SQL Server implementation, and
+  add migration scripts for the schema it needs
 - Replace the sample `WeatherForecast` endpoint with real team/player endpoints
-- Add a persistence provider and a test project under the solution's `tests` folder
+- Add a test project under the solution's `tests` folder — handler and validator
+  tests first, since both are plain classes with no HTTP dependency
