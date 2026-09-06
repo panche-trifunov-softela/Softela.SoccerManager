@@ -37,6 +37,7 @@ public static class BuilderExtensions
             .AddScoped<IDbMigrator, DbMigrator>();
 
         services.AddScoped<ILeagueRepository, LeagueRepository>();
+        services.AddScoped<ISeasonRepository, SeasonRepository>();
 
         services.AddHealthChecks()
             .AddSqlServer(connectionString, name: "sqlserver");
