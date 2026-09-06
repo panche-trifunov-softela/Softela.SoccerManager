@@ -18,6 +18,8 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 
+app.MigrateDatabase();
+
 // First in the pipeline so it also covers failures raised by CORS and authentication.
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -35,5 +37,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
 
 app.Run();

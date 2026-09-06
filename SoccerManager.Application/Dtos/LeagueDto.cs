@@ -16,12 +16,12 @@ public sealed record LeagueDto
     public required string Name { get; init; }
 
     /// <summary>
-    /// The date and time the league was created.
+    /// The UTC date and time the league was created.
     /// </summary>
-    public DateTimeOffset CreatedAt { get; init; }
+    public DateTime CreatedAt { get; init; }
 
     /// <summary>
-    /// The date and time the league was last modified.
+    /// The UTC date and time the league was last modified.
     /// </summary>
-    public DateTimeOffset ModifiedAt { get; init; }
+    public DateTime ModifiedAt { get; init; }
 }

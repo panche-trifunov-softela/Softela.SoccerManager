@@ -10,14 +10,17 @@ namespace SoccerManager.Application.Commands.League.DeleteLeague;
 public class DeleteLeagueHandler : IRequestHandler<DeleteLeagueRequest, bool>
 {
     private readonly ILeagueRepository _leagueRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteLeagueHandler"/> class.
     /// </summary>
     /// <param name="leagueRepository">The repository used to load and delete leagues.</param>
-    public DeleteLeagueHandler(ILeagueRepository leagueRepository)
+    /// <param name="unitOfWork">The unit of work used to group the write into one transaction.</param>
+    public DeleteLeagueHandler(ILeagueRepository leagueRepository, IUnitOfWork unitOfWork)
     {
         _leagueRepository = leagueRepository;
+        _unitOfWork = unitOfWork;
     }
 
     /// <summary>
@@ -29,11 +32,23 @@ public class DeleteLeagueHandler : IRequestHandler<DeleteLeagueRequest, bool>
     /// <exception cref="KeyNotFoundException">Thrown when no league with the given identifier exists.</exception>
     public async Task<bool> Handle(DeleteLeagueRequest request, CancellationToken cancellationToken)
     {
-        var league = await _leagueRepository.GetByIdAsync(request.Id)
-            ?? throw new KeyNotFoundException($"League {request.Id} not found.");
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-        await _leagueRepository.DeleteAsync(request.Id);
+        try
+        {
+            _ = await _leagueRepository.GetByIdAsync(request.Id)
+                ?? throw new KeyNotFoundException($"League {request.Id} not found.");
 
-        return true;
+            await _leagueRepository.DeleteAsync(request.Id);
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return true;
+        }
+        catch
+        {
+            await _unitOfWork.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 }
