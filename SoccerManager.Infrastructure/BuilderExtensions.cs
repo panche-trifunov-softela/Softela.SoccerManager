@@ -1,7 +1,12 @@
+using Dapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SoccerManager.Application.Repositories;
-using SoccerManager.Infrastructure.Repositories;
+using SoccerManager.Infrastructure.Database;
+using SoccerManager.Infrastructure.Database.Connections;
+using SoccerManager.Infrastructure.Database.Dapper;
+using SoccerManager.Infrastructure.Database.Migrator;
+using SoccerManager.Infrastructure.Database.Repositories;
 
 namespace SoccerManager.Infrastructure;
 
@@ -16,10 +21,25 @@ public static class BuilderExtensions
     /// <param name="services">The service collection to configure.</param>
     /// <param name="configuration">The configuration the infrastructure layer reads its settings from.</param>
     /// <returns>The same service collection, for chaining.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the 'soccermanager' connection string is missing.</exception>
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // configuration is unused for now; it is the seam real persistence will read its connection string from.
-        services.AddSingleton<ILeagueRepository, InMemoryLeagueRepository>();
+        // Resolved here rather than lazily so a missing connection string fails at startup, not at the first request.
+        var connectionString = new DatabaseConnectionStringProvider(configuration).GetConnectionString();
+
+        // SQL Server DATETIME2 carries no zone, so without this every timestamp read back is DateTimeKind.Unspecified.
+        SqlMapper.AddTypeHandler(new UtcDateTimeHandler());
+
+        services
+            .AddScoped<IDatabaseConnection, DatabaseConnection>()
+            .AddScoped<IDapperDataContext, DapperDataContext>()
+            .AddScoped<IUnitOfWork, UnitOfWork>()
+            .AddScoped<IDbMigrator, DbMigrator>();
+
+        services.AddScoped<ILeagueRepository, LeagueRepository>();
+
+        services.AddHealthChecks()
+            .AddSqlServer(connectionString, name: "sqlserver");
 
         return services;
     }

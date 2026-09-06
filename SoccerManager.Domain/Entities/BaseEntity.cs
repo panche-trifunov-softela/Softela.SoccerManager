@@ -16,9 +16,9 @@ public abstract class BaseEntity
     public Guid CreatedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the moment the entity was created.
+    /// Gets or sets the UTC moment the entity was created.
     /// </summary>
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the user who last modified the entity.
@@ -26,7 +26,7 @@ public abstract class BaseEntity
     public Guid ModifiedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the moment the entity was last modified.
+    /// Gets or sets the UTC moment the entity was last modified.
     /// </summary>
-    public DateTimeOffset ModifiedAt { get; set; }
+    public DateTime ModifiedAt { get; set; }
 }

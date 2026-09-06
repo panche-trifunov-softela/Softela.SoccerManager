@@ -64,14 +64,68 @@ Handlers throw and `ExceptionHandlingMiddleware` translates:
 | `KeyNotFoundException` | 404 |
 | anything else | 500, logged, with no exception detail in the body |
 
-### Persistence
+## Persistence
 
-`InMemoryLeagueRepository` is a temporary stand-in that holds rows in process
-memory and is registered as a **singleton** — a scoped registration would
-discard every row between requests. Data does not survive a restart. Replacing
-it with a real implementation is a one-line change in
-`SoccerManager.Infrastructure/BuilderExtensions.cs`; nothing in the application
-layer changes.
+SQL Server via Dapper, with the schema owned by [Evolve](https://evolve-db.netlify.app/)
+migration scripts. There is no EF model and no ORM mapping configuration.
+
+Every operation is a **stored procedure**. This is not a stylistic choice: a SQL
+Server scalar function may not perform `INSERT`/`UPDATE`/`DELETE`, so the
+function-per-operation pattern used by the sibling PestManagement service does
+not transfer.
+
+```
+SoccerManager.Infrastructure/Database/
+  Connections/   opens SqlConnections from the configured connection string
+  Dapper/        the scoped connection + transaction shared across one request
+  Migrator/      runs Evolve
+  Repositories/  ILeagueRepository implemented against the stored procedures
+  Scripts/       the migrations
+```
+
+### Migration scripts
+
+| Prefix | Meaning |
+| --- | --- |
+| `V1_0_0_NN__lower_snake_name.sql` | Versioned. Applied once, in order, then never again. Tables and indexes. |
+| `R__PascalCaseName.sql` | Repeatable. Re-applied whenever its checksum changes. One `CREATE OR ALTER PROCEDURE` per file. |
+
+Evolve applies all pending versioned scripts first, then any repeatable script
+whose contents changed. It tracks what it has run in a `changelog` table, and
+runs with erase disabled so it can never drop the schema.
+
+Two rules for the repeatable scripts: `CREATE OR ALTER PROCEDURE` must be the
+first statement in its batch, so each file holds exactly one procedure; and
+never write `GO`, which is a client-tool batch separator rather than T-SQL.
+
+Columns are PascalCase and match the entity property names exactly, so Dapper
+maps them with no configuration.
+
+Timestamps are `DATETIME2(7)` holding UTC — not `DATETIMEOFFSET`, since every
+value written is `DateTime.UtcNow` and the offset would be a constant. Because
+`DATETIME2` carries no zone, `UtcDateTimeHandler` marks every value Dapper reads
+back as UTC; without it the same field would serialize with a trailing `Z` when
+freshly created and without one when read from the database.
+
+### Configuration
+
+The connection string is read from `ConnectionStrings:soccermanager`. It is
+**empty in `appsettings.json` on purpose** — supply the real value through the
+git-ignored `.env`, where the double underscore is .NET's own configuration
+separator:
+
+```bash
+set -a; . ./.env; set +a
+dotnet run --project SoccerManager.API
+```
+
+The API fails at startup, rather than at the first request, when it is missing.
+
+`Database:RunMigrationsOnStartup` controls whether Evolve runs during startup. It
+is **`true` in Development and `false` otherwise**, so a deployment applies
+schema changes as its own step instead of implicitly on every replica start.
+
+`GET /health` reports the database connection.
 
 ## Getting started
 
@@ -162,8 +216,9 @@ clustering, which is not configured.
 
 ## Next steps
 
-- Replace `InMemoryLeagueRepository` with a real SQL Server implementation, and
-  add migration scripts for the schema it needs
 - Replace the sample `WeatherForecast` endpoint with real team/player endpoints
 - Add a test project under the solution's `tests` folder — handler and validator
   tests first, since both are plain classes with no HTTP dependency
+- Move Keycloak off the SQL Server admin login onto a contained user, so it holds
+  no rights over the application database
+- The application database is Basic tier (5 DTU); revisit before it carries load

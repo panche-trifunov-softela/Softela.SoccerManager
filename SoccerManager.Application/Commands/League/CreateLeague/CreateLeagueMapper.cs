@@ -9,10 +9,10 @@ public static class CreateLeagueMapper
     /// Creates a new league entity from the given request.
     /// </summary>
     /// <param name="request">The request carrying the league name.</param>
-    /// <param name="now">The timestamp to stamp on the created and modified fields.</param>
+    /// <param name="now">The UTC timestamp to stamp on the created and modified fields.</param>
     /// <param name="userId">The identifier of the user creating the league.</param>
     /// <returns>A new, unsaved league entity.</returns>
-    public static SoccerManager.Domain.Entities.League ToDomainEntity(CreateLeagueRequest request, DateTimeOffset now, Guid userId)
+    public static SoccerManager.Domain.Entities.League ToDomainEntity(CreateLeagueRequest request, DateTime now, Guid userId)
     {
         return new SoccerManager.Domain.Entities.League
         {
