@@ -29,6 +29,8 @@ public static class BuilderExtensions
 
         // SQL Server DATETIME2 carries no zone, so without this every timestamp read back is DateTimeKind.Unspecified.
         SqlMapper.AddTypeHandler(new UtcDateTimeHandler());
+        // Maps DATE columns to DateOnly explicitly, so the round-trip does not depend on the driver's own DateOnly support.
+        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 
         services
             .AddScoped<IDatabaseConnection, DatabaseConnection>()
@@ -40,6 +42,7 @@ public static class BuilderExtensions
         services.AddScoped<ISeasonRepository, SeasonRepository>();
         services.AddScoped<IDivisionRepository, DivisionRepository>();
         services.AddScoped<ITeamRepository, TeamRepository>();
+        services.AddScoped<IPlayerRepository, PlayerRepository>();
         services.AddScoped<IPositionRepository, PositionRepository>();
 
         services.AddHealthChecks()
