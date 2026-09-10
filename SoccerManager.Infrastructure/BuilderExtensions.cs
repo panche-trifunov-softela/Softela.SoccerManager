@@ -45,6 +45,7 @@ public static class BuilderExtensions
         services.AddScoped<IPlayerRepository, PlayerRepository>();
         services.AddScoped<IPositionRepository, PositionRepository>();
         services.AddScoped<IPlayerPositionRepository, PlayerPositionRepository>();
+        services.AddScoped<IStandingRepository, StandingRepository>();
 
         services.AddHealthChecks()
             .AddSqlServer(connectionString, name: "sqlserver");
