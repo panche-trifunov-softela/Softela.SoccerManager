@@ -157,7 +157,25 @@ Two clients, split by job:
 | Client | Type | Purpose |
 | --- | --- | --- |
 | `soccermanager-api` | bearer-only | The audience the API validates against. No secret, no enabled flow. |
-| `soccermanager-dev` | public | Issues test tokens while no frontend exists. Direct access grants only; retire it once a real frontend client is added. |
+| `soccermanager-spa` | public | The React web app signs in through it: Authorization Code with PKCE (`S256`), no direct grants, no implicit flow. Its audience mapper puts `soccermanager-api` into every access token. |
+
+The SPA client's redirect URIs and web origins list the Vite dev server,
+`http://localhost:5173`; a deployed frontend origin is added alongside it once
+one exists. The same origin has to be in `Cors:AllowedOrigins` in
+[`SoccerManager.API/appsettings.json`](SoccerManager.API/appsettings.json), or
+the browser blocks the call before the API ever sees the token.
+
+There is no password grant. To call the API by hand, sign in through the web
+app and copy the bearer token from one of its requests.
+
+### The realm file seeds an empty database only
+
+`--import-realm` skips a realm that already exists, so editing the JSON and
+rebuilding the image changes nothing on a Keycloak whose database already holds
+the realm. Local and Azure share that database, so one admin-console change —
+made through either — is what actually changes the running realm; make it
+there, and keep the JSON in step by hand, since it is what a fresh environment
+starts from.
 
 ### Running Keycloak locally
 
@@ -171,17 +189,11 @@ cp .env.example .env   # then fill in the SQL and admin credentials
 docker compose up --build
 ```
 
-The admin console is at <http://localhost:8080>. To fetch a token:
-
-```bash
-curl -d client_id=soccermanager-dev -d grant_type=password \
-     -d username=<user> -d password=<pass> \
-     http://localhost:8080/realms/soccermanager/protocol/openid-connect/token
-```
+The admin console is at <http://localhost:8080>.
 
 The realm ships with no users, deliberately. Create one in the admin console and
 give it an email, first name and last name — Keycloak's user profile requires
-all three, and a token request for an incomplete account fails with
+all three, and a sign-in for an incomplete account fails with
 `Account is not fully set up` rather than anything more obvious.
 
 ### Deploying to Azure

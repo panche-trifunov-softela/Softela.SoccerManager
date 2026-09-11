@@ -30,18 +30,22 @@
       "webOrigins": []
     },
     {
-      "clientId": "soccermanager-dev",
-      "name": "SoccerManager development client",
-      "description": "Issues test tokens for the API while no frontend exists. Public client, direct access grants only. Retire this once a real frontend client is added.",
+      "clientId": "soccermanager-spa",
+      "name": "SoccerManager web app",
+      "description": "The React single-page app signs in through this client: Authorization Code with PKCE, no direct grants, no implicit flow. The audience mapper puts the API into every access token it issues.",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": true,
-      "standardFlowEnabled": false,
+      "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
-      "redirectUris": [],
-      "webOrigins": [],
+      "redirectUris": ["http://localhost:5173/*"],
+      "webOrigins": ["http://localhost:5173"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "+"
+      },
       "protocolMappers": [
         {
           "name": "audience-mapper",
