@@ -177,6 +177,40 @@ made through either — is what actually changes the running realm; make it
 there, and keep the JSON in step by hand, since it is what a fresh environment
 starts from.
 
+### The login theme
+
+The login page is a custom theme at
+[`keycloak/themes/soccermanager/`](keycloak/themes/soccermanager/), extending
+Keycloak's `base` theme, and it is baked into the image the same way the
+realm is.
+
+It overrides only `theme.properties` and `template.ftl`. Every other page —
+reset password, update password, OTP, error — inherits base's template and
+picks up our styling through the class hooks declared in `theme.properties`.
+Those two files are copies of Keycloak's own, so on a Keycloak major upgrade
+they should be diffed against the new `base/login` equivalents.
+
+Locally, the theme folder is bind-mounted and theme caching is off, so an
+edit under `keycloak/themes` is visible on the next page load without a
+rebuild.
+
+Applying the theme to a realm that already exists needs an explicit change,
+because `--import-realm` skips a realm that already exists: rebuilding the
+image changes nothing for it. Set it through the admin console, under Realm
+settings → Themes → Login theme, or with
+
+```bash
+kcadm.sh update realms/soccermanager -s loginTheme=soccermanager
+```
+
+`rememberMe` was turned on in the realm file the same way and needs the same
+treatment on a live realm.
+
+**Ordering matters here**: the image carrying the theme has to be built and
+deployed before a live realm is pointed at it, or the login page breaks for
+everyone. Local and Azure Keycloak share one database, so the switch is
+global and immediate.
+
 ### Running Keycloak locally
 
 Keycloak's store is the `keycloak` database on the shared Azure SQL server, so

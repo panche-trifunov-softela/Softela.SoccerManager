@@ -1,6 +1,8 @@
 {
   "realm": "soccermanager",
   "enabled": true,
+  "loginTheme": "soccermanager",
+  "rememberMe": true,
   "roles": {
     "realm": [
       {

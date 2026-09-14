@@ -26,3 +26,14 @@ services:
     ports:
       - "8080:8080"
       - "9000:9000"
+    # The theme is bind-mounted and caching is off, so an edit under
+    # keycloak/themes is visible on the next page load without a rebuild.
+    volumes:
+      - ./keycloak/themes:/opt/keycloak/themes:ro
+    command:
+      - start
+      - --import-realm
+      - --optimized
+      - --spi-theme-cache-themes=false
+      - --spi-theme-cache-templates=false
+      - --spi-theme-static-max-age=-1
