@@ -14,7 +14,10 @@
         </#list>
     </#if>
     <title>${msg("loginTitle",(realm.displayName!''))}</title>
-    <link rel="icon" href="${url.resourcesPath}/img/favicon.ico" />
+    <link rel="icon" type="image/png" href="${url.resourcesPath}/img/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <#if properties.stylesCommon?has_content>
         <#list properties.stylesCommon?split(' ') as style>
             <link href="${url.resourcesCommonPath}/${style}" rel="stylesheet" />
@@ -203,6 +206,7 @@
     </main>
     <aside class="auth_cover" aria-hidden="true">
         <div class="auth_cover_logo">
+            <img class="auth_cover_logo_image" src="${url.resourcesPath}/img/logo.png" alt="" />
             <span class="auth_cover_logo_text">Soccer Manager</span>
         </div>
     </aside>
