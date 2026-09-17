@@ -34,6 +34,7 @@ public class TeamRepository : ITeamRepository
         parameters.Add("@StadiumId", team.StadiumId, DbType.Int32);
         parameters.Add("@FinancialState", (byte)team.FinancialState, DbType.Byte);
         parameters.Add("@JerseyUrl", team.JerseyUrl, DbType.String);
+        parameters.Add("@LogoUrl", team.LogoUrl, DbType.String);
         parameters.Add("@CreatedAt", team.CreatedAt, DbType.DateTime2);
         parameters.Add("@ModifiedAt", team.ModifiedAt, DbType.DateTime2);
         parameters.Add("@CreatedBy", team.CreatedBy, DbType.Guid);
@@ -59,6 +60,7 @@ public class TeamRepository : ITeamRepository
         parameters.Add("@StadiumId", team.StadiumId, DbType.Int32);
         parameters.Add("@FinancialState", (byte)team.FinancialState, DbType.Byte);
         parameters.Add("@JerseyUrl", team.JerseyUrl, DbType.String);
+        parameters.Add("@LogoUrl", team.LogoUrl, DbType.String);
         parameters.Add("@ModifiedAt", team.ModifiedAt, DbType.DateTime2);
         parameters.Add("@ModifiedBy", team.ModifiedBy, DbType.Guid);
 

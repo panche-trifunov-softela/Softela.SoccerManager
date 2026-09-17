@@ -3,6 +3,7 @@ CREATE OR ALTER PROCEDURE dbo.InsertTeam
     @StadiumId      INT,
     @FinancialState TINYINT,
     @JerseyUrl      NVARCHAR(500),
+    @LogoUrl        NVARCHAR(500),
     @CreatedAt      DATETIME2(7),
     @ModifiedAt     DATETIME2(7),
     @CreatedBy      UNIQUEIDENTIFIER,
@@ -11,7 +12,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    INSERT INTO dbo.Teams (Name, StadiumId, FinancialState, JerseyUrl, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
+    INSERT INTO dbo.Teams (Name, StadiumId, FinancialState, JerseyUrl, LogoUrl, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
     OUTPUT INSERTED.Id
-    VALUES (@Name, @StadiumId, @FinancialState, @JerseyUrl, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
+    VALUES (@Name, @StadiumId, @FinancialState, @JerseyUrl, @LogoUrl, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
 END

@@ -4,6 +4,7 @@ CREATE OR ALTER PROCEDURE dbo.UpdateTeam
     @StadiumId      INT,
     @FinancialState TINYINT,
     @JerseyUrl      NVARCHAR(500),
+    @LogoUrl        NVARCHAR(500),
     @ModifiedAt     DATETIME2(7),
     @ModifiedBy     UNIQUEIDENTIFIER
 AS
@@ -15,6 +16,7 @@ BEGIN
         StadiumId      = @StadiumId,
         FinancialState = @FinancialState,
         JerseyUrl      = @JerseyUrl,
+        LogoUrl        = @LogoUrl,
         ModifiedAt     = @ModifiedAt,
         ModifiedBy     = @ModifiedBy
     WHERE Id = @Id;

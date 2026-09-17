@@ -33,6 +33,11 @@ public sealed record TeamDto
     public string? JerseyUrl { get; init; }
 
     /// <summary>
+    /// The URL of the team's logo image, or <see langword="null"/> when it has none.
+    /// </summary>
+    public string? LogoUrl { get; init; }
+
+    /// <summary>
     /// The UTC date and time the team was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }
