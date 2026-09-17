@@ -1,0 +1,21 @@
+-- @Commentary is NVARCHAR(MAX), not JSON: it converts implicitly into the column's native json type on insert.
+CREATE OR ALTER PROCEDURE dbo.InsertMatch
+    @SeasonId      INT,
+    @DivisionId    INT,
+    @HomeTeamId    INT,
+    @AwayTeamId    INT,
+    @RefereeId     INT,
+    @StartDateTime DATETIME2(7),
+    @Commentary    NVARCHAR(MAX),
+    @CreatedAt     DATETIME2(7),
+    @ModifiedAt    DATETIME2(7),
+    @CreatedBy     UNIQUEIDENTIFIER,
+    @ModifiedBy    UNIQUEIDENTIFIER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO dbo.Matches (SeasonId, DivisionId, HomeTeamId, AwayTeamId, RefereeId, StartDateTime, Commentary, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
+    OUTPUT INSERTED.Id
+    VALUES (@SeasonId, @DivisionId, @HomeTeamId, @AwayTeamId, @RefereeId, @StartDateTime, @Commentary, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
+END
