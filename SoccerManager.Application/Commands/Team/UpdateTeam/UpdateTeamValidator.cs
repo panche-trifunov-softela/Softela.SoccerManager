@@ -21,5 +21,6 @@ public sealed class UpdateTeamValidator : AbstractValidator<UpdateTeamRequest>
         RuleFor(x => x.StadiumId).GreaterThan(0).When(x => x.StadiumId.HasValue);
 
         RuleFor(x => x.JerseyUrl).MaximumLength(500);
+        RuleFor(x => x.LogoUrl).MaximumLength(500);
     }
 }

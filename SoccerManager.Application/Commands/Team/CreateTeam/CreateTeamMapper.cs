@@ -20,6 +20,7 @@ public static class CreateTeamMapper
             StadiumId = request.StadiumId,
             FinancialState = request.FinancialState,
             JerseyUrl = request.JerseyUrl,
+            LogoUrl = request.LogoUrl,
             CreatedAt = now,
             CreatedBy = userId,
             ModifiedAt = now,

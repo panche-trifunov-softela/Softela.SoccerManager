@@ -21,6 +21,7 @@ public static class GetTeamByIdMapper
             StadiumId = team.StadiumId,
             FinancialState = team.FinancialState,
             JerseyUrl = team.JerseyUrl,
+            LogoUrl = team.LogoUrl,
             CreatedAt = team.CreatedAt,
             ModifiedAt = team.ModifiedAt,
         };

@@ -32,4 +32,9 @@ public sealed record UpdateTeamRequest : IRequest<bool>
     /// The URL of the team's jersey image, if one has been set.
     /// </summary>
     public string? JerseyUrl { get; init; }
+
+    /// <summary>
+    /// The URL of the team's logo image, if one has been set.
+    /// </summary>
+    public string? LogoUrl { get; init; }
 }
