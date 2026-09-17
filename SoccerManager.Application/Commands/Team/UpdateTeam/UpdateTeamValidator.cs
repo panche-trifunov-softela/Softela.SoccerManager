@@ -16,8 +16,8 @@ public sealed class UpdateTeamValidator : AbstractValidator<UpdateTeamRequest>
         RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
         RuleFor(x => x.FinancialState).IsInEnum();
 
-        // Stadiums are not implemented yet, so this only sanity-checks a supplied value
-        // and never requires one.
+        // Shape-only: that the stadium exists is enforced by FK_Teams_Stadiums, and a team
+        // never needs one.
         RuleFor(x => x.StadiumId).GreaterThan(0).When(x => x.StadiumId.HasValue);
 
         RuleFor(x => x.JerseyUrl).MaximumLength(500);

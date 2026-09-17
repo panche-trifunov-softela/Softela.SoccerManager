@@ -48,6 +48,7 @@ public static class BuilderExtensions
         services.AddScoped<IStandingRepository, StandingRepository>();
         services.AddScoped<ILeagueTeamManagerRepository, LeagueTeamManagerRepository>();
         services.AddScoped<IManagerRepository, ManagerRepository>();
+        services.AddScoped<IStadiumRepository, StadiumRepository>();
 
         services.AddHealthChecks()
             .AddSqlServer(connectionString, name: "sqlserver");

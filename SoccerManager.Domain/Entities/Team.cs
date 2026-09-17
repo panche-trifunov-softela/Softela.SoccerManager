@@ -14,8 +14,6 @@ public class Team : BaseEntity
 
     /// <summary>
     /// Gets or sets the identifier of the team's stadium, or <see langword="null"/> when it has none.
-    /// There is deliberately no foreign key here: <c>dbo.Stadiums</c> does not exist yet, so a constraint
-    /// referencing it would make the Evolve migration fail at startup.
     /// </summary>
     public int? StadiumId { get; set; }
 
