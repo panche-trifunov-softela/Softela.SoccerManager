@@ -3,8 +3,6 @@ CREATE OR ALTER PROCEDURE dbo.UpdateMatch
     @Id            INT,
     @SeasonId      INT,
     @DivisionId    INT,
-    @HomeTeamId    INT,
-    @AwayTeamId    INT,
     @RefereeId     INT,
     @StartDateTime DATETIME2(7),
     @Commentary    NVARCHAR(MAX),
@@ -18,8 +16,6 @@ BEGIN
     UPDATE dbo.Matches
     SET SeasonId      = @SeasonId,
         DivisionId    = @DivisionId,
-        HomeTeamId    = @HomeTeamId,
-        AwayTeamId    = @AwayTeamId,
         RefereeId     = @RefereeId,
         StartDateTime = @StartDateTime,
         Commentary    = @Commentary,

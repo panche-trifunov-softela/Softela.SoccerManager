@@ -16,8 +16,6 @@ public static class UpdateMatchMapper
     {
         match.SeasonId = request.SeasonId;
         match.DivisionId = request.DivisionId;
-        match.HomeTeamId = request.HomeTeamId;
-        match.AwayTeamId = request.AwayTeamId;
         match.RefereeId = request.RefereeId;
         match.StartDateTime = request.StartDateTime;
         match.Commentary = request.Commentary;
