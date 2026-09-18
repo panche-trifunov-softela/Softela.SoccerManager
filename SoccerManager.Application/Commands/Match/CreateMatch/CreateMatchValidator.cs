@@ -19,5 +19,7 @@ public sealed class CreateMatchValidator : AbstractValidator<CreateMatchRequest>
         RuleFor(x => x.RefereeId).GreaterThan(0);
 
         RuleFor(x => x.AwayTeamId).NotEqual(x => x.HomeTeamId);
+
+        RuleFor(x => x.Attendance).GreaterThanOrEqualTo(0);
     }
 }

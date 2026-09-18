@@ -24,6 +24,7 @@ public static class GetMatchByIdMapper
             RefereeId = match.RefereeId,
             StartDateTime = match.StartDateTime,
             Commentary = match.Commentary,
+            Attendance = match.Attendance,
             CreatedAt = match.CreatedAt,
             ModifiedAt = match.ModifiedAt,
         };

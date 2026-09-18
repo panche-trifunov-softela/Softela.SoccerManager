@@ -21,6 +21,7 @@ public static class UpdateMatchMapper
         match.RefereeId = request.RefereeId;
         match.StartDateTime = request.StartDateTime;
         match.Commentary = request.Commentary;
+        match.Attendance = request.Attendance;
         match.ModifiedAt = now;
         match.ModifiedBy = userId;
     }
