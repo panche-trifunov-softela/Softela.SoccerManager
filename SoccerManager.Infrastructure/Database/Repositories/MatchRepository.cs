@@ -36,6 +36,7 @@ public class MatchRepository : IMatchRepository
         parameters.Add("@StartDateTime", match.StartDateTime, DbType.DateTime2);
         parameters.Add("@Commentary", match.Commentary, DbType.String);
         parameters.Add("@Attendance", match.Attendance, DbType.Int32);
+        parameters.Add("@IsStarted", match.IsStarted, DbType.Boolean);
         parameters.Add("@CreatedAt", match.CreatedAt, DbType.DateTime2);
         parameters.Add("@ModifiedAt", match.ModifiedAt, DbType.DateTime2);
         parameters.Add("@CreatedBy", match.CreatedBy, DbType.Guid);
@@ -63,6 +64,7 @@ public class MatchRepository : IMatchRepository
         parameters.Add("@StartDateTime", match.StartDateTime, DbType.DateTime2);
         parameters.Add("@Commentary", match.Commentary, DbType.String);
         parameters.Add("@Attendance", match.Attendance, DbType.Int32);
+        parameters.Add("@IsStarted", match.IsStarted, DbType.Boolean);
         parameters.Add("@ModifiedAt", match.ModifiedAt, DbType.DateTime2);
         parameters.Add("@ModifiedBy", match.ModifiedBy, DbType.Guid);
 

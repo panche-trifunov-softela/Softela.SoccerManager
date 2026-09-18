@@ -20,6 +20,7 @@ public static class UpdateMatchMapper
         match.StartDateTime = request.StartDateTime;
         match.Commentary = request.Commentary;
         match.Attendance = request.Attendance;
+        match.IsStarted = request.IsStarted;
         match.ModifiedAt = now;
         match.ModifiedBy = userId;
     }

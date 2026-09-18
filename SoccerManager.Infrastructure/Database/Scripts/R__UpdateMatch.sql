@@ -7,6 +7,7 @@ CREATE OR ALTER PROCEDURE dbo.UpdateMatch
     @StartDateTime DATETIME2(7),
     @Commentary    NVARCHAR(MAX),
     @Attendance    INT,
+    @IsStarted     BIT,
     @ModifiedAt    DATETIME2(7),
     @ModifiedBy    UNIQUEIDENTIFIER
 AS
@@ -20,6 +21,7 @@ BEGIN
         StartDateTime = @StartDateTime,
         Commentary    = @Commentary,
         Attendance    = @Attendance,
+        IsStarted     = @IsStarted,
         ModifiedAt    = @ModifiedAt,
         ModifiedBy    = @ModifiedBy
     WHERE Id = @Id;

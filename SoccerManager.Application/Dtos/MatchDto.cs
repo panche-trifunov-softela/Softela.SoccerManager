@@ -41,6 +41,11 @@ public sealed record MatchDto
     public int Attendance { get; init; }
 
     /// <summary>
+    /// Whether the match has started.
+    /// </summary>
+    public bool IsStarted { get; init; }
+
+    /// <summary>
     /// The UTC date and time the match was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }

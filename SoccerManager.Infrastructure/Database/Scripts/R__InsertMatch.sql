@@ -6,6 +6,7 @@ CREATE OR ALTER PROCEDURE dbo.InsertMatch
     @StartDateTime DATETIME2(7),
     @Commentary    NVARCHAR(MAX),
     @Attendance    INT,
+    @IsStarted     BIT,
     @CreatedAt     DATETIME2(7),
     @ModifiedAt    DATETIME2(7),
     @CreatedBy     UNIQUEIDENTIFIER,
@@ -14,7 +15,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    INSERT INTO dbo.Matches (SeasonId, DivisionId, RefereeId, StartDateTime, Commentary, Attendance, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
+    INSERT INTO dbo.Matches (SeasonId, DivisionId, RefereeId, StartDateTime, Commentary, Attendance, IsStarted, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
     OUTPUT INSERTED.Id
-    VALUES (@SeasonId, @DivisionId, @RefereeId, @StartDateTime, @Commentary, @Attendance, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
+    VALUES (@SeasonId, @DivisionId, @RefereeId, @StartDateTime, @Commentary, @Attendance, @IsStarted, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
 END
