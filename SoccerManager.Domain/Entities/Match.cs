@@ -36,4 +36,9 @@ public class Match : BaseEntity
     /// Gets or sets the number of spectators at the match; zero until it has been played.
     /// </summary>
     public int Attendance { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the match has started.
+    /// </summary>
+    public bool IsStarted { get; set; }
 }

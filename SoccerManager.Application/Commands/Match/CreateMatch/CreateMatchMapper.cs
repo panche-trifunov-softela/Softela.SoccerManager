@@ -22,6 +22,7 @@ public static class CreateMatchMapper
             StartDateTime = request.StartDateTime,
             Commentary = request.Commentary,
             Attendance = request.Attendance,
+            IsStarted = request.IsStarted,
             CreatedAt = now,
             CreatedBy = userId,
             ModifiedAt = now,

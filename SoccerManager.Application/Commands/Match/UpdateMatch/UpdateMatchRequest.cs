@@ -41,4 +41,9 @@ public sealed record UpdateMatchRequest : IRequest<bool>
     /// The number of spectators at the match; zero until it has been played.
     /// </summary>
     public int Attendance { get; init; }
+
+    /// <summary>
+    /// Whether the match has started.
+    /// </summary>
+    public bool IsStarted { get; init; }
 }

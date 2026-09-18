@@ -23,6 +23,7 @@ public static class GetMatchesMapper
             StartDateTime = match.StartDateTime,
             Commentary = match.Commentary,
             Attendance = match.Attendance,
+            IsStarted = match.IsStarted,
             CreatedAt = match.CreatedAt,
             ModifiedAt = match.ModifiedAt,
         };
