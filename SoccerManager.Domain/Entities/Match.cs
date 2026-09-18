@@ -41,4 +41,9 @@ public class Match : BaseEntity
     /// Gets or sets the match commentary as a JSON document, or <see langword="null"/> when there is none.
     /// </summary>
     public string? Commentary { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of spectators at the match; zero until it has been played.
+    /// </summary>
+    public int Attendance { get; set; }
 }

@@ -23,6 +23,7 @@ public static class CreateMatchMapper
             RefereeId = request.RefereeId,
             StartDateTime = request.StartDateTime,
             Commentary = request.Commentary,
+            Attendance = request.Attendance,
             CreatedAt = now,
             CreatedBy = userId,
             ModifiedAt = now,

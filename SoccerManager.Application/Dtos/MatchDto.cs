@@ -46,6 +46,11 @@ public sealed record MatchDto
     public string? Commentary { get; init; }
 
     /// <summary>
+    /// The number of spectators at the match; zero until it has been played.
+    /// </summary>
+    public int Attendance { get; init; }
+
+    /// <summary>
     /// The UTC date and time the match was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }

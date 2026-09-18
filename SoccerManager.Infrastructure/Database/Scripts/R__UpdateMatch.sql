@@ -8,6 +8,7 @@ CREATE OR ALTER PROCEDURE dbo.UpdateMatch
     @RefereeId     INT,
     @StartDateTime DATETIME2(7),
     @Commentary    NVARCHAR(MAX),
+    @Attendance    INT,
     @ModifiedAt    DATETIME2(7),
     @ModifiedBy    UNIQUEIDENTIFIER
 AS
@@ -22,6 +23,7 @@ BEGIN
         RefereeId     = @RefereeId,
         StartDateTime = @StartDateTime,
         Commentary    = @Commentary,
+        Attendance    = @Attendance,
         ModifiedAt    = @ModifiedAt,
         ModifiedBy    = @ModifiedBy
     WHERE Id = @Id;

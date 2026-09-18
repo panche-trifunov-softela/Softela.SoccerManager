@@ -46,4 +46,9 @@ public sealed record UpdateMatchRequest : IRequest<bool>
     /// The match commentary as a JSON document, if any has been set.
     /// </summary>
     public string? Commentary { get; init; }
+
+    /// <summary>
+    /// The number of spectators at the match; zero until it has been played.
+    /// </summary>
+    public int Attendance { get; init; }
 }
