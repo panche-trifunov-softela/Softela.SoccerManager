@@ -15,11 +15,7 @@ public sealed class UpdateMatchValidator : AbstractValidator<UpdateMatchRequest>
         RuleFor(x => x.Id).GreaterThan(0);
         RuleFor(x => x.SeasonId).GreaterThan(0);
         RuleFor(x => x.DivisionId).GreaterThan(0);
-        RuleFor(x => x.HomeTeamId).GreaterThan(0);
-        RuleFor(x => x.AwayTeamId).GreaterThan(0);
         RuleFor(x => x.RefereeId).GreaterThan(0);
-
-        RuleFor(x => x.AwayTeamId).NotEqual(x => x.HomeTeamId);
 
         RuleFor(x => x.Attendance).GreaterThanOrEqualTo(0);
     }

@@ -16,16 +16,6 @@ public class Match : BaseEntity
     public int DivisionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the home team.
-    /// </summary>
-    public int HomeTeamId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the identifier of the away team.
-    /// </summary>
-    public int AwayTeamId { get; set; }
-
-    /// <summary>
     /// Gets or sets the identifier of the match's referee.
     /// There is deliberately no foreign key here: <c>dbo.Referees</c> does not exist yet, so a constraint
     /// referencing it would make the Evolve migration fail at startup.

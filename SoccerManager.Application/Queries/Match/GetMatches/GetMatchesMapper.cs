@@ -19,8 +19,6 @@ public static class GetMatchesMapper
             Id = match.Id,
             SeasonId = match.SeasonId,
             DivisionId = match.DivisionId,
-            HomeTeamId = match.HomeTeamId,
-            AwayTeamId = match.AwayTeamId,
             RefereeId = match.RefereeId,
             StartDateTime = match.StartDateTime,
             Commentary = match.Commentary,

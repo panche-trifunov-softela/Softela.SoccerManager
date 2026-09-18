@@ -18,8 +18,6 @@ public static class CreateMatchMapper
         {
             SeasonId = request.SeasonId,
             DivisionId = request.DivisionId,
-            HomeTeamId = request.HomeTeamId,
-            AwayTeamId = request.AwayTeamId,
             RefereeId = request.RefereeId,
             StartDateTime = request.StartDateTime,
             Commentary = request.Commentary,

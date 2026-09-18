@@ -23,16 +23,6 @@ public sealed record UpdateMatchRequest : IRequest<bool>
     public int DivisionId { get; init; }
 
     /// <summary>
-    /// The identifier of the home team.
-    /// </summary>
-    public int HomeTeamId { get; init; }
-
-    /// <summary>
-    /// The identifier of the away team.
-    /// </summary>
-    public int AwayTeamId { get; init; }
-
-    /// <summary>
     /// The identifier of the match's referee.
     /// </summary>
     public int RefereeId { get; init; }
