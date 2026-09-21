@@ -4,7 +4,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Ordered by SlotNumber so the formation comes back in its own slot order, 1 to 11.
+    -- Ordered by SlotNumber so the formation comes back in its own slot order, the eleven starters first and then the reserves.
     SELECT Id, FormationId, PositionId, SlotNumber, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy
     FROM dbo.FormationPositions
     WHERE FormationId = @FormationId

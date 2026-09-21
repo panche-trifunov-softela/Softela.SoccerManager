@@ -21,7 +21,7 @@ public sealed record FormationPositionDto
     public int PositionId { get; init; }
 
     /// <summary>
-    /// The slot the position fills within the formation, from 1 to 11.
+    /// The slot the position fills within the formation, from 1 to 19.
     /// </summary>
     public int SlotNumber { get; init; }
 
