@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace SoccerManager.Application.Commands.MatchFormationPlayerPosition;
+namespace SoccerManager.Application.Services;
 
 /// <summary>
 /// Resolves the values a match formation player position copies from other aggregates, so the create and

@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using SoccerManager.Application.Core.User;
 using SoccerManager.Application.Repositories;
+using SoccerManager.Application.Services;
 
 namespace SoccerManager.Application.Commands.MatchFormationPlayerPosition.UpdateMatchFormationPlayerPosition;
 

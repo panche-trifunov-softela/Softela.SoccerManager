@@ -1,4 +1,4 @@
-namespace SoccerManager.Application.Commands.MatchFormationPlayerPosition;
+namespace SoccerManager.Application.Services;
 
 /// <summary>
 /// Carries the values a match formation player position copies from the player's league registration and

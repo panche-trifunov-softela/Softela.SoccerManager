@@ -1,8 +1,9 @@
 using FluentValidation;
 using FluentValidation.Results;
 using SoccerManager.Application.Repositories;
+using SoccerManager.Domain.Entities;
 
-namespace SoccerManager.Application.Commands.MatchFormationPlayerPosition;
+namespace SoccerManager.Application.Services;
 
 /// <summary>
 /// Resolves the values a match formation player position copies from the match, the player's position rating
@@ -61,7 +62,7 @@ public class MatchFormationPlayerPositionSnapshotResolver : IMatchFormationPlaye
         {
             throw new ValidationException(new[]
             {
-                new ValidationFailure(nameof(SoccerManager.Domain.Entities.MatchFormationPlayerPosition.TeamId), $"Player {playerPosition.PlayerId} is registered with team {leagueTeamPlayer.TeamId} in league {season.LeagueId}, not team {teamId}."),
+                new ValidationFailure(nameof(MatchFormationPlayerPosition.TeamId), $"Player {playerPosition.PlayerId} is registered with team {leagueTeamPlayer.TeamId} in league {season.LeagueId}, not team {teamId}."),
             });
         }
 
