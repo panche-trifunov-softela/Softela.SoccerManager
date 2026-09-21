@@ -41,4 +41,12 @@ public interface ILeagueTeamPlayerRepository
     /// <param name="teamId">The identifier of the team to filter by.</param>
     /// <returns>A list of every player registration belonging to the league and team.</returns>
     Task<List<LeagueTeamPlayer>> GetByLeagueAndTeamAsync(int leagueId, int teamId);
+
+    /// <summary>
+    /// Retrieves a player's registration within a league.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league.</param>
+    /// <param name="playerId">The identifier of the player.</param>
+    /// <returns>The matching registration, or <see langword="null"/> when the player is not registered in the league.</returns>
+    Task<LeagueTeamPlayer?> GetByLeagueAndPlayerAsync(int leagueId, int playerId);
 }

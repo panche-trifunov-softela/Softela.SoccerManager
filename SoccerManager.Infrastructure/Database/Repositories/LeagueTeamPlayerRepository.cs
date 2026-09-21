@@ -142,4 +142,23 @@ public class LeagueTeamPlayerRepository : ILeagueTeamPlayerRepository
 
         return leagueTeamPlayers.ToList();
     }
+
+    /// <summary>
+    /// Retrieves a player's registration within a league.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league.</param>
+    /// <param name="playerId">The identifier of the player.</param>
+    /// <returns>The matching registration, or <see langword="null"/> when the player is not registered in the league.</returns>
+    public async Task<LeagueTeamPlayer?> GetByLeagueAndPlayerAsync(int leagueId, int playerId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueId", leagueId, DbType.Int32);
+        parameters.Add("@PlayerId", playerId, DbType.Int32);
+
+        return await _dapperDataContext.Connection.QueryFirstOrDefaultAsync<LeagueTeamPlayer>(
+            "dbo.GetLeagueTeamPlayerByLeagueAndPlayer",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
 }
