@@ -63,4 +63,19 @@ public sealed record CreateLeagueTeamPlayerRequest : IRequest<int>
     /// starting ones, so this value is never lower than <see cref="WantedStarterAppearances"/>.
     /// </summary>
     public int WantedTotalAppearances { get; init; }
+
+    /// <summary>
+    /// The player's physical condition, from 1 to 100.
+    /// </summary>
+    public int Condition { get; init; }
+
+    /// <summary>
+    /// Whether the player is suspended from the domestic competition.
+    /// </summary>
+    public bool IsSuspendedDomesticCompetition { get; init; }
+
+    /// <summary>
+    /// Whether the player is suspended from the continental competition.
+    /// </summary>
+    public bool IsSuspendedContinentalCompetition { get; init; }
 }
