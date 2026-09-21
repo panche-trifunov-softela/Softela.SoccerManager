@@ -28,6 +28,9 @@ public static class GetLeagueTeamPlayerByIdMapper
             TransfermarketValue = leagueTeamPlayer.TransfermarketValue,
             WantedStarterAppearances = leagueTeamPlayer.WantedStarterAppearances,
             WantedTotalAppearances = leagueTeamPlayer.WantedTotalAppearances,
+            Condition = leagueTeamPlayer.Condition,
+            IsSuspendedDomesticCompetition = leagueTeamPlayer.IsSuspendedDomesticCompetition,
+            IsSuspendedContinentalCompetition = leagueTeamPlayer.IsSuspendedContinentalCompetition,
             CreatedAt = leagueTeamPlayer.CreatedAt,
             ModifiedAt = leagueTeamPlayer.ModifiedAt,
         };

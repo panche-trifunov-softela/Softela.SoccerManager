@@ -69,6 +69,21 @@ public sealed record LeagueTeamPlayerDto
     public int WantedTotalAppearances { get; init; }
 
     /// <summary>
+    /// The player's physical condition, from 1 to 100 inclusive.
+    /// </summary>
+    public int Condition { get; init; }
+
+    /// <summary>
+    /// Whether the player is suspended from the domestic competition.
+    /// </summary>
+    public bool IsSuspendedDomesticCompetition { get; init; }
+
+    /// <summary>
+    /// Whether the player is suspended from the continental competition.
+    /// </summary>
+    public bool IsSuspendedContinentalCompetition { get; init; }
+
+    /// <summary>
     /// The UTC date and time the league team player was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }

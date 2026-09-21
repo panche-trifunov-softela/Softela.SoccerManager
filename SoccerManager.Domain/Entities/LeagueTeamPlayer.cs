@@ -63,4 +63,19 @@ public class LeagueTeamPlayer : BaseEntity
     /// the starting ones, so this value is never lower than <see cref="WantedStarterAppearances"/>.
     /// </summary>
     public int WantedTotalAppearances { get; set; }
+
+    /// <summary>
+    /// Gets or sets the player's physical condition, from 1 to 100 inclusive.
+    /// </summary>
+    public int Condition { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the player is suspended from the domestic competition.
+    /// </summary>
+    public bool IsSuspendedDomesticCompetition { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the player is suspended from the continental competition.
+    /// </summary>
+    public bool IsSuspendedContinentalCompetition { get; set; }
 }

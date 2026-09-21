@@ -14,6 +14,6 @@ public sealed class CreateFormationPositionValidator : AbstractValidator<CreateF
     {
         RuleFor(x => x.FormationId).GreaterThan(0);
         RuleFor(x => x.PositionId).GreaterThan(0);
-        RuleFor(x => x.SlotNumber).InclusiveBetween(1, 11);
+        RuleFor(x => x.SlotNumber).InclusiveBetween(1, 19);
     }
 }

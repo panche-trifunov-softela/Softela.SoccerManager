@@ -41,6 +41,9 @@ public class LeagueTeamPlayerRepository : ILeagueTeamPlayerRepository
         parameters.Add("@TransfermarketValue", leagueTeamPlayer.TransfermarketValue, DbType.Int64);
         parameters.Add("@WantedStarterAppearances", leagueTeamPlayer.WantedStarterAppearances, DbType.Int32);
         parameters.Add("@WantedTotalAppearances", leagueTeamPlayer.WantedTotalAppearances, DbType.Int32);
+        parameters.Add("@Condition", leagueTeamPlayer.Condition, DbType.Int32);
+        parameters.Add("@IsSuspendedDomesticCompetition", leagueTeamPlayer.IsSuspendedDomesticCompetition, DbType.Boolean);
+        parameters.Add("@IsSuspendedContinentalCompetition", leagueTeamPlayer.IsSuspendedContinentalCompetition, DbType.Boolean);
         parameters.Add("@CreatedAt", leagueTeamPlayer.CreatedAt, DbType.DateTime2);
         parameters.Add("@ModifiedAt", leagueTeamPlayer.ModifiedAt, DbType.DateTime2);
         parameters.Add("@CreatedBy", leagueTeamPlayer.CreatedBy, DbType.Guid);
@@ -73,6 +76,9 @@ public class LeagueTeamPlayerRepository : ILeagueTeamPlayerRepository
         parameters.Add("@TransfermarketValue", leagueTeamPlayer.TransfermarketValue, DbType.Int64);
         parameters.Add("@WantedStarterAppearances", leagueTeamPlayer.WantedStarterAppearances, DbType.Int32);
         parameters.Add("@WantedTotalAppearances", leagueTeamPlayer.WantedTotalAppearances, DbType.Int32);
+        parameters.Add("@Condition", leagueTeamPlayer.Condition, DbType.Int32);
+        parameters.Add("@IsSuspendedDomesticCompetition", leagueTeamPlayer.IsSuspendedDomesticCompetition, DbType.Boolean);
+        parameters.Add("@IsSuspendedContinentalCompetition", leagueTeamPlayer.IsSuspendedContinentalCompetition, DbType.Boolean);
         parameters.Add("@ModifiedAt", leagueTeamPlayer.ModifiedAt, DbType.DateTime2);
         parameters.Add("@ModifiedBy", leagueTeamPlayer.ModifiedBy, DbType.Guid);
 

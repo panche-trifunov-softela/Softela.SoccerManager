@@ -31,5 +31,7 @@ public sealed class UpdateLeagueTeamPlayerValidator : AbstractValidator<UpdateLe
 
         // Starting appearances are appearances too, so the wanted total can never be lower than them.
         RuleFor(x => x.WantedTotalAppearances).GreaterThanOrEqualTo(x => x.WantedStarterAppearances);
+
+        RuleFor(x => x.Condition).InclusiveBetween(1, 100);
     }
 }

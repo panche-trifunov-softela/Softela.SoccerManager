@@ -25,6 +25,9 @@ public static class UpdateLeagueTeamPlayerMapper
         leagueTeamPlayer.TransfermarketValue = request.TransfermarketValue;
         leagueTeamPlayer.WantedStarterAppearances = request.WantedStarterAppearances;
         leagueTeamPlayer.WantedTotalAppearances = request.WantedTotalAppearances;
+        leagueTeamPlayer.Condition = request.Condition;
+        leagueTeamPlayer.IsSuspendedDomesticCompetition = request.IsSuspendedDomesticCompetition;
+        leagueTeamPlayer.IsSuspendedContinentalCompetition = request.IsSuspendedContinentalCompetition;
         leagueTeamPlayer.ModifiedAt = now;
         leagueTeamPlayer.ModifiedBy = userId;
     }
