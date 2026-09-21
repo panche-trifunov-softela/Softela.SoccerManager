@@ -1,6 +1,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using SoccerManager.Application.Commands.MatchFormationPlayerPosition;
 using SoccerManager.Application.Core.Behaviors;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
@@ -27,6 +28,10 @@ public static class BuilderExtensions
             .AddScoped<IQueryDispatcher, QueryDispatcher>();
 
         services.AddValidatorsFromAssembly(ApplicationAssembly);
+
+        // The one application service beyond the dispatchers: it reads several aggregates to snapshot a lineup
+        // slot, so it lives outside any single handler and is shared by the create and update handlers.
+        services.AddScoped<IMatchFormationPlayerPositionSnapshotResolver, MatchFormationPlayerPositionSnapshotResolver>();
 
         // Registered after the validators so the behaviour resolves the ones scanned above.
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
