@@ -54,6 +54,7 @@ public static class BuilderExtensions
         services.AddScoped<IMatchTeamStatisticRepository, MatchTeamStatisticRepository>();
         services.AddScoped<ILeagueTeamPlayerRepository, LeagueTeamPlayerRepository>();
         services.AddScoped<IMatchTeamTacticRepository, MatchTeamTacticRepository>();
+        services.AddScoped<IFormationRepository, FormationRepository>();
 
         services.AddHealthChecks()
             .AddSqlServer(connectionString, name: "sqlserver");
