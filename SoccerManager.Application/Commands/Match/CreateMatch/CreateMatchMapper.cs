@@ -17,7 +17,7 @@ public static class CreateMatchMapper
         return new SoccerManager.Domain.Entities.Match
         {
             SeasonId = request.SeasonId,
-            DivisionId = request.DivisionId,
+            CompetitionId = request.CompetitionId,
             RefereeId = request.RefereeId,
             StartDateTime = request.StartDateTime,
             Commentary = request.Commentary,

@@ -15,7 +15,7 @@ public static class UpdateMatchMapper
     public static void ApplyTo(UpdateMatchRequest request, SoccerManager.Domain.Entities.Match match, DateTime now, Guid userId)
     {
         match.SeasonId = request.SeasonId;
-        match.DivisionId = request.DivisionId;
+        match.CompetitionId = request.CompetitionId;
         match.RefereeId = request.RefereeId;
         match.StartDateTime = request.StartDateTime;
         match.Commentary = request.Commentary;

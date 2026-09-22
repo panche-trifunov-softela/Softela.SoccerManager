@@ -16,7 +16,6 @@ public static class UpdateStandingMapper
     {
         standing.CompetitionId = request.CompetitionId;
         standing.SeasonId = request.SeasonId;
-        standing.DivisionId = request.DivisionId;
         standing.TeamId = request.TeamId;
         standing.Points = request.Points;
         standing.GoalsFor = request.GoalsFor;

@@ -23,6 +23,10 @@ public static class GetCompetitionByIdMapper
             IsDomestic = competition.IsDomestic,
             Format = competition.Format,
             MaxAgeAllowed = competition.MaxAgeAllowed,
+            Order = competition.Order,
+            TeamsPromoted = competition.TeamsPromoted,
+            TeamsRelegated = competition.TeamsRelegated,
+            TeamsInPlayoffs = competition.TeamsInPlayoffs,
             CreatedAt = competition.CreatedAt,
             ModifiedAt = competition.ModifiedAt,
         };

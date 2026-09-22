@@ -20,6 +20,10 @@ public static class UpdateCompetitionMapper
         competition.IsDomestic = request.IsDomestic;
         competition.Format = request.Format;
         competition.MaxAgeAllowed = request.MaxAgeAllowed;
+        competition.Order = request.Order;
+        competition.TeamsPromoted = request.TeamsPromoted;
+        competition.TeamsRelegated = request.TeamsRelegated;
+        competition.TeamsInPlayoffs = request.TeamsInPlayoffs;
         competition.ModifiedAt = now;
         competition.ModifiedBy = userId;
     }

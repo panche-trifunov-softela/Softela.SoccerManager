@@ -12,11 +12,10 @@ public sealed class GetStandingsValidator : AbstractValidator<GetStandingsReques
     /// </summary>
     public GetStandingsValidator()
     {
-        // This query is always scoped to one division within one season within
-        // one competition, so a missing or zero CompetitionId, SeasonId or
-        // DivisionId must fail fast rather than silently returning nothing.
+        // This query is always scoped to one season within one competition, so a
+        // missing or zero CompetitionId or SeasonId must fail fast rather than
+        // silently returning nothing.
         RuleFor(x => x.CompetitionId).GreaterThan(0);
         RuleFor(x => x.SeasonId).GreaterThan(0);
-        RuleFor(x => x.DivisionId).GreaterThan(0);
     }
 }

@@ -11,9 +11,9 @@ public class Match : BaseEntity
     public int SeasonId { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the division the match is played in.
+    /// Gets or sets the identifier of the competition the match is played in, or <see langword="null"/> when it is a friendly.
     /// </summary>
-    public int DivisionId { get; set; }
+    public int? CompetitionId { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the match's referee.

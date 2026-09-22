@@ -35,11 +35,10 @@ public interface IStandingRepository
     Task<Standing?> GetByIdAsync(int id);
 
     /// <summary>
-    /// Retrieves every standing belonging to the given competition, season and division.
+    /// Retrieves every standing belonging to the given competition and season.
     /// </summary>
     /// <param name="competitionId">The identifier of the competition to filter by.</param>
     /// <param name="seasonId">The identifier of the season to filter by.</param>
-    /// <param name="divisionId">The identifier of the division to filter by.</param>
-    /// <returns>A list of every standing belonging to the competition, season and division.</returns>
-    Task<List<Standing>> GetByCompetitionSeasonAndDivisionAsync(int competitionId, int seasonId, int divisionId);
+    /// <returns>A list of every standing belonging to the competition and season.</returns>
+    Task<List<Standing>> GetByCompetitionAndSeasonAsync(int competitionId, int seasonId);
 }

@@ -2,7 +2,6 @@ CREATE OR ALTER PROCEDURE dbo.UpdateStanding
     @Id            INT,
     @CompetitionId INT,
     @SeasonId      INT,
-    @DivisionId    INT,
     @TeamId        INT,
     @Points        INT,
     @GoalsFor      INT,
@@ -19,7 +18,6 @@ BEGIN
     UPDATE dbo.Standings
     SET CompetitionId = @CompetitionId,
         SeasonId      = @SeasonId,
-        DivisionId    = @DivisionId,
         TeamId        = @TeamId,
         Points        = @Points,
         GoalsFor      = @GoalsFor,

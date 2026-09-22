@@ -31,7 +31,7 @@ public class MatchRepository : IMatchRepository
     {
         var parameters = new DynamicParameters();
         parameters.Add("@SeasonId", match.SeasonId, DbType.Int32);
-        parameters.Add("@DivisionId", match.DivisionId, DbType.Int32);
+        parameters.Add("@CompetitionId", match.CompetitionId, DbType.Int32);
         parameters.Add("@RefereeId", match.RefereeId, DbType.Int32);
         parameters.Add("@StartDateTime", match.StartDateTime, DbType.DateTime2);
         parameters.Add("@Commentary", match.Commentary, DbType.String);
@@ -59,7 +59,7 @@ public class MatchRepository : IMatchRepository
         var parameters = new DynamicParameters();
         parameters.Add("@Id", match.Id, DbType.Int32);
         parameters.Add("@SeasonId", match.SeasonId, DbType.Int32);
-        parameters.Add("@DivisionId", match.DivisionId, DbType.Int32);
+        parameters.Add("@CompetitionId", match.CompetitionId, DbType.Int32);
         parameters.Add("@RefereeId", match.RefereeId, DbType.Int32);
         parameters.Add("@StartDateTime", match.StartDateTime, DbType.DateTime2);
         parameters.Add("@Commentary", match.Commentary, DbType.String);

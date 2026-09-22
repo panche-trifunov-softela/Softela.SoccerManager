@@ -21,5 +21,12 @@ public sealed class CreateCompetitionValidator : AbstractValidator<CreateCompeti
 
         // Null means no age limit, so the range is only checked when a value was supplied.
         RuleFor(x => x.MaxAgeAllowed).InclusiveBetween(16, 23).When(x => x.MaxAgeAllowed.HasValue);
+
+        // Zero is legitimate throughout: a knockout cup has no tier, and the top
+        // competition promotes nobody while the bottom relegates nobody.
+        RuleFor(x => x.Order).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.TeamsPromoted).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.TeamsRelegated).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.TeamsInPlayoffs).GreaterThanOrEqualTo(0);
     }
 }

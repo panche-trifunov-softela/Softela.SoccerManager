@@ -36,6 +36,10 @@ public class CompetitionRepository : ICompetitionRepository
         parameters.Add("@IsDomestic", competition.IsDomestic, DbType.Boolean);
         parameters.Add("@Format", (byte)competition.Format, DbType.Byte);
         parameters.Add("@MaxAgeAllowed", competition.MaxAgeAllowed, DbType.Int32);
+        parameters.Add("@Order", competition.Order, DbType.Int32);
+        parameters.Add("@TeamsPromoted", competition.TeamsPromoted, DbType.Int32);
+        parameters.Add("@TeamsRelegated", competition.TeamsRelegated, DbType.Int32);
+        parameters.Add("@TeamsInPlayoffs", competition.TeamsInPlayoffs, DbType.Int32);
         parameters.Add("@CreatedAt", competition.CreatedAt, DbType.DateTime2);
         parameters.Add("@ModifiedAt", competition.ModifiedAt, DbType.DateTime2);
         parameters.Add("@CreatedBy", competition.CreatedBy, DbType.Guid);
@@ -62,6 +66,10 @@ public class CompetitionRepository : ICompetitionRepository
         parameters.Add("@IsDomestic", competition.IsDomestic, DbType.Boolean);
         parameters.Add("@Format", (byte)competition.Format, DbType.Byte);
         parameters.Add("@MaxAgeAllowed", competition.MaxAgeAllowed, DbType.Int32);
+        parameters.Add("@Order", competition.Order, DbType.Int32);
+        parameters.Add("@TeamsPromoted", competition.TeamsPromoted, DbType.Int32);
+        parameters.Add("@TeamsRelegated", competition.TeamsRelegated, DbType.Int32);
+        parameters.Add("@TeamsInPlayoffs", competition.TeamsInPlayoffs, DbType.Int32);
         parameters.Add("@ModifiedAt", competition.ModifiedAt, DbType.DateTime2);
         parameters.Add("@ModifiedBy", competition.ModifiedBy, DbType.Guid);
 

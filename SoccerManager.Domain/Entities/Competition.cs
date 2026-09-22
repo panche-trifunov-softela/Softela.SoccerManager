@@ -37,4 +37,25 @@ public class Competition : BaseEntity
     /// age limit. When set, the value is between 16 and 23.
     /// </summary>
     public int? MaxAgeAllowed { get; set; }
+
+    /// <summary>
+    /// Gets or sets the competition's rank within its league, where lower values indicate higher tiers, or 0 when
+    /// it is not a tiered competition.
+    /// </summary>
+    public int Order { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of teams promoted from this competition at the end of a season. 0 when not applicable.
+    /// </summary>
+    public int TeamsPromoted { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of teams relegated from this competition at the end of a season. 0 when not applicable.
+    /// </summary>
+    public int TeamsRelegated { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of teams from this competition that enter the playoffs. 0 when not applicable.
+    /// </summary>
+    public int TeamsInPlayoffs { get; set; }
 }
