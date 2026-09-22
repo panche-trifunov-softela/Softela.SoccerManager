@@ -57,6 +57,7 @@ public static class BuilderExtensions
         services.AddScoped<IFormationRepository, FormationRepository>();
         services.AddScoped<IFormationPositionRepository, FormationPositionRepository>();
         services.AddScoped<IMatchFormationPlayerPositionRepository, MatchFormationPlayerPositionRepository>();
+        services.AddScoped<ICompetitionRepository, CompetitionRepository>();
 
         services.AddHealthChecks()
             .AddSqlServer(connectionString, name: "sqlserver");
