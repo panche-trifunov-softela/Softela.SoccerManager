@@ -12,6 +12,7 @@ public sealed class CreateStandingValidator : AbstractValidator<CreateStandingRe
     /// </summary>
     public CreateStandingValidator()
     {
+        RuleFor(x => x.CompetitionId).GreaterThan(0);
         RuleFor(x => x.SeasonId).GreaterThan(0);
         RuleFor(x => x.DivisionId).GreaterThan(0);
         RuleFor(x => x.TeamId).GreaterThan(0);

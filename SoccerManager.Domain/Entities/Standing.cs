@@ -1,10 +1,15 @@
 namespace SoccerManager.Domain.Entities;
 
 /// <summary>
-/// Represents one team's record in a division for a season.
+/// Represents one team's record in a competition, within a division for a season.
 /// </summary>
 public class Standing : BaseEntity
 {
+    /// <summary>
+    /// Gets or sets the identifier of the competition this record belongs to.
+    /// </summary>
+    public int CompetitionId { get; set; }
+
     /// <summary>
     /// Gets or sets the identifier of the season this record belongs to.
     /// </summary>

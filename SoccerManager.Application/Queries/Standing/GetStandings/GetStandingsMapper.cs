@@ -17,6 +17,7 @@ public static class GetStandingsMapper
         return new StandingDto
         {
             Id = standing.Id,
+            CompetitionId = standing.CompetitionId,
             SeasonId = standing.SeasonId,
             DivisionId = standing.DivisionId,
             TeamId = standing.TeamId,

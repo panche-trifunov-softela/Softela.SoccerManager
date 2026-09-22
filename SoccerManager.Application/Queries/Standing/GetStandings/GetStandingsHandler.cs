@@ -20,14 +20,14 @@ public class GetStandingsHandler : IRequestHandler<GetStandingsRequest, GetStand
     }
 
     /// <summary>
-    /// Retrieves every standing belonging to the requested season and division.
+    /// Retrieves every standing belonging to the requested competition, season and division.
     /// </summary>
     /// <param name="request">The query request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The response carrying the matching standings.</returns>
     public async Task<GetStandingsResponse> Handle(GetStandingsRequest request, CancellationToken cancellationToken)
     {
-        var standings = await _standingRepository.GetBySeasonAndDivisionAsync(request.SeasonId, request.DivisionId);
+        var standings = await _standingRepository.GetByCompetitionSeasonAndDivisionAsync(request.CompetitionId, request.SeasonId, request.DivisionId);
 
         return new GetStandingsResponse { Data = standings.Select(GetStandingsMapper.ToDto).ToList() };
     }

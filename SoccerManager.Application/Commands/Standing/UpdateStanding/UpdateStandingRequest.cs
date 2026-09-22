@@ -13,6 +13,11 @@ public sealed record UpdateStandingRequest : IRequest<bool>
     public int Id { get; init; }
 
     /// <summary>
+    /// The identifier of the competition this record belongs to.
+    /// </summary>
+    public int CompetitionId { get; init; }
+
+    /// <summary>
     /// The identifier of the season this record belongs to.
     /// </summary>
     public int SeasonId { get; init; }

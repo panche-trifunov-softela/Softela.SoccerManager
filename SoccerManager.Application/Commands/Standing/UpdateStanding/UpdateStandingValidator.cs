@@ -13,6 +13,7 @@ public sealed class UpdateStandingValidator : AbstractValidator<UpdateStandingRe
     public UpdateStandingValidator()
     {
         RuleFor(x => x.Id).GreaterThan(0);
+        RuleFor(x => x.CompetitionId).GreaterThan(0);
         RuleFor(x => x.SeasonId).GreaterThan(0);
         RuleFor(x => x.DivisionId).GreaterThan(0);
         RuleFor(x => x.TeamId).GreaterThan(0);

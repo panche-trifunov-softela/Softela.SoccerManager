@@ -8,6 +8,11 @@ namespace SoccerManager.Application.Commands.Standing.CreateStanding;
 public sealed record CreateStandingRequest : IRequest<int>
 {
     /// <summary>
+    /// The identifier of the competition this record belongs to.
+    /// </summary>
+    public int CompetitionId { get; init; }
+
+    /// <summary>
     /// The identifier of the season this record belongs to.
     /// </summary>
     public int SeasonId { get; init; }
