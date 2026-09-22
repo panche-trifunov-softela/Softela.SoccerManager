@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using SoccerManager.Application.Models;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Entities;
 using SoccerManager.Infrastructure.Database.Dapper;
@@ -127,5 +128,26 @@ public class LeagueTeamManagerRepository : ILeagueTeamManagerRepository
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
 
         return leagueTeamManagers.ToList();
+    }
+
+    /// <summary>
+    /// Retrieves every manager appointment belonging to the manager profile linked to the given Keycloak user, enriched with league and team names.
+    /// </summary>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose appointments are retrieved.</param>
+    /// <param name="currentOnly">When <see langword="true"/>, narrows the results to appointments where <c>IsCurrent</c> is <see langword="true"/>.</param>
+    /// <returns>A list of the user's manager appointments, or an empty list when the user has no manager profile.</returns>
+    public async Task<List<GetLeagueTeamManagersByUserIdResult>> GetByUserIdAsync(Guid userId, bool currentOnly)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@UserId", userId, DbType.Guid);
+        parameters.Add("@CurrentOnly", currentOnly, DbType.Boolean);
+
+        var myLeagueTeamManagers = await _dapperDataContext.Connection.QueryAsync<GetLeagueTeamManagersByUserIdResult>(
+            "dbo.GetLeagueTeamManagersByUserId",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        return myLeagueTeamManagers.ToList();
     }
 }
