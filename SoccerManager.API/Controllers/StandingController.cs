@@ -33,17 +33,18 @@ public class StandingController : ControllerBase
     }
 
     /// <summary>
-    /// Returns every standing belonging to the given season and division.
+    /// Returns every standing belonging to the given competition, season and division.
     /// </summary>
+    /// <param name="competitionId">The identifier of the competition to filter by.</param>
     /// <param name="seasonId">The identifier of the season to filter by.</param>
     /// <param name="divisionId">The identifier of the division to filter by.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The list of standings belonging to the season and division.</returns>
+    /// <returns>The list of standings belonging to the competition, season and division.</returns>
     [HttpGet]
-    public async Task<IActionResult> GetStandings([FromQuery] int seasonId, [FromQuery] int divisionId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetStandings([FromQuery] int competitionId, [FromQuery] int seasonId, [FromQuery] int divisionId, CancellationToken cancellationToken)
     {
-        // seasonId and divisionId are both required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
-        var result = await _queryDispatcher.QueryAsync(new GetStandingsRequest { SeasonId = seasonId, DivisionId = divisionId }, cancellationToken);
+        // competitionId, seasonId and divisionId are all required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
+        var result = await _queryDispatcher.QueryAsync(new GetStandingsRequest { CompetitionId = competitionId, SeasonId = seasonId, DivisionId = divisionId }, cancellationToken);
 
         return Ok(result.Data);
     }

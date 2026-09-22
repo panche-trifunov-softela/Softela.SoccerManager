@@ -16,6 +16,7 @@ public static class CreateStandingMapper
     {
         return new SoccerManager.Domain.Entities.Standing
         {
+            CompetitionId = request.CompetitionId,
             SeasonId = request.SeasonId,
             DivisionId = request.DivisionId,
             TeamId = request.TeamId,

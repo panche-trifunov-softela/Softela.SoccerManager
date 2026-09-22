@@ -14,6 +14,7 @@ public static class UpdateStandingMapper
     /// <param name="userId">The identifier of the user performing the update.</param>
     public static void ApplyTo(UpdateStandingRequest request, SoccerManager.Domain.Entities.Standing standing, DateTime now, Guid userId)
     {
+        standing.CompetitionId = request.CompetitionId;
         standing.SeasonId = request.SeasonId;
         standing.DivisionId = request.DivisionId;
         standing.TeamId = request.TeamId;
