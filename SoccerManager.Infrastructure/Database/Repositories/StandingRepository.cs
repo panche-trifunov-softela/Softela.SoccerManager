@@ -32,7 +32,6 @@ public class StandingRepository : IStandingRepository
         var parameters = new DynamicParameters();
         parameters.Add("@CompetitionId", standing.CompetitionId, DbType.Int32);
         parameters.Add("@SeasonId", standing.SeasonId, DbType.Int32);
-        parameters.Add("@DivisionId", standing.DivisionId, DbType.Int32);
         parameters.Add("@TeamId", standing.TeamId, DbType.Int32);
         parameters.Add("@Points", standing.Points, DbType.Int32);
         parameters.Add("@GoalsFor", standing.GoalsFor, DbType.Int32);
@@ -63,7 +62,6 @@ public class StandingRepository : IStandingRepository
         parameters.Add("@Id", standing.Id, DbType.Int32);
         parameters.Add("@CompetitionId", standing.CompetitionId, DbType.Int32);
         parameters.Add("@SeasonId", standing.SeasonId, DbType.Int32);
-        parameters.Add("@DivisionId", standing.DivisionId, DbType.Int32);
         parameters.Add("@TeamId", standing.TeamId, DbType.Int32);
         parameters.Add("@Points", standing.Points, DbType.Int32);
         parameters.Add("@GoalsFor", standing.GoalsFor, DbType.Int32);
@@ -115,18 +113,16 @@ public class StandingRepository : IStandingRepository
     }
 
     /// <summary>
-    /// Retrieves every standing belonging to the given competition, season and division.
+    /// Retrieves every standing belonging to the given competition and season.
     /// </summary>
     /// <param name="competitionId">The identifier of the competition to filter by.</param>
     /// <param name="seasonId">The identifier of the season to filter by.</param>
-    /// <param name="divisionId">The identifier of the division to filter by.</param>
     /// <returns>A list of the matching standings.</returns>
-    public async Task<List<Standing>> GetByCompetitionSeasonAndDivisionAsync(int competitionId, int seasonId, int divisionId)
+    public async Task<List<Standing>> GetByCompetitionAndSeasonAsync(int competitionId, int seasonId)
     {
         var parameters = new DynamicParameters();
         parameters.Add("@CompetitionId", competitionId, DbType.Int32);
         parameters.Add("@SeasonId", seasonId, DbType.Int32);
-        parameters.Add("@DivisionId", divisionId, DbType.Int32);
 
         var standings = await _dapperDataContext.Connection.QueryAsync<Standing>(
             "dbo.GetStandings",

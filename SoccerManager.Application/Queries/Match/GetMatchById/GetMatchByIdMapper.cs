@@ -18,7 +18,7 @@ public static class GetMatchByIdMapper
         {
             Id = match.Id,
             SeasonId = match.SeasonId,
-            DivisionId = match.DivisionId,
+            CompetitionId = match.CompetitionId,
             RefereeId = match.RefereeId,
             StartDateTime = match.StartDateTime,
             Commentary = match.Commentary,

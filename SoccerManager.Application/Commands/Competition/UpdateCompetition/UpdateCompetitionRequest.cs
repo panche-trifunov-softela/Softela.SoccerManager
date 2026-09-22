@@ -39,4 +39,25 @@ public sealed record UpdateCompetitionRequest : IRequest<bool>
     /// when there is no age limit.
     /// </summary>
     public int? MaxAgeAllowed { get; init; }
+
+    /// <summary>
+    /// The competition's rank within its league, where lower values indicate higher tiers, or 0 when it is not a
+    /// tiered competition.
+    /// </summary>
+    public int Order { get; init; }
+
+    /// <summary>
+    /// The number of teams promoted from this competition at the end of a season.
+    /// </summary>
+    public int TeamsPromoted { get; init; }
+
+    /// <summary>
+    /// The number of teams relegated from this competition at the end of a season.
+    /// </summary>
+    public int TeamsRelegated { get; init; }
+
+    /// <summary>
+    /// The number of teams from this competition that enter the playoffs.
+    /// </summary>
+    public int TeamsInPlayoffs { get; init; }
 }

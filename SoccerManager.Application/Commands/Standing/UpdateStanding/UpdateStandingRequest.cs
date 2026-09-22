@@ -23,11 +23,6 @@ public sealed record UpdateStandingRequest : IRequest<bool>
     public int SeasonId { get; init; }
 
     /// <summary>
-    /// The identifier of the division this record belongs to.
-    /// </summary>
-    public int DivisionId { get; init; }
-
-    /// <summary>
     /// The identifier of the team this record is for.
     /// </summary>
     public int TeamId { get; init; }

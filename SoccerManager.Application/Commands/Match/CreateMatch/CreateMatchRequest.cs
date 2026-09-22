@@ -13,9 +13,9 @@ public sealed record CreateMatchRequest : IRequest<int>
     public int SeasonId { get; init; }
 
     /// <summary>
-    /// The identifier of the division the match is played in.
+    /// The identifier of the competition the match is played in, or <see langword="null"/> when it is a friendly.
     /// </summary>
-    public int DivisionId { get; init; }
+    public int? CompetitionId { get; init; }
 
     /// <summary>
     /// The identifier of the match's referee.

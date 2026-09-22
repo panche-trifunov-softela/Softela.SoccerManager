@@ -1,7 +1,7 @@
 namespace SoccerManager.Application.Dtos;
 
 /// <summary>
-/// Represents one team's record in a competition, within a division for a season, for read-oriented consumers.
+/// Represents one team's record in a competition for a season, for read-oriented consumers.
 /// </summary>
 public sealed record StandingDto
 {
@@ -19,11 +19,6 @@ public sealed record StandingDto
     /// The identifier of the season this record belongs to.
     /// </summary>
     public int SeasonId { get; init; }
-
-    /// <summary>
-    /// The identifier of the division this record belongs to.
-    /// </summary>
-    public int DivisionId { get; init; }
 
     /// <summary>
     /// The identifier of the team this record is for.

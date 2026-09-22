@@ -8,7 +8,7 @@ namespace SoccerManager.Application.Queries.Standing.GetStandings;
 public sealed record GetStandingsResponse
 {
     /// <summary>
-    /// The list of standings belonging to the requested season and division.
+    /// The list of standings belonging to the requested competition and season.
     /// </summary>
     public required List<StandingDto> Data { get; init; }
 }
