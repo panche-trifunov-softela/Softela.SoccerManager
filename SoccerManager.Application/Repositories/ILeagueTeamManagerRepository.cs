@@ -1,3 +1,4 @@
+using SoccerManager.Application.Models;
 using SoccerManager.Domain.Entities;
 
 namespace SoccerManager.Application.Repositories;
@@ -41,4 +42,12 @@ public interface ILeagueTeamManagerRepository
     /// <param name="teamId">The identifier of the team to filter by.</param>
     /// <returns>A list of every manager appointment belonging to the league and team.</returns>
     Task<List<LeagueTeamManager>> GetByLeagueAndTeamAsync(int leagueId, int teamId);
+
+    /// <summary>
+    /// Retrieves every manager appointment belonging to the manager profile linked to the given Keycloak user, enriched with league and team names.
+    /// </summary>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose appointments are retrieved.</param>
+    /// <param name="currentOnly">When <see langword="true"/>, narrows the results to appointments where <c>IsCurrent</c> is <see langword="true"/>.</param>
+    /// <returns>A list of the user's manager appointments, or an empty list when the user has no manager profile.</returns>
+    Task<List<GetLeagueTeamManagersByUserIdResult>> GetByUserIdAsync(Guid userId, bool currentOnly);
 }

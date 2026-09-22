@@ -7,6 +7,7 @@ using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.LeagueTeamManager.GetLeagueTeamManagerById;
 using SoccerManager.Application.Queries.LeagueTeamManager.GetLeagueTeamManagers;
+using SoccerManager.Application.Queries.LeagueTeamManager.GetMyLeagueTeamManagers;
 
 namespace SoccerManager.API.Controllers;
 
@@ -44,6 +45,22 @@ public class LeagueTeamManagerController : ControllerBase
     {
         // leagueId and teamId are both required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
         var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamManagersRequest { LeagueId = leagueId, TeamId = teamId }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the league team manager appointments belonging to the authenticated caller.
+    /// </summary>
+    /// <param name="currentOnly">Whether to narrow the results to appointments that are still current.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The list of league team manager appointments belonging to the authenticated caller.</returns>
+    [HttpGet("mine")]
+    public async Task<IActionResult> GetMyLeagueTeamManagers([FromQuery] bool currentOnly, CancellationToken cancellationToken)
+    {
+        // The caller is identified from the bearer token rather than any route or query value.
+        // A caller with no manager profile receives an empty list rather than a 404.
+        var result = await _queryDispatcher.QueryAsync(new GetMyLeagueTeamManagersRequest { CurrentOnly = currentOnly }, cancellationToken);
 
         return Ok(result.Data);
     }
