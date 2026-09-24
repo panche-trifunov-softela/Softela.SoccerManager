@@ -230,7 +230,11 @@ button {
 
 /* form */
 
-#kc-form-login {
+/* The login form carries an id only; every other page's form is matched by
+   kcFormClass, so both lay out the same way. */
+
+#kc-form-login,
+.auth_form {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -465,6 +469,15 @@ button {
     color: var(--text);
 }
 
+/* The sign-up link the login page puts here inherits the reset's color, so it
+   needs the accent to read as a link at all. */
+
+.auth_info a {
+    color: var(--highlight);
+    font-family: var(--heading-font);
+    font-weight: 600;
+}
+
 #kc-social-providers ul {
     list-style: none;
     display: flex;
@@ -506,6 +519,44 @@ button {
 
 #kc-locale button[aria-expanded="true"] ~ ul {
     display: block;
+}
+
+/* register */
+
+/* The shared shell wraps the title in a Bootstrap column and puts the
+   required-fields hint before it, so the order is corrected here rather than by
+   forking the template. col-md-10 is the framework leftover it renders. */
+
+.auth_content {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth_content .col-md-10 {
+    order: -1;
+}
+
+.auth_content #kc-page-title {
+    margin-bottom: 8px;
+}
+
+.auth_content > .subtitle {
+    font-size: 0.75rem;
+    color: var(--label);
+    margin-bottom: 20px;
+}
+
+.required {
+    color: var(--red);
+}
+
+/* Both rows sit in one form group, whose 6px gap is meant for a label and its
+   field, so the submit button needs the form's own spacing back. Scoped to the
+   form class, because the login page carries this id too and already spaces it
+   with its own group. */
+
+.auth_form #kc-form-options {
+    margin-bottom: 14px;
 }
 
 /* reduced motion */
