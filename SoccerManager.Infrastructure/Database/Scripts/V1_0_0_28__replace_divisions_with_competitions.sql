@@ -16,6 +16,7 @@ ALTER TABLE dbo.Competitions ADD TeamsPromoted INT NOT NULL CONSTRAINT DF_Compet
 ALTER TABLE dbo.Competitions ADD TeamsRelegated INT NOT NULL CONSTRAINT DF_Competitions_TeamsRelegated DEFAULT 0;
 
 ALTER TABLE dbo.Competitions ADD TeamsInPlayoffs INT NOT NULL CONSTRAINT DF_Competitions_TeamsInPlayoffs DEFAULT 0;
+GO
 
 CREATE UNIQUE NONCLUSTERED INDEX UX_Competitions_LeagueId_Order ON dbo.Competitions (LeagueId, [Order]) WHERE [Order] > 0;
 
