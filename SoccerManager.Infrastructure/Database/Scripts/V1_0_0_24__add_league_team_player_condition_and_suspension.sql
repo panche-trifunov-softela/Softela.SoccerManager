@@ -8,5 +8,6 @@ ALTER TABLE dbo.LeagueTeamPlayers ADD Condition INT NOT NULL CONSTRAINT DF_Leagu
 ALTER TABLE dbo.LeagueTeamPlayers ADD IsSuspendedDomesticCompetition BIT NOT NULL CONSTRAINT DF_LeagueTeamPlayers_IsSuspendedDomesticCompetition DEFAULT 0;
 
 ALTER TABLE dbo.LeagueTeamPlayers ADD IsSuspendedContinentalCompetition BIT NOT NULL CONSTRAINT DF_LeagueTeamPlayers_IsSuspendedContinentalCompetition DEFAULT 0;
+GO
 
 ALTER TABLE dbo.LeagueTeamPlayers ADD CONSTRAINT CK_LeagueTeamPlayers_Condition CHECK (Condition BETWEEN 1 AND 100);
