@@ -22,6 +22,7 @@ public static class CreatePlayerMapper
             Value = request.Value,
             Wage = request.Wage,
             ImageUrl = request.ImageUrl,
+            NationalTeamId = request.NationalTeamId,
             CreatedAt = now,
             CreatedBy = userId,
             ModifiedAt = now,

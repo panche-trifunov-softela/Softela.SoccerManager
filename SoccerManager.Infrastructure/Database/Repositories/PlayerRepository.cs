@@ -37,6 +37,7 @@ public class PlayerRepository : IPlayerRepository
         parameters.Add("@Value", player.Value, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@Wage", player.Wage, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@ImageUrl", player.ImageUrl, DbType.String);
+        parameters.Add("@NationalTeamId", player.NationalTeamId, DbType.Int32);
         parameters.Add("@CreatedAt", player.CreatedAt, DbType.DateTime2);
         parameters.Add("@ModifiedAt", player.ModifiedAt, DbType.DateTime2);
         parameters.Add("@CreatedBy", player.CreatedBy, DbType.Guid);
@@ -65,6 +66,7 @@ public class PlayerRepository : IPlayerRepository
         parameters.Add("@Value", player.Value, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@Wage", player.Wage, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@ImageUrl", player.ImageUrl, DbType.String);
+        parameters.Add("@NationalTeamId", player.NationalTeamId, DbType.Int32);
         parameters.Add("@ModifiedAt", player.ModifiedAt, DbType.DateTime2);
         parameters.Add("@ModifiedBy", player.ModifiedBy, DbType.Guid);
 

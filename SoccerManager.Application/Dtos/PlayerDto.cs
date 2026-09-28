@@ -41,6 +41,11 @@ public sealed record PlayerDto
     public string? ImageUrl { get; init; }
 
     /// <summary>
+    /// The identifier of the player's national team, or <see langword="null"/> when it has none.
+    /// </summary>
+    public int? NationalTeamId { get; init; }
+
+    /// <summary>
     /// The UTC date and time the player was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }

@@ -34,4 +34,9 @@ public class Player : BaseEntity
     /// Gets or sets the URL of the player's image, or <see langword="null"/> when it has none.
     /// </summary>
     public string? ImageUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the player's national team, or <see langword="null"/> when it has none.
+    /// </summary>
+    public int? NationalTeamId { get; set; }
 }
