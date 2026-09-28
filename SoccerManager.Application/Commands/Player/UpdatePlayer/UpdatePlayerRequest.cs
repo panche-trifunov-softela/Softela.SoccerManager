@@ -41,4 +41,9 @@ public sealed record UpdatePlayerRequest : IRequest<bool>
     /// The URL of the player's image, if one has been set.
     /// </summary>
     public string? ImageUrl { get; init; }
+
+    /// <summary>
+    /// The identifier of the national team the player plays for, if one has been assigned.
+    /// </summary>
+    public int? NationalTeamId { get; init; }
 }

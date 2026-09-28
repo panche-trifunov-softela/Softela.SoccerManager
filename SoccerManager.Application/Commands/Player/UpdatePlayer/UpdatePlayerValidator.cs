@@ -29,5 +29,9 @@ public sealed class UpdatePlayerValidator : AbstractValidator<UpdatePlayerReques
         RuleFor(x => x.Wage).GreaterThanOrEqualTo(0m).PrecisionScale(18, 2, false);
 
         RuleFor(x => x.ImageUrl).MaximumLength(500);
+
+        // Shape-only: that the national team exists is enforced by FK_Players_NationalTeams, and a
+        // player never needs one.
+        RuleFor(x => x.NationalTeamId).GreaterThan(0).When(x => x.NationalTeamId.HasValue);
     }
 }
