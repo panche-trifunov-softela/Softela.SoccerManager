@@ -75,7 +75,9 @@ authenticated call can't be exercised end to end here; the unauthenticated
 ## Run (human path)
 
 ```bash
+$env:ConnectionStrings__soccermanager = ((Get-Content .env | Where-Object { $_ -like 'ConnectionStrings__soccermanager=*' } | Select-Object -First 1) -split '=', 2)[1]
 dotnet run --project SoccerManager.API --launch-profile https
+
 ```
 Plain `dotnet run` with no `--launch-profile` picks the first profile
 (`http`), which is port 5005 only. `SoccerManager.UI` calls :7265, so the
