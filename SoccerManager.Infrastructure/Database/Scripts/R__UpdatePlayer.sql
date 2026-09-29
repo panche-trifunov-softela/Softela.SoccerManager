@@ -7,6 +7,7 @@ CREATE OR ALTER PROCEDURE dbo.UpdatePlayer
     @Wage           DECIMAL(18,2),
     @ImageUrl       NVARCHAR(500),
     @NationalTeamId INT,
+    @TeamId         INT,
     @ModifiedAt     DATETIME2(7),
     @ModifiedBy     UNIQUEIDENTIFIER
 AS
@@ -21,6 +22,7 @@ BEGIN
         Wage           = @Wage,
         ImageUrl       = @ImageUrl,
         NationalTeamId = @NationalTeamId,
+        TeamId         = @TeamId,
         ModifiedAt     = @ModifiedAt,
         ModifiedBy     = @ModifiedBy
     WHERE Id = @Id;

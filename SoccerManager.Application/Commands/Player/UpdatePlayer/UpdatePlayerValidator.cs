@@ -33,5 +33,9 @@ public sealed class UpdatePlayerValidator : AbstractValidator<UpdatePlayerReques
         // Shape-only: that the national team exists is enforced by FK_Players_NationalTeams, and a
         // player never needs one.
         RuleFor(x => x.NationalTeamId).GreaterThan(0).When(x => x.NationalTeamId.HasValue);
+
+        // Shape-only: that the team exists is enforced by FK_Players_Teams, and a player
+        // never needs one.
+        RuleFor(x => x.TeamId).GreaterThan(0).When(x => x.TeamId.HasValue);
     }
 }

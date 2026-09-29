@@ -6,6 +6,7 @@ CREATE OR ALTER PROCEDURE dbo.InsertPlayer
     @Wage           DECIMAL(18,2),
     @ImageUrl       NVARCHAR(500),
     @NationalTeamId INT,
+    @TeamId         INT,
     @CreatedAt      DATETIME2(7),
     @ModifiedAt     DATETIME2(7),
     @CreatedBy      UNIQUEIDENTIFIER,
@@ -14,7 +15,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    INSERT INTO dbo.Players (Name, DateOfBirth, Rating, [Value], Wage, ImageUrl, NationalTeamId, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
+    INSERT INTO dbo.Players (Name, DateOfBirth, Rating, [Value], Wage, ImageUrl, NationalTeamId, TeamId, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
     OUTPUT INSERTED.Id
-    VALUES (@Name, @DateOfBirth, @Rating, @Value, @Wage, @ImageUrl, @NationalTeamId, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
+    VALUES (@Name, @DateOfBirth, @Rating, @Value, @Wage, @ImageUrl, @NationalTeamId, @TeamId, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
 END

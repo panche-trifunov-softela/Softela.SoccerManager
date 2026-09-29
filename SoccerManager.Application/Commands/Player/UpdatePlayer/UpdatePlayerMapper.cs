@@ -21,6 +21,7 @@ public static class UpdatePlayerMapper
         player.Wage = request.Wage;
         player.ImageUrl = request.ImageUrl;
         player.NationalTeamId = request.NationalTeamId;
+        player.TeamId = request.TeamId;
         player.ModifiedAt = now;
         player.ModifiedBy = userId;
     }

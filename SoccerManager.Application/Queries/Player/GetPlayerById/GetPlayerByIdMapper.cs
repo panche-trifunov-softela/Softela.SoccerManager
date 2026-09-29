@@ -24,6 +24,7 @@ public static class GetPlayerByIdMapper
             Wage = player.Wage,
             ImageUrl = player.ImageUrl,
             NationalTeamId = player.NationalTeamId,
+            TeamId = player.TeamId,
             CreatedAt = player.CreatedAt,
             ModifiedAt = player.ModifiedAt,
         };
