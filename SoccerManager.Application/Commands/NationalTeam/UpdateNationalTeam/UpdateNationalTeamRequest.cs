@@ -31,4 +31,9 @@ public sealed record UpdateNationalTeamRequest : IRequest<bool>
     /// The URL of the national team's logo image, if one has been set.
     /// </summary>
     public string? LogoUrl { get; init; }
+
+    /// <summary>
+    /// The national team's Transfermarkt identifier, if one has been assigned.
+    /// </summary>
+    public int? TransfermarktId { get; init; }
 }

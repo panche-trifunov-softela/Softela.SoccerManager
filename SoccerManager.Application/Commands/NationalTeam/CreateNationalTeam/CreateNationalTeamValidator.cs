@@ -20,5 +20,9 @@ public sealed class CreateNationalTeamValidator : AbstractValidator<CreateNation
 
         RuleFor(x => x.JerseyUrl).MaximumLength(500);
         RuleFor(x => x.LogoUrl).MaximumLength(500);
+
+        // Shape-only: uniqueness is enforced by UX_NationalTeams_TransfermarktId, and a
+        // national team never needs one.
+        RuleFor(x => x.TransfermarktId).GreaterThan(0).When(x => x.TransfermarktId.HasValue);
     }
 }

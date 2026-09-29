@@ -38,6 +38,11 @@ public sealed record TeamDto
     public string? LogoUrl { get; init; }
 
     /// <summary>
+    /// The team's Transfermarkt identifier, or <see langword="null"/> when it has none.
+    /// </summary>
+    public int? TransfermarktId { get; init; }
+
+    /// <summary>
     /// The UTC date and time the team was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }

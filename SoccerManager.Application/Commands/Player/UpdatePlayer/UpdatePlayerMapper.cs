@@ -22,6 +22,7 @@ public static class UpdatePlayerMapper
         player.ImageUrl = request.ImageUrl;
         player.NationalTeamId = request.NationalTeamId;
         player.TeamId = request.TeamId;
+        player.TransfermarktId = request.TransfermarktId;
         player.ModifiedAt = now;
         player.ModifiedBy = userId;
     }

@@ -22,6 +22,7 @@ public static class GetTeamByIdMapper
             FinancialState = team.FinancialState,
             JerseyUrl = team.JerseyUrl,
             LogoUrl = team.LogoUrl,
+            TransfermarktId = team.TransfermarktId,
             CreatedAt = team.CreatedAt,
             ModifiedAt = team.ModifiedAt,
         };

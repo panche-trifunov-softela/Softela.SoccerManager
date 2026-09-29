@@ -22,5 +22,9 @@ public sealed class UpdateTeamValidator : AbstractValidator<UpdateTeamRequest>
 
         RuleFor(x => x.JerseyUrl).MaximumLength(500);
         RuleFor(x => x.LogoUrl).MaximumLength(500);
+
+        // Shape-only: uniqueness is enforced by UX_Teams_TransfermarktId, and a team
+        // never needs one.
+        RuleFor(x => x.TransfermarktId).GreaterThan(0).When(x => x.TransfermarktId.HasValue);
     }
 }

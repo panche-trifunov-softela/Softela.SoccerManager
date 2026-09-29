@@ -51,4 +51,9 @@ public sealed record UpdatePlayerRequest : IRequest<bool>
     /// The identifier of the player's current real-life club, if one has been assigned.
     /// </summary>
     public int? TeamId { get; init; }
+
+    /// <summary>
+    /// The player's Transfermarkt identifier, if one has been assigned.
+    /// </summary>
+    public int? TransfermarktId { get; init; }
 }

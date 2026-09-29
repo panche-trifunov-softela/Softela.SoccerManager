@@ -20,6 +20,7 @@ public static class CreateNationalTeamMapper
             StadiumId = request.StadiumId,
             JerseyUrl = request.JerseyUrl,
             LogoUrl = request.LogoUrl,
+            TransfermarktId = request.TransfermarktId,
             CreatedAt = now,
             CreatedBy = userId,
             ModifiedAt = now,

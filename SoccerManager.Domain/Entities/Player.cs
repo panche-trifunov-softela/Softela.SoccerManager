@@ -44,4 +44,9 @@ public class Player : BaseEntity
     /// Gets or sets the identifier of the player's current real-life club, or <see langword="null"/> when it has none.
     /// </summary>
     public int? TeamId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the player's Transfermarkt identifier, or <see langword="null"/> when it has none.
+    /// </summary>
+    public int? TransfermarktId { get; set; }
 }

@@ -32,4 +32,9 @@ public sealed record CreateTeamRequest : IRequest<int>
     /// The URL of the team's logo image, if one has been set.
     /// </summary>
     public string? LogoUrl { get; init; }
+
+    /// <summary>
+    /// The team's Transfermarkt identifier, if one has been assigned.
+    /// </summary>
+    public int? TransfermarktId { get; init; }
 }

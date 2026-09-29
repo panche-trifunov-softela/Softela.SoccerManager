@@ -34,6 +34,7 @@ public class NationalTeamRepository : INationalTeamRepository
         parameters.Add("@StadiumId", nationalTeam.StadiumId, DbType.Int32);
         parameters.Add("@JerseyUrl", nationalTeam.JerseyUrl, DbType.String);
         parameters.Add("@LogoUrl", nationalTeam.LogoUrl, DbType.String);
+        parameters.Add("@TransfermarktId", nationalTeam.TransfermarktId, DbType.Int32);
         parameters.Add("@CreatedAt", nationalTeam.CreatedAt, DbType.DateTime2);
         parameters.Add("@ModifiedAt", nationalTeam.ModifiedAt, DbType.DateTime2);
         parameters.Add("@CreatedBy", nationalTeam.CreatedBy, DbType.Guid);
@@ -59,6 +60,7 @@ public class NationalTeamRepository : INationalTeamRepository
         parameters.Add("@StadiumId", nationalTeam.StadiumId, DbType.Int32);
         parameters.Add("@JerseyUrl", nationalTeam.JerseyUrl, DbType.String);
         parameters.Add("@LogoUrl", nationalTeam.LogoUrl, DbType.String);
+        parameters.Add("@TransfermarktId", nationalTeam.TransfermarktId, DbType.Int32);
         parameters.Add("@ModifiedAt", nationalTeam.ModifiedAt, DbType.DateTime2);
         parameters.Add("@ModifiedBy", nationalTeam.ModifiedBy, DbType.Guid);
 

@@ -21,6 +21,7 @@ public static class GetNationalTeamsMapper
             StadiumId = nationalTeam.StadiumId,
             JerseyUrl = nationalTeam.JerseyUrl,
             LogoUrl = nationalTeam.LogoUrl,
+            TransfermarktId = nationalTeam.TransfermarktId,
             CreatedAt = nationalTeam.CreatedAt,
             ModifiedAt = nationalTeam.ModifiedAt,
         };
