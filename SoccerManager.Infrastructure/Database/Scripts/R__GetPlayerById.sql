@@ -4,7 +4,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT Id, Name, DateOfBirth, Rating, [Value], Wage, ImageUrl, NationalTeamId, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy
+    SELECT Id, Name, DateOfBirth, Rating, [Value], Wage, ImageUrl, NationalTeamId, TeamId, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy
     FROM dbo.Players
     WHERE Id = @Id;
 END

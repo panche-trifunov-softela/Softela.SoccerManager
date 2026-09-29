@@ -41,4 +41,9 @@ public sealed record CreatePlayerRequest : IRequest<int>
     /// The identifier of the national team the player plays for, if one has been assigned.
     /// </summary>
     public int? NationalTeamId { get; init; }
+
+    /// <summary>
+    /// The identifier of the player's current real-life club, if one has been assigned.
+    /// </summary>
+    public int? TeamId { get; init; }
 }

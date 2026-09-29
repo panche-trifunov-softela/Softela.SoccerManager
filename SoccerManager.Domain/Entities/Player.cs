@@ -39,4 +39,9 @@ public class Player : BaseEntity
     /// Gets or sets the identifier of the player's national team, or <see langword="null"/> when it has none.
     /// </summary>
     public int? NationalTeamId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the player's current real-life club, or <see langword="null"/> when it has none.
+    /// </summary>
+    public int? TeamId { get; set; }
 }

@@ -46,6 +46,11 @@ public sealed record PlayerDto
     public int? NationalTeamId { get; init; }
 
     /// <summary>
+    /// The identifier of the player's current real-life club, or <see langword="null"/> when it has none.
+    /// </summary>
+    public int? TeamId { get; init; }
+
+    /// <summary>
     /// The UTC date and time the player was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }
