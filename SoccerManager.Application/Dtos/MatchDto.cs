@@ -21,9 +21,9 @@ public sealed record MatchDto
     public int? CompetitionId { get; init; }
 
     /// <summary>
-    /// The identifier of the match's referee.
+    /// The identifier of the match's referee, or <see langword="null"/> when it has none.
     /// </summary>
-    public int RefereeId { get; init; }
+    public int? RefereeId { get; init; }
 
     /// <summary>
     /// The UTC moment the match starts.

@@ -23,9 +23,9 @@ public sealed record UpdateMatchRequest : IRequest<bool>
     public int? CompetitionId { get; init; }
 
     /// <summary>
-    /// The identifier of the match's referee.
+    /// The identifier of the match's referee, if one has been assigned.
     /// </summary>
-    public int RefereeId { get; init; }
+    public int? RefereeId { get; init; }
 
     /// <summary>
     /// The UTC moment the match starts.
