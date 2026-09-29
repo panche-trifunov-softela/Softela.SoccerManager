@@ -19,6 +19,7 @@ public static class UpdateTeamMapper
         team.FinancialState = request.FinancialState;
         team.JerseyUrl = request.JerseyUrl;
         team.LogoUrl = request.LogoUrl;
+        team.TransfermarktId = request.TransfermarktId;
         team.ModifiedAt = now;
         team.ModifiedBy = userId;
     }

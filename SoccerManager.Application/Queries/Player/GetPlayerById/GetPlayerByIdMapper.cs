@@ -25,6 +25,7 @@ public static class GetPlayerByIdMapper
             ImageUrl = player.ImageUrl,
             NationalTeamId = player.NationalTeamId,
             TeamId = player.TeamId,
+            TransfermarktId = player.TransfermarktId,
             CreatedAt = player.CreatedAt,
             ModifiedAt = player.ModifiedAt,
         };

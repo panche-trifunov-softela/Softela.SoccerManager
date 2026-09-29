@@ -18,6 +18,7 @@ public static class UpdateNationalTeamMapper
         nationalTeam.StadiumId = request.StadiumId;
         nationalTeam.JerseyUrl = request.JerseyUrl;
         nationalTeam.LogoUrl = request.LogoUrl;
+        nationalTeam.TransfermarktId = request.TransfermarktId;
         nationalTeam.ModifiedAt = now;
         nationalTeam.ModifiedBy = userId;
     }

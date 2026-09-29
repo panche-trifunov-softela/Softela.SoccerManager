@@ -37,5 +37,9 @@ public sealed class UpdatePlayerValidator : AbstractValidator<UpdatePlayerReques
         // Shape-only: that the team exists is enforced by FK_Players_Teams, and a player
         // never needs one.
         RuleFor(x => x.TeamId).GreaterThan(0).When(x => x.TeamId.HasValue);
+
+        // Shape-only: uniqueness is enforced by UX_Players_TransfermarktId, and a player
+        // never needs one.
+        RuleFor(x => x.TransfermarktId).GreaterThan(0).When(x => x.TransfermarktId.HasValue);
     }
 }

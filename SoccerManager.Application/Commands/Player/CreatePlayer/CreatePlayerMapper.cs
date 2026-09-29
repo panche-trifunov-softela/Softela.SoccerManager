@@ -24,6 +24,7 @@ public static class CreatePlayerMapper
             ImageUrl = request.ImageUrl,
             NationalTeamId = request.NationalTeamId,
             TeamId = request.TeamId,
+            TransfermarktId = request.TransfermarktId,
             CreatedAt = now,
             CreatedBy = userId,
             ModifiedAt = now,

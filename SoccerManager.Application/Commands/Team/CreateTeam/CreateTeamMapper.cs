@@ -21,6 +21,7 @@ public static class CreateTeamMapper
             FinancialState = request.FinancialState,
             JerseyUrl = request.JerseyUrl,
             LogoUrl = request.LogoUrl,
+            TransfermarktId = request.TransfermarktId,
             CreatedAt = now,
             CreatedBy = userId,
             ModifiedAt = now,

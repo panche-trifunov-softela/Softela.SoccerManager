@@ -31,6 +31,11 @@ public sealed record NationalTeamDto
     public string? LogoUrl { get; init; }
 
     /// <summary>
+    /// The national team's Transfermarkt identifier, or <see langword="null"/> when it has none.
+    /// </summary>
+    public int? TransfermarktId { get; init; }
+
+    /// <summary>
     /// The UTC date and time the national team was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }
