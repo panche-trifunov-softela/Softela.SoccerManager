@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerManager.Domain", "Soc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerManager.Infrastructure", "SoccerManager.Infrastructure\SoccerManager.Infrastructure.csproj", "{3CEEFFE3-3B07-437F-B17A-0A93AE647C46}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerManager.Importer", "SoccerManager.Importer\SoccerManager.Importer.csproj", "{13AB1F37-233D-461E-8209-3957F9178A22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{3CEEFFE3-3B07-437F-B17A-0A93AE647C46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CEEFFE3-3B07-437F-B17A-0A93AE647C46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CEEFFE3-3B07-437F-B17A-0A93AE647C46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13AB1F37-233D-461E-8209-3957F9178A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13AB1F37-233D-461E-8209-3957F9178A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13AB1F37-233D-461E-8209-3957F9178A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13AB1F37-233D-461E-8209-3957F9178A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{6C505FC0-B39E-483A-8100-FF6BF0CBE646} = {580D6740-CF6C-49D9-98A1-D3A905AA868D}
 		{17F3B682-6EC8-46A3-AD97-967EA4967AAD} = {580D6740-CF6C-49D9-98A1-D3A905AA868D}
 		{3CEEFFE3-3B07-437F-B17A-0A93AE647C46} = {580D6740-CF6C-49D9-98A1-D3A905AA868D}
+		{13AB1F37-233D-461E-8209-3957F9178A22} = {580D6740-CF6C-49D9-98A1-D3A905AA868D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {100EE3B0-CA2C-428F-B2F8-CD309F7FE9B1}
