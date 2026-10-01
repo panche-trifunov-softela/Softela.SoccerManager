@@ -9,7 +9,7 @@ public sealed class ScopeOptions
     public const string SectionName = "Scope";
 
     /// <summary>The Transfermarkt domestic competition codes the importer targets.</summary>
-    public string[] Leagues { get; set; } = new[] { "GB1", "FR1", "NL1", "IT1", "L1", "ES1", "PO1" };
+    public string[] Leagues { get; set; } = new[] { "GB1", "FR1", "NL1", "IT1", "L1", "ES1", "PO1", "BRA1", "ARG1" };
 
     /// <summary>The season a player must have last played in to be considered in scope.</summary>
     public int CurrentSeason { get; set; } = 2025;
