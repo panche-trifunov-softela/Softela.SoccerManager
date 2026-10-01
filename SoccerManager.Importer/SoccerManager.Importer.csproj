@@ -13,7 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SoccerManager.Application\SoccerManager.Application.csproj" />
     <ProjectReference Include="..\SoccerManager.Domain\SoccerManager.Domain.csproj" />
+    <ProjectReference Include="..\SoccerManager.Infrastructure\SoccerManager.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

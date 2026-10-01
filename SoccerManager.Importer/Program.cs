@@ -10,13 +10,13 @@ var arguments = ImporterArgumentsParser.Parse(args);
 if (arguments.Verb is null)
 {
     Console.Error.WriteLine("Usage: SoccerManager.Importer <verb> [options]");
-    Console.Error.WriteLine("Verbs: import --dry-run [--skip-wikidata]");
+    Console.Error.WriteLine("Verbs: import [--dry-run] [--skip-wikidata] (writing needs ConnectionStrings:soccermanager)");
     return ExitCodes.Usage;
 }
 
 if (!string.Equals(arguments.Verb, "import", StringComparison.Ordinal))
 {
-    Console.Error.WriteLine($"Unknown verb '{arguments.Verb}'. Verbs: import --dry-run [--skip-wikidata]");
+    Console.Error.WriteLine($"Unknown verb '{arguments.Verb}'. Verbs: import [--dry-run] [--skip-wikidata] (writing needs ConnectionStrings:soccermanager)");
     return ExitCodes.Usage;
 }
 

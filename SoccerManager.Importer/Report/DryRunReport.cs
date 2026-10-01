@@ -5,23 +5,24 @@ using SoccerManager.Importer.Transform.Model;
 namespace SoccerManager.Importer.Report;
 
 /// <summary>
-/// Writes the dry-run review report to a <see cref="TextWriter"/> as plain, fixed-width text: the nine sections a
-/// developer reviews before a real import runs, in order: provenance, scope, Wikidata, the import model's own
-/// counts, ratings, clubs, wages, positions, and referees/stadiums/images. Nothing is written to disk.
+/// Writes the import model's own review report to a <see cref="TextWriter"/> as plain, fixed-width text: the nine
+/// sections a developer reviews before any database write happens, in order: provenance, scope, Wikidata, the
+/// import model's own counts, ratings, clubs, wages, positions, and referees/stadiums/images. Nothing here writes
+/// to disk or to the database; printed before the database changes section in both a dry run and a real import.
 /// </summary>
 public sealed class DryRunReport
 {
     /// <summary>
     /// Writes every section of the report to <paramref name="writer"/>.
     /// </summary>
-    /// <param name="writer">The writer the report is printed to. The caller passes <see cref="Console.Out"/> for a dry run.</param>
+    /// <param name="writer">The writer the report is printed to. The caller passes <see cref="Console.Out"/> for both a dry run and a real import.</param>
     /// <param name="model">The import model to report on.</param>
     public void Write(TextWriter writer, ImportModel model)
     {
         ArgumentNullException.ThrowIfNull(writer);
         ArgumentNullException.ThrowIfNull(model);
 
-        writer.WriteLine("SoccerManager.Importer - dry-run report");
+        writer.WriteLine("SoccerManager.Importer - import report");
         writer.WriteLine();
 
         WriteProvenance(writer, model.Diagnostics);
