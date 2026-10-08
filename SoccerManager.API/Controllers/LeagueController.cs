@@ -33,14 +33,16 @@ public class LeagueController : ControllerBase
     }
 
     /// <summary>
-    /// Returns every league.
+    /// Returns the newest leagues in which the caller does not currently manage a club.
     /// </summary>
+    /// <param name="searchTerm">Text a league name must contain; omitted or blank means no name filter.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The list of leagues.</returns>
+    /// <returns>The available leagues, newest first.</returns>
     [HttpGet]
-    public async Task<IActionResult> GetLeagues(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetLeagues([FromQuery] string? searchTerm, CancellationToken cancellationToken)
     {
-        var result = await _queryDispatcher.QueryAsync(new GetLeaguesRequest(), cancellationToken);
+        // The caller is identified from the bearer token rather than any route or query value.
+        var result = await _queryDispatcher.QueryAsync(new GetLeaguesRequest { SearchTerm = searchTerm }, cancellationToken);
 
         return Ok(result.Data);
     }

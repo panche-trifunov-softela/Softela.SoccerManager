@@ -35,8 +35,11 @@ public interface ILeagueRepository
     Task<League?> GetByIdAsync(int id);
 
     /// <summary>
-    /// Retrieves all leagues.
+    /// Retrieves the newest leagues in which the given user does not currently manage a club.
     /// </summary>
-    /// <returns>A list of every league.</returns>
-    Task<List<League>> GetAllAsync();
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose currently managed leagues are left out.</param>
+    /// <param name="searchTerm">The text a league name must contain, or <see langword="null"/> for no name filter.</param>
+    /// <param name="maxCount">The most leagues to return.</param>
+    /// <returns>The matching leagues, newest first.</returns>
+    Task<List<League>> GetAvailableForUserAsync(Guid userId, string? searchTerm, int maxCount);
 }
