@@ -8,7 +8,7 @@ namespace SoccerManager.Application.Queries.League.GetLeagues;
 public sealed record GetLeaguesResponse
 {
     /// <summary>
-    /// The list of all leagues.
+    /// The available leagues, newest first.
     /// </summary>
     public required List<LeagueDto> Data { get; init; }
 }
