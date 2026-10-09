@@ -98,6 +98,23 @@ public class ManagerRepository : IManagerRepository
     }
 
     /// <summary>
+    /// Retrieves the manager profile linked to the given Keycloak user.
+    /// </summary>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose manager profile is retrieved.</param>
+    /// <returns>The matching manager, or <see langword="null"/> when the user has no manager profile.</returns>
+    public async Task<Manager?> GetByUserIdAsync(Guid userId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@UserId", userId, DbType.Guid);
+
+        return await _dapperDataContext.Connection.QueryFirstOrDefaultAsync<Manager>(
+            "dbo.GetManagerByUserId",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Retrieves all managers.
     /// </summary>
     /// <returns>A list of every manager.</returns>

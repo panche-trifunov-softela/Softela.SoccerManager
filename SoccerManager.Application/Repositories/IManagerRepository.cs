@@ -35,6 +35,13 @@ public interface IManagerRepository
     Task<Manager?> GetByIdAsync(int id);
 
     /// <summary>
+    /// Retrieves the manager profile linked to the given Keycloak user.
+    /// </summary>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose manager profile is retrieved.</param>
+    /// <returns>The matching manager, or <see langword="null"/> when the user has no manager profile.</returns>
+    Task<Manager?> GetByUserIdAsync(Guid userId);
+
+    /// <summary>
     /// Retrieves all managers.
     /// </summary>
     /// <returns>A list of every manager.</returns>
