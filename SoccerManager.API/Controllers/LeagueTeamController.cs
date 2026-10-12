@@ -1,0 +1,90 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SoccerManager.Application.Commands.LeagueTeam.CreateLeagueTeam;
+using SoccerManager.Application.Commands.LeagueTeam.DeleteLeagueTeam;
+using SoccerManager.Application.Core.Command;
+using SoccerManager.Application.Core.Query;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamById;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeams;
+
+namespace SoccerManager.API.Controllers;
+
+/// <summary>
+/// Exposes create, read and delete operations for the rosters of leagues.
+/// </summary>
+[ApiController]
+[Authorize]
+[Route("api/league-teams")]
+public class LeagueTeamController : ControllerBase
+{
+    private readonly ICommandDispatcher _commandDispatcher;
+    private readonly IQueryDispatcher _queryDispatcher;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LeagueTeamController"/> class.
+    /// </summary>
+    /// <param name="commandDispatcher">The dispatcher used to send commands to their handlers.</param>
+    /// <param name="queryDispatcher">The dispatcher used to send queries to their handlers.</param>
+    public LeagueTeamController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
+    {
+        _commandDispatcher = commandDispatcher;
+        _queryDispatcher = queryDispatcher;
+    }
+
+    /// <summary>
+    /// Returns every team on the roster of the given league.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league whose roster to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The list of teams on the league's roster.</returns>
+    [HttpGet]
+    public async Task<IActionResult> GetLeagueTeams([FromQuery] int leagueId, CancellationToken cancellationToken)
+    {
+        // leagueId is required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamsRequest { LeagueId = leagueId }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the league team with the given identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the league team to retrieve.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The matching league team.</returns>
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetLeagueTeamById(int id, CancellationToken cancellationToken)
+    {
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamByIdRequest { Id = id }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Adds a team to the roster of a league.
+    /// </summary>
+    /// <param name="request">The league and team to add to the roster.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The identifier of the created league team.</returns>
+    [HttpPost]
+    public async Task<IActionResult> CreateLeagueTeam([FromBody] CreateLeagueTeamRequest request, CancellationToken cancellationToken)
+    {
+        var id = await _commandDispatcher.SendAsync<int, CreateLeagueTeamRequest>(request, cancellationToken);
+
+        return CreatedAtAction(nameof(GetLeagueTeamById), new { id }, new { id });
+    }
+
+    /// <summary>
+    /// Removes the league team with the given identifier from the roster.
+    /// </summary>
+    /// <param name="id">The identifier of the league team to delete.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>Whether the deletion succeeded.</returns>
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteLeagueTeam(int id, CancellationToken cancellationToken)
+    {
+        var result = await _commandDispatcher.SendAsync<bool, DeleteLeagueTeamRequest>(new DeleteLeagueTeamRequest { Id = id }, cancellationToken);
+
+        return Ok(new { success = result });
+    }
+}
