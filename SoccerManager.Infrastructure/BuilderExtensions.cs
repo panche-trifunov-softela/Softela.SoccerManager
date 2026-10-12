@@ -45,6 +45,7 @@ public static class BuilderExtensions
         services.AddScoped<IPositionRepository, PositionRepository>();
         services.AddScoped<IPlayerPositionRepository, PlayerPositionRepository>();
         services.AddScoped<IStandingRepository, StandingRepository>();
+        services.AddScoped<ILeagueTeamRepository, LeagueTeamRepository>();
         services.AddScoped<ILeagueTeamManagerRepository, LeagueTeamManagerRepository>();
         services.AddScoped<ILeagueTeamManagerApplicationRepository, LeagueTeamManagerApplicationRepository>();
         services.AddScoped<IManagerRepository, ManagerRepository>();

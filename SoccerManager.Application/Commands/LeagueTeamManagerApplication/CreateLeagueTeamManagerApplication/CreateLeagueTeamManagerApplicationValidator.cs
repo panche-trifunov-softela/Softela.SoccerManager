@@ -11,7 +11,7 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
 {
     private readonly IManagerRepository _managerRepository;
     private readonly ILeagueTeamManagerRepository _leagueTeamManagerRepository;
-    private readonly ILeagueTeamPlayerRepository _leagueTeamPlayerRepository;
+    private readonly ILeagueTeamRepository _leagueTeamRepository;
     private readonly ICurrentUser _currentUser;
 
     /// <summary>
@@ -19,13 +19,13 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
     /// </summary>
     /// <param name="managerRepository">The repository used to check the caller has a manager profile.</param>
     /// <param name="leagueTeamManagerRepository">The repository used to check the team has no manager and the caller manages no club in the league.</param>
-    /// <param name="leagueTeamPlayerRepository">The repository used to check the team has a squad in the league.</param>
+    /// <param name="leagueTeamRepository">The repository used to check the team is part of the league.</param>
     /// <param name="currentUser">The currently authenticated user.</param>
-    public CreateLeagueTeamManagerApplicationValidator(IManagerRepository managerRepository, ILeagueTeamManagerRepository leagueTeamManagerRepository, ILeagueTeamPlayerRepository leagueTeamPlayerRepository, ICurrentUser currentUser)
+    public CreateLeagueTeamManagerApplicationValidator(IManagerRepository managerRepository, ILeagueTeamManagerRepository leagueTeamManagerRepository, ILeagueTeamRepository leagueTeamRepository, ICurrentUser currentUser)
     {
         _managerRepository = managerRepository;
         _leagueTeamManagerRepository = leagueTeamManagerRepository;
-        _leagueTeamPlayerRepository = leagueTeamPlayerRepository;
+        _leagueTeamRepository = leagueTeamRepository;
         _currentUser = currentUser;
 
         RuleFor(x => x.LeagueId).GreaterThan(0);
@@ -41,9 +41,10 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
                 .OverridePropertyName("Manager")
                 .WithMessage("Create a manager profile first.");
 
+            // The roster is what matters, not a squad: a league may start its managers with no players.
             RuleFor(x => x.TeamId)
-                .MustAsync((request, _, _) => TeamHasSquadAsync(request))
-                .WithMessage("The team has no squad in this league.");
+                .MustAsync((request, _, _) => TeamIsInLeagueAsync(request))
+                .WithMessage("The team is not part of this league.");
 
             RuleFor(x => x.TeamId)
                 .MustAsync((request, _, _) => TeamHasNoManagerAsync(request))
@@ -68,15 +69,13 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
     }
 
     /// <summary>
-    /// Checks that the team has at least one player registered in the league.
+    /// Checks that the team is on the roster of the league.
     /// </summary>
     /// <param name="request">The request being validated.</param>
-    /// <returns><see langword="true"/> when the team has a squad in the league.</returns>
-    private async Task<bool> TeamHasSquadAsync(CreateLeagueTeamManagerApplicationRequest request)
+    /// <returns><see langword="true"/> when the team is part of the league.</returns>
+    private async Task<bool> TeamIsInLeagueAsync(CreateLeagueTeamManagerApplicationRequest request)
     {
-        var squad = await _leagueTeamPlayerRepository.GetByLeagueAndTeamAsync(request.LeagueId, request.TeamId);
-
-        return squad.Count > 0;
+        return await _leagueTeamRepository.GetByLeagueAndTeamAsync(request.LeagueId, request.TeamId) is not null;
     }
 
     /// <summary>
