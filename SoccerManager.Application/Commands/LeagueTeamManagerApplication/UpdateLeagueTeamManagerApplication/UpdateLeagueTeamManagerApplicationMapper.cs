@@ -24,15 +24,15 @@ public static class UpdateLeagueTeamManagerApplicationMapper
     /// Builds the current manager appointment that accepting the given application creates.
     /// </summary>
     /// <param name="application">The accepted application the appointment is for.</param>
+    /// <param name="leagueTeamId">The identifier of the roster entry of the application's league and team, which the manager is appointed to.</param>
     /// <param name="now">The UTC timestamp whose date starts the tenure and which is stamped on the created and modified fields.</param>
     /// <param name="userId">The identifier of the user accepting the application.</param>
     /// <returns>A new, unsaved league team manager appointment.</returns>
-    public static SoccerManager.Domain.Entities.LeagueTeamManager ToAppointment(SoccerManager.Domain.Entities.LeagueTeamManagerApplication application, DateTime now, Guid userId)
+    public static SoccerManager.Domain.Entities.LeagueTeamManager ToAppointment(SoccerManager.Domain.Entities.LeagueTeamManagerApplication application, int leagueTeamId, DateTime now, Guid userId)
     {
         return new SoccerManager.Domain.Entities.LeagueTeamManager
         {
-            LeagueId = application.LeagueId,
-            TeamId = application.TeamId,
+            LeagueTeamId = leagueTeamId,
             ManagerId = application.ManagerId,
             StartDate = DateOnly.FromDateTime(now),
             EndDate = null,

@@ -3,6 +3,7 @@
 -- database's case-insensitive collation; the caller turns a blank term into NULL.
 -- The NULL defaults let a caller passing no parameters (an older API build on the shared
 -- database) still get every league.
+-- An appointment reaches its league through its roster entry (dbo.LeagueTeams).
 CREATE OR ALTER PROCEDURE dbo.GetLeagues
     @UserId     UNIQUEIDENTIFIER = NULL,
     @SearchTerm NVARCHAR(100)    = NULL,
@@ -17,8 +18,9 @@ BEGIN
       AND NOT EXISTS (
           SELECT 1
           FROM dbo.LeagueTeamManagers ltm
+              INNER JOIN dbo.LeagueTeams lt ON lt.Id = ltm.LeagueTeamId
               INNER JOIN dbo.Managers m ON m.Id = ltm.ManagerId
-          WHERE ltm.LeagueId = l.Id
+          WHERE lt.LeagueId = l.Id
             AND ltm.IsCurrent = 1
             AND m.UserId = @UserId
       )

@@ -12,19 +12,14 @@ public sealed record MyLeagueTeamManagerDto
     public int Id { get; init; }
 
     /// <summary>
-    /// The identifier of the league the appointment belongs to.
+    /// The identifier of the league roster entry (the club in its league) the appointment belongs to.
     /// </summary>
-    public int LeagueId { get; init; }
+    public int LeagueTeamId { get; init; }
 
     /// <summary>
     /// The name of the league the appointment belongs to.
     /// </summary>
     public required string LeagueName { get; init; }
-
-    /// <summary>
-    /// The identifier of the team the manager is appointed to.
-    /// </summary>
-    public int TeamId { get; init; }
 
     /// <summary>
     /// The name of the team the manager is appointed to.

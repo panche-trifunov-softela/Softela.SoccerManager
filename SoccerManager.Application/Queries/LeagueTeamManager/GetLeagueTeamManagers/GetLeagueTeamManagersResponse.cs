@@ -8,7 +8,7 @@ namespace SoccerManager.Application.Queries.LeagueTeamManager.GetLeagueTeamManag
 public sealed record GetLeagueTeamManagersResponse
 {
     /// <summary>
-    /// The list of manager appointments belonging to the requested league and team.
+    /// The list of manager appointments belonging to the requested league roster entry.
     /// </summary>
     public required List<LeagueTeamManagerDto> Data { get; init; }
 }

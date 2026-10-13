@@ -14,6 +14,7 @@ public class UpdateLeagueTeamManagerApplicationHandler : IRequestHandler<UpdateL
 {
     private readonly ILeagueTeamManagerApplicationRepository _applicationRepository;
     private readonly ILeagueTeamManagerRepository _leagueTeamManagerRepository;
+    private readonly ILeagueTeamRepository _leagueTeamRepository;
     private readonly ICurrentUser _currentUser;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -22,12 +23,14 @@ public class UpdateLeagueTeamManagerApplicationHandler : IRequestHandler<UpdateL
     /// </summary>
     /// <param name="applicationRepository">The repository used to load and persist league team manager applications.</param>
     /// <param name="leagueTeamManagerRepository">The repository used to persist the appointment an acceptance creates.</param>
+    /// <param name="leagueTeamRepository">The repository used to find the roster entry an acceptance appoints the manager to.</param>
     /// <param name="currentUser">The currently authenticated user.</param>
     /// <param name="unitOfWork">The unit of work used to group the writes into one transaction.</param>
-    public UpdateLeagueTeamManagerApplicationHandler(ILeagueTeamManagerApplicationRepository applicationRepository, ILeagueTeamManagerRepository leagueTeamManagerRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
+    public UpdateLeagueTeamManagerApplicationHandler(ILeagueTeamManagerApplicationRepository applicationRepository, ILeagueTeamManagerRepository leagueTeamManagerRepository, ILeagueTeamRepository leagueTeamRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
     {
         _applicationRepository = applicationRepository;
         _leagueTeamManagerRepository = leagueTeamManagerRepository;
+        _leagueTeamRepository = leagueTeamRepository;
         _currentUser = currentUser;
         _unitOfWork = unitOfWork;
     }
@@ -62,7 +65,11 @@ public class UpdateLeagueTeamManagerApplicationHandler : IRequestHandler<UpdateL
 
             if (application.Status == ApplicationStatus.Accepted)
             {
-                var appointment = UpdateLeagueTeamManagerApplicationMapper.ToAppointment(application, now, _currentUser.UserId);
+                // The validator refuses an application whose club is off the roster; this is the backstop.
+                var leagueTeam = await _leagueTeamRepository.GetByLeagueAndTeamAsync(application.LeagueId, application.TeamId)
+                    ?? throw new ValidationException(new[] { new ValidationFailure("Status", "The team is not part of this league.") });
+
+                var appointment = UpdateLeagueTeamManagerApplicationMapper.ToAppointment(application, leagueTeam.Id, now, _currentUser.UserId);
 
                 await _leagueTeamManagerRepository.CreateAsync(appointment);
                 await _applicationRepository.RejectOtherPendingAsync(application);

@@ -36,12 +36,11 @@ public interface ILeagueTeamManagerRepository
     Task<LeagueTeamManager?> GetByIdAsync(int id);
 
     /// <summary>
-    /// Retrieves every manager appointment belonging to the given league and team.
+    /// Retrieves every manager appointment belonging to the given league roster entry.
     /// </summary>
-    /// <param name="leagueId">The identifier of the league to filter by.</param>
-    /// <param name="teamId">The identifier of the team to filter by.</param>
-    /// <returns>A list of every manager appointment belonging to the league and team.</returns>
-    Task<List<LeagueTeamManager>> GetByLeagueAndTeamAsync(int leagueId, int teamId);
+    /// <param name="leagueTeamId">The identifier of the league roster entry to filter by.</param>
+    /// <returns>A list of every manager appointment belonging to the roster entry.</returns>
+    Task<List<LeagueTeamManager>> GetByLeagueTeamIdAsync(int leagueTeamId);
 
     /// <summary>
     /// Retrieves every manager appointment belonging to the manager profile linked to the given Keycloak user, enriched with league and team names.

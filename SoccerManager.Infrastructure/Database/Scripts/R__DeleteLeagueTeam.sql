@@ -18,7 +18,7 @@ BEGIN
         SELECT 1 FROM dbo.LeagueTeamPlayers WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id) THEN 1 ELSE 0 END;
 
     DECLARE @HasAppointments BIT = CASE WHEN EXISTS (
-        SELECT 1 FROM dbo.LeagueTeamManagers WITH (UPDLOCK, HOLDLOCK) WHERE LeagueId = @LeagueId AND TeamId = @TeamId) THEN 1 ELSE 0 END;
+        SELECT 1 FROM dbo.LeagueTeamManagers WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id) THEN 1 ELSE 0 END;
 
     DECLARE @HasApplications BIT = CASE WHEN EXISTS (
         SELECT 1 FROM dbo.LeagueTeamManagerApplications WITH (UPDLOCK, HOLDLOCK) WHERE LeagueId = @LeagueId AND TeamId = @TeamId) THEN 1 ELSE 0 END;

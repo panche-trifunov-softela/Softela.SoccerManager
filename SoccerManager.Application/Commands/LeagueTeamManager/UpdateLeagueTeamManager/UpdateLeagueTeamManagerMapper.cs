@@ -14,8 +14,7 @@ public static class UpdateLeagueTeamManagerMapper
     /// <param name="userId">The identifier of the user performing the update.</param>
     public static void ApplyTo(UpdateLeagueTeamManagerRequest request, SoccerManager.Domain.Entities.LeagueTeamManager leagueTeamManager, DateTime now, Guid userId)
     {
-        leagueTeamManager.LeagueId = request.LeagueId;
-        leagueTeamManager.TeamId = request.TeamId;
+        leagueTeamManager.LeagueTeamId = request.LeagueTeamId;
         leagueTeamManager.ManagerId = request.ManagerId;
         leagueTeamManager.StartDate = request.StartDate;
         leagueTeamManager.EndDate = request.EndDate;
