@@ -14,7 +14,13 @@ public class GetLeagueTeamManagersByUserIdResult
     public int Id { get; set; }
 
     /// <summary>
-    /// The identifier of the league the appointment belongs to.
+    /// The identifier of the league roster entry the appointment belongs to.
+    /// </summary>
+    public int LeagueTeamId { get; set; }
+
+    /// <summary>
+    /// The identifier of the league the appointment belongs to, joined in through its roster entry.
+    /// MyLeagueTeamManagerDto does not expose it; the application validators use it to find a manager's club in a league.
     /// </summary>
     public int LeagueId { get; set; }
 
@@ -22,11 +28,6 @@ public class GetLeagueTeamManagersByUserIdResult
     /// The name of the league the appointment belongs to.
     /// </summary>
     public string LeagueName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The identifier of the team the manager is appointed to.
-    /// </summary>
-    public int TeamId { get; set; }
 
     /// <summary>
     /// The name of the team the manager is appointed to.

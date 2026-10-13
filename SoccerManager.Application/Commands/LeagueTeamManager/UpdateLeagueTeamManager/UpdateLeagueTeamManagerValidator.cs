@@ -13,8 +13,7 @@ public sealed class UpdateLeagueTeamManagerValidator : AbstractValidator<UpdateL
     public UpdateLeagueTeamManagerValidator()
     {
         RuleFor(x => x.Id).GreaterThan(0);
-        RuleFor(x => x.LeagueId).GreaterThan(0);
-        RuleFor(x => x.TeamId).GreaterThan(0);
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
         RuleFor(x => x.ManagerId).GreaterThan(0);
 
         // A missing startDate binds to DateOnly's default of 0001-01-01, so the lower bound

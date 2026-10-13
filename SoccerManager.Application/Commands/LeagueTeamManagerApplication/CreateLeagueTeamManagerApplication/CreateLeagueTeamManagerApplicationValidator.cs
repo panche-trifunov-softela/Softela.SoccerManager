@@ -85,7 +85,15 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
     /// <returns><see langword="true"/> when no current manager is appointed to the team in the league.</returns>
     private async Task<bool> TeamHasNoManagerAsync(CreateLeagueTeamManagerApplicationRequest request)
     {
-        var appointments = await _leagueTeamManagerRepository.GetByLeagueAndTeamAsync(request.LeagueId, request.TeamId);
+        var leagueTeam = await _leagueTeamRepository.GetByLeagueAndTeamAsync(request.LeagueId, request.TeamId);
+
+        // A team off the roster is reported by the roster rule alone.
+        if (leagueTeam is null)
+        {
+            return true;
+        }
+
+        var appointments = await _leagueTeamManagerRepository.GetByLeagueTeamIdAsync(leagueTeam.Id);
 
         return !appointments.Any(appointment => appointment.IsCurrent);
     }

@@ -34,17 +34,16 @@ public class LeagueTeamManagerController : ControllerBase
     }
 
     /// <summary>
-    /// Returns every manager appointment belonging to the given league and team.
+    /// Returns every manager appointment belonging to the given league roster entry.
     /// </summary>
-    /// <param name="leagueId">The identifier of the league to filter by.</param>
-    /// <param name="teamId">The identifier of the team to filter by.</param>
+    /// <param name="leagueTeamId">The identifier of the league roster entry (the club in its league) to filter by.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The list of manager appointments belonging to the league and team.</returns>
+    /// <returns>The list of manager appointments belonging to the league roster entry.</returns>
     [HttpGet]
-    public async Task<IActionResult> GetLeagueTeamManagers([FromQuery] int leagueId, [FromQuery] int teamId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetLeagueTeamManagers([FromQuery] int leagueTeamId, CancellationToken cancellationToken)
     {
-        // leagueId and teamId are both required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
-        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamManagersRequest { LeagueId = leagueId, TeamId = teamId }, cancellationToken);
+        // leagueTeamId is required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamManagersRequest { LeagueTeamId = leagueTeamId }, cancellationToken);
 
         return Ok(result.Data);
     }

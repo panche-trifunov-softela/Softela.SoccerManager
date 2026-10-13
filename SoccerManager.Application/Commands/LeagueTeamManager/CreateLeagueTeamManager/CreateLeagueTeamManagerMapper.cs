@@ -16,8 +16,7 @@ public static class CreateLeagueTeamManagerMapper
     {
         return new SoccerManager.Domain.Entities.LeagueTeamManager
         {
-            LeagueId = request.LeagueId,
-            TeamId = request.TeamId,
+            LeagueTeamId = request.LeagueTeamId,
             ManagerId = request.ManagerId,
             StartDate = request.StartDate,
             EndDate = request.EndDate,

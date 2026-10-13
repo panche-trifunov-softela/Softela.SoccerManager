@@ -18,9 +18,8 @@ public static class GetMyLeagueTeamManagersMapper
         return new MyLeagueTeamManagerDto
         {
             Id = row.Id,
-            LeagueId = row.LeagueId,
+            LeagueTeamId = row.LeagueTeamId,
             LeagueName = row.LeagueName,
-            TeamId = row.TeamId,
             TeamName = row.TeamName,
             TeamLogoUrl = row.TeamLogoUrl,
             ManagerId = row.ManagerId,

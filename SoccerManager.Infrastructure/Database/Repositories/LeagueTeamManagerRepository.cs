@@ -31,8 +31,7 @@ public class LeagueTeamManagerRepository : ILeagueTeamManagerRepository
     public async Task<int> CreateAsync(LeagueTeamManager leagueTeamManager)
     {
         var parameters = new DynamicParameters();
-        parameters.Add("@LeagueId", leagueTeamManager.LeagueId, DbType.Int32);
-        parameters.Add("@TeamId", leagueTeamManager.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamManager.LeagueTeamId, DbType.Int32);
         parameters.Add("@ManagerId", leagueTeamManager.ManagerId, DbType.Int32);
         // No DbType here: DynamicParameters only looks up a registered type handler (DateOnlyTypeHandler) when the DbType is null; passing DbType.Date would bypass it.
         parameters.Add("@StartDate", leagueTeamManager.StartDate);
@@ -59,8 +58,7 @@ public class LeagueTeamManagerRepository : ILeagueTeamManagerRepository
     {
         var parameters = new DynamicParameters();
         parameters.Add("@Id", leagueTeamManager.Id, DbType.Int32);
-        parameters.Add("@LeagueId", leagueTeamManager.LeagueId, DbType.Int32);
-        parameters.Add("@TeamId", leagueTeamManager.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamManager.LeagueTeamId, DbType.Int32);
         parameters.Add("@ManagerId", leagueTeamManager.ManagerId, DbType.Int32);
         // No DbType here: DynamicParameters only looks up a registered type handler (DateOnlyTypeHandler) when the DbType is null; passing DbType.Date would bypass it.
         parameters.Add("@StartDate", leagueTeamManager.StartDate);
@@ -110,16 +108,14 @@ public class LeagueTeamManagerRepository : ILeagueTeamManagerRepository
     }
 
     /// <summary>
-    /// Retrieves every manager appointment belonging to the given league and team.
+    /// Retrieves every manager appointment belonging to the given league roster entry.
     /// </summary>
-    /// <param name="leagueId">The identifier of the league to filter by.</param>
-    /// <param name="teamId">The identifier of the team to filter by.</param>
-    /// <returns>A list of the league and team's manager appointments.</returns>
-    public async Task<List<LeagueTeamManager>> GetByLeagueAndTeamAsync(int leagueId, int teamId)
+    /// <param name="leagueTeamId">The identifier of the league roster entry to filter by.</param>
+    /// <returns>A list of the roster entry's manager appointments.</returns>
+    public async Task<List<LeagueTeamManager>> GetByLeagueTeamIdAsync(int leagueTeamId)
     {
         var parameters = new DynamicParameters();
-        parameters.Add("@LeagueId", leagueId, DbType.Int32);
-        parameters.Add("@TeamId", teamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
 
         var leagueTeamManagers = await _dapperDataContext.Connection.QueryAsync<LeagueTeamManager>(
             "dbo.GetLeagueTeamManagers",

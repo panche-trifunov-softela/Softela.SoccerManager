@@ -17,8 +17,7 @@ public static class GetLeagueTeamManagerByIdMapper
         return new LeagueTeamManagerDto
         {
             Id = leagueTeamManager.Id,
-            LeagueId = leagueTeamManager.LeagueId,
-            TeamId = leagueTeamManager.TeamId,
+            LeagueTeamId = leagueTeamManager.LeagueTeamId,
             ManagerId = leagueTeamManager.ManagerId,
             StartDate = leagueTeamManager.StartDate,
             EndDate = leagueTeamManager.EndDate,
