@@ -41,6 +41,13 @@ public interface ILeagueTeamRepository
     Task<List<LeagueTeam>> GetByLeagueIdAsync(int leagueId);
 
     /// <summary>
+    /// Retrieves every club on the given league's roster, ordered by team name, with whether each one has a current manager there.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league whose roster to look through.</param>
+    /// <returns>A list of the league's clubs, empty when the league is unknown.</returns>
+    Task<List<GetAvailableLeagueTeamsResult>> GetAvailableByLeagueIdAsync(int leagueId);
+
+    /// <summary>
     /// Retrieves the roster entry of the given team in the given league.
     /// </summary>
     /// <param name="leagueId">The identifier of the league to look in.</param>

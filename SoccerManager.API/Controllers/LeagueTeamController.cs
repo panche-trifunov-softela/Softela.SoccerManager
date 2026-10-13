@@ -4,6 +4,7 @@ using SoccerManager.Application.Commands.LeagueTeam.CreateLeagueTeam;
 using SoccerManager.Application.Commands.LeagueTeam.DeleteLeagueTeam;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
+using SoccerManager.Application.Queries.LeagueTeam.GetAvailableLeagueTeams;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamById;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeams;
 
@@ -42,6 +43,22 @@ public class LeagueTeamController : ControllerBase
     {
         // leagueId is required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
         var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamsRequest { LeagueId = leagueId }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns every club on the given league's roster, by team name, with whether each one has a current manager there.
+    /// A pending application does not count as a manager.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league whose available clubs to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The league's clubs, empty for an unknown league.</returns>
+    [HttpGet("available")]
+    public async Task<IActionResult> GetAvailableLeagueTeams([FromQuery] int leagueId, CancellationToken cancellationToken)
+    {
+        // leagueId is required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
+        var result = await _queryDispatcher.QueryAsync(new GetAvailableLeagueTeamsRequest { LeagueId = leagueId }, cancellationToken);
 
         return Ok(result.Data);
     }
