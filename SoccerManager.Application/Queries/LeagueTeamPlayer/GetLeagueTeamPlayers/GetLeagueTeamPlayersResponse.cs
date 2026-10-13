@@ -8,7 +8,7 @@ namespace SoccerManager.Application.Queries.LeagueTeamPlayer.GetLeagueTeamPlayer
 public sealed record GetLeagueTeamPlayersResponse
 {
     /// <summary>
-    /// The list of player registrations belonging to the requested league and team.
+    /// The list of player registrations belonging to the requested league team.
     /// </summary>
     public required List<LeagueTeamPlayerDto> Data { get; init; }
 }

@@ -17,8 +17,7 @@ public static class GetLeagueTeamPlayerByIdMapper
         return new LeagueTeamPlayerDto
         {
             Id = leagueTeamPlayer.Id,
-            LeagueId = leagueTeamPlayer.LeagueId,
-            TeamId = leagueTeamPlayer.TeamId,
+            LeagueTeamId = leagueTeamPlayer.LeagueTeamId,
             PlayerId = leagueTeamPlayer.PlayerId,
             ContractLength = leagueTeamPlayer.ContractLength,
             ContractSalaryPerWeek = leagueTeamPlayer.ContractSalaryPerWeek,

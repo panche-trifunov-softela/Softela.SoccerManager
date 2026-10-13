@@ -9,14 +9,10 @@ namespace SoccerManager.Application.Commands.LeagueTeamPlayer.CreateLeagueTeamPl
 public sealed record CreateLeagueTeamPlayerRequest : IRequest<int>
 {
     /// <summary>
-    /// The identifier of the league the registration belongs to.
+    /// The identifier of the league team (the club's roster entry in a league) the player is registered
+    /// with. It identifies both the league and the team.
     /// </summary>
-    public int LeagueId { get; init; }
-
-    /// <summary>
-    /// The identifier of the team the player is registered with.
-    /// </summary>
-    public int TeamId { get; init; }
+    public int LeagueTeamId { get; init; }
 
     /// <summary>
     /// The identifier of the registered player.

@@ -30,8 +30,7 @@ public class LeagueTeamPlayerRepository : ILeagueTeamPlayerRepository
     public async Task<int> CreateAsync(LeagueTeamPlayer leagueTeamPlayer)
     {
         var parameters = new DynamicParameters();
-        parameters.Add("@LeagueId", leagueTeamPlayer.LeagueId, DbType.Int32);
-        parameters.Add("@TeamId", leagueTeamPlayer.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamPlayer.LeagueTeamId, DbType.Int32);
         parameters.Add("@PlayerId", leagueTeamPlayer.PlayerId, DbType.Int32);
         parameters.Add("@ContractLength", leagueTeamPlayer.ContractLength, DbType.Int32);
         parameters.Add("@ContractSalaryPerWeek", leagueTeamPlayer.ContractSalaryPerWeek, DbType.Int64);
@@ -65,8 +64,7 @@ public class LeagueTeamPlayerRepository : ILeagueTeamPlayerRepository
     {
         var parameters = new DynamicParameters();
         parameters.Add("@Id", leagueTeamPlayer.Id, DbType.Int32);
-        parameters.Add("@LeagueId", leagueTeamPlayer.LeagueId, DbType.Int32);
-        parameters.Add("@TeamId", leagueTeamPlayer.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamPlayer.LeagueTeamId, DbType.Int32);
         parameters.Add("@PlayerId", leagueTeamPlayer.PlayerId, DbType.Int32);
         parameters.Add("@ContractLength", leagueTeamPlayer.ContractLength, DbType.Int32);
         parameters.Add("@ContractSalaryPerWeek", leagueTeamPlayer.ContractSalaryPerWeek, DbType.Int64);
@@ -123,16 +121,14 @@ public class LeagueTeamPlayerRepository : ILeagueTeamPlayerRepository
     }
 
     /// <summary>
-    /// Retrieves every player registration belonging to the given league and team.
+    /// Retrieves every player registration belonging to a club's roster entry in a league.
     /// </summary>
-    /// <param name="leagueId">The identifier of the league to filter by.</param>
-    /// <param name="teamId">The identifier of the team to filter by.</param>
-    /// <returns>A list of the league and team's player registrations.</returns>
-    public async Task<List<LeagueTeamPlayer>> GetByLeagueAndTeamAsync(int leagueId, int teamId)
+    /// <param name="leagueTeamId">The identifier of the league team to filter by.</param>
+    /// <returns>A list of the league team's player registrations.</returns>
+    public async Task<List<LeagueTeamPlayer>> GetByLeagueTeamIdAsync(int leagueTeamId)
     {
         var parameters = new DynamicParameters();
-        parameters.Add("@LeagueId", leagueId, DbType.Int32);
-        parameters.Add("@TeamId", teamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
 
         var leagueTeamPlayers = await _dapperDataContext.Connection.QueryAsync<LeagueTeamPlayer>(
             "dbo.GetLeagueTeamPlayers",
@@ -145,6 +141,8 @@ public class LeagueTeamPlayerRepository : ILeagueTeamPlayerRepository
 
     /// <summary>
     /// Retrieves a player's registration within a league.
+    /// No constraint guarantees at most one registration per player per league any more; when a race left
+    /// duplicates, the oldest one is returned.
     /// </summary>
     /// <param name="leagueId">The identifier of the league.</param>
     /// <param name="playerId">The identifier of the player.</param>

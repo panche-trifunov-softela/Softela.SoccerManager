@@ -1,4 +1,5 @@
 using FluentValidation;
+using SoccerManager.Application.Repositories;
 
 namespace SoccerManager.Application.Commands.LeagueTeamPlayer.CreateLeagueTeamPlayer;
 
@@ -7,14 +8,31 @@ namespace SoccerManager.Application.Commands.LeagueTeamPlayer.CreateLeagueTeamPl
 /// </summary>
 public sealed class CreateLeagueTeamPlayerValidator : AbstractValidator<CreateLeagueTeamPlayerRequest>
 {
+    private readonly ILeagueTeamRepository _leagueTeamRepository;
+    private readonly ILeagueTeamPlayerRepository _leagueTeamPlayerRepository;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateLeagueTeamPlayerValidator"/> class.
     /// </summary>
-    public CreateLeagueTeamPlayerValidator()
+    /// <param name="leagueTeamRepository">The repository used to find the league the league team belongs to.</param>
+    /// <param name="leagueTeamPlayerRepository">The repository used to check the player has no club in that league yet.</param>
+    public CreateLeagueTeamPlayerValidator(ILeagueTeamRepository leagueTeamRepository, ILeagueTeamPlayerRepository leagueTeamPlayerRepository)
     {
-        RuleFor(x => x.LeagueId).GreaterThan(0);
-        RuleFor(x => x.TeamId).GreaterThan(0);
+        _leagueTeamRepository = leagueTeamRepository;
+        _leagueTeamPlayerRepository = leagueTeamPlayerRepository;
+
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
         RuleFor(x => x.PlayerId).GreaterThan(0);
+
+        // No database constraint backs this any more (it needed LeagueId on the row), and the lookup runs
+        // outside the handler's transaction, so a race can let a duplicate through. A league team that does
+        // not exist passes here on purpose: the foreign key rejects it, so there is no friendly roster check.
+        When(x => x.LeagueTeamId > 0 && x.PlayerId > 0, () =>
+        {
+            RuleFor(x => x.PlayerId)
+                .MustAsync((request, _, _) => PlayerHasNoClubInLeagueAsync(request))
+                .WithMessage("The player is already in a club in this league.");
+        });
 
         // Both ranges match the CHECK constraints on dbo.LeagueTeamPlayers, so the two agree.
         RuleFor(x => x.ContractLength).InclusiveBetween(1, 6);
@@ -32,5 +50,22 @@ public sealed class CreateLeagueTeamPlayerValidator : AbstractValidator<CreateLe
         RuleFor(x => x.WantedTotalAppearances).GreaterThanOrEqualTo(x => x.WantedStarterAppearances);
 
         RuleFor(x => x.Condition).InclusiveBetween(1, 100);
+    }
+
+    /// <summary>
+    /// Checks that the player is not already registered with a club in the league of the league team.
+    /// </summary>
+    /// <param name="request">The request being validated.</param>
+    /// <returns><see langword="true"/> when the league team does not exist or the player has no registration in its league.</returns>
+    private async Task<bool> PlayerHasNoClubInLeagueAsync(CreateLeagueTeamPlayerRequest request)
+    {
+        var leagueTeam = await _leagueTeamRepository.GetByIdAsync(request.LeagueTeamId);
+
+        if (leagueTeam is null)
+        {
+            return true;
+        }
+
+        return await _leagueTeamPlayerRepository.GetByLeagueAndPlayerAsync(leagueTeam.LeagueId, request.PlayerId) is null;
     }
 }

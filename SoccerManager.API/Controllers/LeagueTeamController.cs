@@ -75,11 +75,13 @@ public class LeagueTeamController : ControllerBase
     }
 
     /// <summary>
-    /// Removes the league team with the given identifier from the roster.
+    /// Removes the league team with the given identifier from the roster, but only while nothing is
+    /// attached to the club in that league. A club that still has a squad, manager appointments,
+    /// applications, standings or matches there is refused with a 400 naming what blocks it.
     /// </summary>
     /// <param name="id">The identifier of the league team to delete.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>Whether the deletion succeeded.</returns>
+    /// <returns>Whether the deletion succeeded; a 400 when something is still attached, or a 404 when no such league team exists.</returns>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteLeagueTeam(int id, CancellationToken cancellationToken)
     {

@@ -1,6 +1,5 @@
 CREATE OR ALTER PROCEDURE dbo.InsertLeagueTeamPlayer
-    @LeagueId                          INT,
-    @TeamId                            INT,
+    @LeagueTeamId                      INT,
     @PlayerId                          INT,
     @ContractLength                    INT,
     @ContractSalaryPerWeek             BIGINT,
@@ -21,7 +20,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    INSERT INTO dbo.LeagueTeamPlayers (LeagueId, TeamId, PlayerId, ContractLength, ContractSalaryPerWeek, SquadNumber, FansFavoritePlayer, Morale, TransfermarketValue, WantedStarterAppearances, WantedTotalAppearances, Condition, IsSuspendedDomesticCompetition, IsSuspendedContinentalCompetition, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
+    INSERT INTO dbo.LeagueTeamPlayers (LeagueTeamId, PlayerId, ContractLength, ContractSalaryPerWeek, SquadNumber, FansFavoritePlayer, Morale, TransfermarketValue, WantedStarterAppearances, WantedTotalAppearances, Condition, IsSuspendedDomesticCompetition, IsSuspendedContinentalCompetition, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
     OUTPUT INSERTED.Id
-    VALUES (@LeagueId, @TeamId, @PlayerId, @ContractLength, @ContractSalaryPerWeek, @SquadNumber, @FansFavoritePlayer, @Morale, @TransfermarketValue, @WantedStarterAppearances, @WantedTotalAppearances, @Condition, @IsSuspendedDomesticCompetition, @IsSuspendedContinentalCompetition, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
+    VALUES (@LeagueTeamId, @PlayerId, @ContractLength, @ContractSalaryPerWeek, @SquadNumber, @FansFavoritePlayer, @Morale, @TransfermarketValue, @WantedStarterAppearances, @WantedTotalAppearances, @Condition, @IsSuspendedDomesticCompetition, @IsSuspendedContinentalCompetition, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
 END

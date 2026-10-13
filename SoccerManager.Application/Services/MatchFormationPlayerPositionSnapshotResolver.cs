@@ -15,6 +15,7 @@ public class MatchFormationPlayerPositionSnapshotResolver : IMatchFormationPlaye
     private readonly ISeasonRepository _seasonRepository;
     private readonly IPlayerPositionRepository _playerPositionRepository;
     private readonly ILeagueTeamPlayerRepository _leagueTeamPlayerRepository;
+    private readonly ILeagueTeamRepository _leagueTeamRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MatchFormationPlayerPositionSnapshotResolver"/> class.
@@ -23,12 +24,14 @@ public class MatchFormationPlayerPositionSnapshotResolver : IMatchFormationPlaye
     /// <param name="seasonRepository">The repository used to reach the match's league through its season.</param>
     /// <param name="playerPositionRepository">The repository used to load the player's position rating.</param>
     /// <param name="leagueTeamPlayerRepository">The repository used to load the player's registration in the league.</param>
-    public MatchFormationPlayerPositionSnapshotResolver(IMatchRepository matchRepository, ISeasonRepository seasonRepository, IPlayerPositionRepository playerPositionRepository, ILeagueTeamPlayerRepository leagueTeamPlayerRepository)
+    /// <param name="leagueTeamRepository">The repository used to find the team a registration's league team stands for.</param>
+    public MatchFormationPlayerPositionSnapshotResolver(IMatchRepository matchRepository, ISeasonRepository seasonRepository, IPlayerPositionRepository playerPositionRepository, ILeagueTeamPlayerRepository leagueTeamPlayerRepository, ILeagueTeamRepository leagueTeamRepository)
     {
         _matchRepository = matchRepository;
         _seasonRepository = seasonRepository;
         _playerPositionRepository = playerPositionRepository;
         _leagueTeamPlayerRepository = leagueTeamPlayerRepository;
+        _leagueTeamRepository = leagueTeamRepository;
     }
 
     /// <summary>
@@ -58,11 +61,14 @@ public class MatchFormationPlayerPositionSnapshotResolver : IMatchFormationPlaye
             ?? throw new KeyNotFoundException($"Player {playerPosition.PlayerId} is not registered in league {season.LeagueId}.");
 
         // The database cannot check this: the registration's team is reached through the player, not the request.
-        if (leagueTeamPlayer.TeamId != teamId)
+        // A registration only knows its league team, so the team is read from the roster entry it points at.
+        var registeredLeagueTeam = await _leagueTeamRepository.GetByIdAsync(leagueTeamPlayer.LeagueTeamId);
+
+        if (registeredLeagueTeam is null || registeredLeagueTeam.TeamId != teamId)
         {
             throw new ValidationException(new[]
             {
-                new ValidationFailure(nameof(MatchFormationPlayerPosition.TeamId), $"Player {playerPosition.PlayerId} is registered with team {leagueTeamPlayer.TeamId} in league {season.LeagueId}, not team {teamId}."),
+                new ValidationFailure(nameof(MatchFormationPlayerPosition.TeamId), $"Player {playerPosition.PlayerId} is registered with team {registeredLeagueTeam?.TeamId} in league {season.LeagueId}, not team {teamId}."),
             });
         }
 
