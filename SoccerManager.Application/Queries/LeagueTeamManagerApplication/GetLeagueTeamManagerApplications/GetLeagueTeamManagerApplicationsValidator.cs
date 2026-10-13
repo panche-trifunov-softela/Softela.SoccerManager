@@ -12,10 +12,9 @@ public sealed class GetLeagueTeamManagerApplicationsValidator : AbstractValidato
     /// </summary>
     public GetLeagueTeamManagerApplicationsValidator()
     {
-        // This query is always scoped to one team within one league, so a
-        // missing or zero LeagueId or TeamId must fail fast rather than
+        // This query is always scoped to one league roster entry, so a
+        // missing or zero LeagueTeamId must fail fast rather than
         // silently returning nothing.
-        RuleFor(x => x.LeagueId).GreaterThan(0);
-        RuleFor(x => x.TeamId).GreaterThan(0);
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
     }
 }

@@ -20,17 +20,17 @@ public class GetLeagueTeamManagerApplicationsHandler : IRequestHandler<GetLeague
     }
 
     /// <summary>
-    /// Retrieves every application belonging to the requested league and team, newest first.
+    /// Retrieves every application belonging to the requested league roster entry, newest first.
     /// </summary>
     /// <param name="request">The query request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The response carrying the matching league team manager applications.</returns>
     public async Task<GetLeagueTeamManagerApplicationsResponse> Handle(GetLeagueTeamManagerApplicationsRequest request, CancellationToken cancellationToken)
     {
-        // No league/team-existence check here: a filter matching nothing is not an
-        // error, just an empty list, and this keeps ILeagueRepository and ITeamRepository
+        // No roster-existence check here: a filter matching nothing is not an
+        // error, just an empty list, and this keeps ILeagueTeamRepository
         // out of a handler that only needs ILeagueTeamManagerApplicationRepository.
-        var applications = await _applicationRepository.GetByLeagueAndTeamAsync(request.LeagueId, request.TeamId);
+        var applications = await _applicationRepository.GetByLeagueTeamIdAsync(request.LeagueTeamId);
 
         return new GetLeagueTeamManagerApplicationsResponse { Data = applications.Select(GetLeagueTeamManagerApplicationsMapper.ToDto).ToList() };
     }

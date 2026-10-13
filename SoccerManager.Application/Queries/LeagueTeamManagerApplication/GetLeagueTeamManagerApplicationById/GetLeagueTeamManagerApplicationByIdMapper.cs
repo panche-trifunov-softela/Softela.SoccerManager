@@ -17,8 +17,7 @@ public static class GetLeagueTeamManagerApplicationByIdMapper
         return new LeagueTeamManagerApplicationDto
         {
             Id = application.Id,
-            LeagueId = application.LeagueId,
-            TeamId = application.TeamId,
+            LeagueTeamId = application.LeagueTeamId,
             ManagerId = application.ManagerId,
             Status = application.Status,
             ResponseDate = application.ResponseDate,

@@ -20,7 +20,7 @@ public sealed class UpdateLeagueTeamManagerApplicationValidator : AbstractValida
     /// <param name="applicationRepository">The repository used to load the application being answered.</param>
     /// <param name="leagueTeamManagerRepository">The repository used to check the team and the applicant are still free to be appointed.</param>
     /// <param name="managerRepository">The repository used to find the applicant's user.</param>
-    /// <param name="leagueTeamRepository">The repository used to find the club's roster entry.</param>
+    /// <param name="leagueTeamRepository">The repository used to find the league of the application's club.</param>
     public UpdateLeagueTeamManagerApplicationValidator(ILeagueTeamManagerApplicationRepository applicationRepository, ILeagueTeamManagerRepository leagueTeamManagerRepository, IManagerRepository managerRepository, ILeagueTeamRepository leagueTeamRepository)
     {
         _applicationRepository = applicationRepository;
@@ -70,25 +70,14 @@ public sealed class UpdateLeagueTeamManagerApplicationValidator : AbstractValida
             return;
         }
 
-        // Applications still carry the league and team, so the club's roster entry is looked up by them. An
-        // application made before its club was on the roster cannot be accepted until the club is added.
-        var leagueTeam = await _leagueTeamRepository.GetByLeagueAndTeamAsync(application.LeagueId, application.TeamId);
+        // Pending is also enforced atomically by the update procedure, and the team check by
+        // UX_LeagueTeamManagers_LeagueTeamId_Current. The applicant check has no database backstop:
+        // two concurrent acceptances of one applicant for different teams could both pass.
+        var teamAppointments = await _leagueTeamManagerRepository.GetByLeagueTeamIdAsync(application.LeagueTeamId);
 
-        if (leagueTeam is null)
+        if (teamAppointments.Any(appointment => appointment.IsCurrent))
         {
-            context.AddFailure("The team is not part of this league.");
-        }
-        else
-        {
-            // Pending is also enforced atomically by the update procedure, and the team check by
-            // UX_LeagueTeamManagers_LeagueTeamId_Current. The applicant check has no database backstop:
-            // two concurrent acceptances of one applicant for different teams could both pass.
-            var teamAppointments = await _leagueTeamManagerRepository.GetByLeagueTeamIdAsync(leagueTeam.Id);
-
-            if (teamAppointments.Any(appointment => appointment.IsCurrent))
-            {
-                context.AddFailure("The team already has a manager in this league.");
-            }
+            context.AddFailure("The team already has a manager in this league.");
         }
 
         var applicant = await _managerRepository.GetByIdAsync(application.ManagerId);
@@ -99,9 +88,17 @@ public sealed class UpdateLeagueTeamManagerApplicationValidator : AbstractValida
             return;
         }
 
+        // The LeagueTeams cascade deletes the application with its roster entry, so a missing row cannot happen.
+        var leagueTeam = await _leagueTeamRepository.GetByIdAsync(application.LeagueTeamId);
+
+        if (leagueTeam is null)
+        {
+            return;
+        }
+
         var applicantAppointments = await _leagueTeamManagerRepository.GetByUserIdAsync(applicant.UserId, currentOnly: true);
 
-        if (applicantAppointments.Any(appointment => appointment.LeagueId == application.LeagueId))
+        if (applicantAppointments.Any(appointment => appointment.LeagueId == leagueTeam.LeagueId))
         {
             context.AddFailure("The applicant already manages a club in this league.");
         }

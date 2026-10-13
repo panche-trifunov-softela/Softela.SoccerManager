@@ -30,8 +30,7 @@ public class LeagueTeamManagerApplicationRepository : ILeagueTeamManagerApplicat
     public async Task<int> CreateAsync(LeagueTeamManagerApplication application)
     {
         var parameters = new DynamicParameters();
-        parameters.Add("@LeagueId", application.LeagueId, DbType.Int32);
-        parameters.Add("@TeamId", application.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", application.LeagueTeamId, DbType.Int32);
         parameters.Add("@ManagerId", application.ManagerId, DbType.Int32);
         parameters.Add("@Status", (byte)application.Status, DbType.Byte);
         parameters.Add("@ResponseDate", application.ResponseDate, DbType.DateTime2);
@@ -102,16 +101,14 @@ public class LeagueTeamManagerApplicationRepository : ILeagueTeamManagerApplicat
     }
 
     /// <summary>
-    /// Retrieves every application belonging to the given league and team, newest first.
+    /// Retrieves every application belonging to the given league roster entry, newest first.
     /// </summary>
-    /// <param name="leagueId">The identifier of the league to filter by.</param>
-    /// <param name="teamId">The identifier of the team to filter by.</param>
-    /// <returns>A list of every application belonging to the league and team.</returns>
-    public async Task<List<LeagueTeamManagerApplication>> GetByLeagueAndTeamAsync(int leagueId, int teamId)
+    /// <param name="leagueTeamId">The identifier of the league roster entry to filter by.</param>
+    /// <returns>A list of every application belonging to the league roster entry.</returns>
+    public async Task<List<LeagueTeamManagerApplication>> GetByLeagueTeamIdAsync(int leagueTeamId)
     {
         var parameters = new DynamicParameters();
-        parameters.Add("@LeagueId", leagueId, DbType.Int32);
-        parameters.Add("@TeamId", teamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
 
         var applications = await _dapperDataContext.Connection.QueryAsync<LeagueTeamManagerApplication>(
             "dbo.GetLeagueTeamManagerApplications",
@@ -123,15 +120,14 @@ public class LeagueTeamManagerApplicationRepository : ILeagueTeamManagerApplicat
     }
 
     /// <summary>
-    /// Rejects every other pending application that accepting the given one makes moot: the other pending applications for the same team in the league, and the applicant's other pending applications in the league.
+    /// Rejects every other pending application that accepting the given one makes moot: the other pending applications for the same club, and the applicant's other pending applications in the club's league.
     /// </summary>
     /// <param name="acceptedApplication">The application that was just accepted, carrying the response date and audit values to stamp on the rejected ones.</param>
     public async Task RejectOtherPendingAsync(LeagueTeamManagerApplication acceptedApplication)
     {
         var parameters = new DynamicParameters();
         parameters.Add("@AcceptedId", acceptedApplication.Id, DbType.Int32);
-        parameters.Add("@LeagueId", acceptedApplication.LeagueId, DbType.Int32);
-        parameters.Add("@TeamId", acceptedApplication.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", acceptedApplication.LeagueTeamId, DbType.Int32);
         parameters.Add("@ManagerId", acceptedApplication.ManagerId, DbType.Int32);
         parameters.Add("@ResponseDate", acceptedApplication.ResponseDate, DbType.DateTime2);
         parameters.Add("@ModifiedAt", acceptedApplication.ModifiedAt, DbType.DateTime2);

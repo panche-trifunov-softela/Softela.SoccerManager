@@ -19,7 +19,7 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
     /// </summary>
     /// <param name="managerRepository">The repository used to check the caller has a manager profile.</param>
     /// <param name="leagueTeamManagerRepository">The repository used to check the team has no manager and the caller manages no club in the league.</param>
-    /// <param name="leagueTeamRepository">The repository used to check the team is part of the league.</param>
+    /// <param name="leagueTeamRepository">The repository used to find the club's roster entry and its league.</param>
     /// <param name="currentUser">The currently authenticated user.</param>
     public CreateLeagueTeamManagerApplicationValidator(IManagerRepository managerRepository, ILeagueTeamManagerRepository leagueTeamManagerRepository, ILeagueTeamRepository leagueTeamRepository, ICurrentUser currentUser)
     {
@@ -28,31 +28,19 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
         _leagueTeamRepository = leagueTeamRepository;
         _currentUser = currentUser;
 
-        RuleFor(x => x.LeagueId).GreaterThan(0);
-        RuleFor(x => x.TeamId).GreaterThan(0);
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
 
         // These lookups run outside the handler's transaction, so a race can at worst let a pending
         // application through; answering it re-checks the team and applicant rules. The manager's
         // existence is also enforced by FK_LeagueTeamManagerApplications_Managers.
-        When(x => x.LeagueId > 0 && x.TeamId > 0, () =>
+        When(x => x.LeagueTeamId > 0, () =>
         {
             RuleFor(x => x)
                 .MustAsync(HaveManagerProfileAsync)
                 .OverridePropertyName("Manager")
                 .WithMessage("Create a manager profile first.");
 
-            // The roster is what matters, not a squad: a league may start its managers with no players.
-            RuleFor(x => x.TeamId)
-                .MustAsync((request, _, _) => TeamIsInLeagueAsync(request))
-                .WithMessage("The team is not part of this league.");
-
-            RuleFor(x => x.TeamId)
-                .MustAsync((request, _, _) => TeamHasNoManagerAsync(request))
-                .WithMessage("The team already has a manager in this league.");
-
-            RuleFor(x => x.LeagueId)
-                .MustAsync((request, _, _) => CallerManagesNoClubAsync(request))
-                .WithMessage("You already manage a club in this league.");
+            RuleFor(x => x.LeagueTeamId).CustomAsync(ValidateClubAsync);
         });
     }
 
@@ -69,44 +57,37 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
     }
 
     /// <summary>
-    /// Checks that the team is on the roster of the league.
+    /// Checks that the club is on a league's roster, that it has no current manager there and that the
+    /// caller manages no club in that league, loading the roster entry once for every check.
     /// </summary>
-    /// <param name="request">The request being validated.</param>
-    /// <returns><see langword="true"/> when the team is part of the league.</returns>
-    private async Task<bool> TeamIsInLeagueAsync(CreateLeagueTeamManagerApplicationRequest request)
+    /// <param name="leagueTeamId">The roster entry the caller applies to manage.</param>
+    /// <param name="context">The context failures are added to.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    private async Task ValidateClubAsync(int leagueTeamId, ValidationContext<CreateLeagueTeamManagerApplicationRequest> context, CancellationToken cancellationToken)
     {
-        return await _leagueTeamRepository.GetByLeagueAndTeamAsync(request.LeagueId, request.TeamId) is not null;
-    }
+        // The roster is what matters, not a squad: a league may start its managers with no players. An
+        // unknown roster entry is reported on its own.
+        var leagueTeam = await _leagueTeamRepository.GetByIdAsync(leagueTeamId);
 
-    /// <summary>
-    /// Checks that the team has no current manager in the league.
-    /// </summary>
-    /// <param name="request">The request being validated.</param>
-    /// <returns><see langword="true"/> when no current manager is appointed to the team in the league.</returns>
-    private async Task<bool> TeamHasNoManagerAsync(CreateLeagueTeamManagerApplicationRequest request)
-    {
-        var leagueTeam = await _leagueTeamRepository.GetByLeagueAndTeamAsync(request.LeagueId, request.TeamId);
-
-        // A team off the roster is reported by the roster rule alone.
         if (leagueTeam is null)
         {
-            return true;
+            context.AddFailure("The team is not part of this league.");
+
+            return;
         }
 
-        var appointments = await _leagueTeamManagerRepository.GetByLeagueTeamIdAsync(leagueTeam.Id);
+        var teamAppointments = await _leagueTeamManagerRepository.GetByLeagueTeamIdAsync(leagueTeamId);
 
-        return !appointments.Any(appointment => appointment.IsCurrent);
-    }
+        if (teamAppointments.Any(appointment => appointment.IsCurrent))
+        {
+            context.AddFailure("The team already has a manager in this league.");
+        }
 
-    /// <summary>
-    /// Checks that the caller does not currently manage any club in the league.
-    /// </summary>
-    /// <param name="request">The request being validated.</param>
-    /// <returns><see langword="true"/> when the caller has no current appointment in the league.</returns>
-    private async Task<bool> CallerManagesNoClubAsync(CreateLeagueTeamManagerApplicationRequest request)
-    {
-        var appointments = await _leagueTeamManagerRepository.GetByUserIdAsync(_currentUser.UserId, currentOnly: true);
+        var callerAppointments = await _leagueTeamManagerRepository.GetByUserIdAsync(_currentUser.UserId, currentOnly: true);
 
-        return !appointments.Any(appointment => appointment.LeagueId == request.LeagueId);
+        if (callerAppointments.Any(appointment => appointment.LeagueId == leagueTeam.LeagueId))
+        {
+            context.AddFailure("You already manage a club in this league.");
+        }
     }
 }
