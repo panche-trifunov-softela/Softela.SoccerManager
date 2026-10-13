@@ -15,7 +15,7 @@ public sealed class UpdateStandingValidator : AbstractValidator<UpdateStandingRe
         RuleFor(x => x.Id).GreaterThan(0);
         RuleFor(x => x.CompetitionId).GreaterThan(0);
         RuleFor(x => x.SeasonId).GreaterThan(0);
-        RuleFor(x => x.TeamId).GreaterThan(0);
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
 
         // Unlike the identifier fields above, 0 is a legitimate value for a statistic.
         RuleFor(x => x.Points).GreaterThanOrEqualTo(0);

@@ -18,7 +18,7 @@ public static class CreateStandingMapper
         {
             CompetitionId = request.CompetitionId,
             SeasonId = request.SeasonId,
-            TeamId = request.TeamId,
+            LeagueTeamId = request.LeagueTeamId,
             Points = request.Points,
             GoalsFor = request.GoalsFor,
             GoalsAgainst = request.GoalsAgainst,

@@ -16,9 +16,9 @@ public class Standing : BaseEntity
     public int SeasonId { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the team this record is for.
+    /// Gets or sets the identifier of the league roster entry (the club in its league) this record is for.
     /// </summary>
-    public int TeamId { get; set; }
+    public int LeagueTeamId { get; set; }
 
     /// <summary>
     /// Gets or sets the points accumulated.

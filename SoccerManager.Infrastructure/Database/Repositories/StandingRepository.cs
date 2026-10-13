@@ -32,7 +32,7 @@ public class StandingRepository : IStandingRepository
         var parameters = new DynamicParameters();
         parameters.Add("@CompetitionId", standing.CompetitionId, DbType.Int32);
         parameters.Add("@SeasonId", standing.SeasonId, DbType.Int32);
-        parameters.Add("@TeamId", standing.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", standing.LeagueTeamId, DbType.Int32);
         parameters.Add("@Points", standing.Points, DbType.Int32);
         parameters.Add("@GoalsFor", standing.GoalsFor, DbType.Int32);
         parameters.Add("@GoalsAgainst", standing.GoalsAgainst, DbType.Int32);
@@ -62,7 +62,7 @@ public class StandingRepository : IStandingRepository
         parameters.Add("@Id", standing.Id, DbType.Int32);
         parameters.Add("@CompetitionId", standing.CompetitionId, DbType.Int32);
         parameters.Add("@SeasonId", standing.SeasonId, DbType.Int32);
-        parameters.Add("@TeamId", standing.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", standing.LeagueTeamId, DbType.Int32);
         parameters.Add("@Points", standing.Points, DbType.Int32);
         parameters.Add("@GoalsFor", standing.GoalsFor, DbType.Int32);
         parameters.Add("@GoalsAgainst", standing.GoalsAgainst, DbType.Int32);

@@ -19,7 +19,7 @@ public static class GetStandingsMapper
             Id = standing.Id,
             CompetitionId = standing.CompetitionId,
             SeasonId = standing.SeasonId,
-            TeamId = standing.TeamId,
+            LeagueTeamId = standing.LeagueTeamId,
             Points = standing.Points,
             GoalsFor = standing.GoalsFor,
             GoalsAgainst = standing.GoalsAgainst,
