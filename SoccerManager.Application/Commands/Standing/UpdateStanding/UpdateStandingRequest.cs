@@ -23,9 +23,9 @@ public sealed record UpdateStandingRequest : IRequest<bool>
     public int SeasonId { get; init; }
 
     /// <summary>
-    /// The identifier of the team this record is for.
+    /// The identifier of the league roster entry (the club in its league) this record is for.
     /// </summary>
-    public int TeamId { get; init; }
+    public int LeagueTeamId { get; init; }
 
     /// <summary>
     /// The points accumulated.

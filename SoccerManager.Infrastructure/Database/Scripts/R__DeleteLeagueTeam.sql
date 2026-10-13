@@ -24,10 +24,7 @@ BEGIN
         SELECT 1 FROM dbo.LeagueTeamManagerApplications WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id) THEN 1 ELSE 0 END;
 
     DECLARE @HasStandings BIT = CASE WHEN EXISTS (
-        SELECT 1
-        FROM dbo.Standings s WITH (UPDLOCK, HOLDLOCK)
-            INNER JOIN dbo.Competitions c ON c.Id = s.CompetitionId
-        WHERE c.LeagueId = @LeagueId AND s.TeamId = @TeamId) THEN 1 ELSE 0 END;
+        SELECT 1 FROM dbo.Standings WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id) THEN 1 ELSE 0 END;
 
     DECLARE @HasMatches BIT = CASE WHEN EXISTS (
         SELECT 1
