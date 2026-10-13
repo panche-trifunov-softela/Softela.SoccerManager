@@ -33,17 +33,16 @@ public class LeagueTeamManagerApplicationController : ControllerBase
     }
 
     /// <summary>
-    /// Returns every application belonging to the given league and team, newest first.
+    /// Returns every application belonging to the given league roster entry, newest first.
     /// </summary>
-    /// <param name="leagueId">The identifier of the league to filter by.</param>
-    /// <param name="teamId">The identifier of the team to filter by.</param>
+    /// <param name="leagueTeamId">The identifier of the league roster entry (the club in its league) to filter by.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The list of applications belonging to the league and team.</returns>
+    /// <returns>The list of applications belonging to the league roster entry.</returns>
     [HttpGet]
-    public async Task<IActionResult> GetLeagueTeamManagerApplications([FromQuery] int leagueId, [FromQuery] int teamId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetLeagueTeamManagerApplications([FromQuery] int leagueTeamId, CancellationToken cancellationToken)
     {
-        // leagueId and teamId are both required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
-        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamManagerApplicationsRequest { LeagueId = leagueId, TeamId = teamId }, cancellationToken);
+        // leagueTeamId is required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamManagerApplicationsRequest { LeagueTeamId = leagueTeamId }, cancellationToken);
 
         return Ok(result.Data);
     }
@@ -65,7 +64,7 @@ public class LeagueTeamManagerApplicationController : ControllerBase
     /// <summary>
     /// Applies on behalf of the authenticated caller to manage a team in a league.
     /// </summary>
-    /// <param name="request">The league and team the caller applies to manage.</param>
+    /// <param name="request">The league roster entry (the club in its league) the caller applies to manage.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created application.</returns>
     [HttpPost]

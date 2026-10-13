@@ -1,6 +1,5 @@
 CREATE OR ALTER PROCEDURE dbo.InsertLeagueTeamManagerApplication
-    @LeagueId     INT,
-    @TeamId       INT,
+    @LeagueTeamId INT,
     @ManagerId    INT,
     @Status       TINYINT,
     @ResponseDate DATETIME2(7),
@@ -12,7 +11,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    INSERT INTO dbo.LeagueTeamManagerApplications (LeagueId, TeamId, ManagerId, Status, ResponseDate, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
+    INSERT INTO dbo.LeagueTeamManagerApplications (LeagueTeamId, ManagerId, Status, ResponseDate, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
     OUTPUT INSERTED.Id
-    VALUES (@LeagueId, @TeamId, @ManagerId, @Status, @ResponseDate, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
+    VALUES (@LeagueTeamId, @ManagerId, @Status, @ResponseDate, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
 END

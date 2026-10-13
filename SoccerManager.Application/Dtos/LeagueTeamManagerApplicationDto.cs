@@ -13,14 +13,9 @@ public sealed record LeagueTeamManagerApplicationDto
     public int Id { get; init; }
 
     /// <summary>
-    /// The identifier of the league the application is for.
+    /// The identifier of the league roster entry (the club in its league) the manager applies to manage.
     /// </summary>
-    public int LeagueId { get; init; }
-
-    /// <summary>
-    /// The identifier of the team the manager applied to manage.
-    /// </summary>
-    public int TeamId { get; init; }
+    public int LeagueTeamId { get; init; }
 
     /// <summary>
     /// The identifier of the manager who applied.

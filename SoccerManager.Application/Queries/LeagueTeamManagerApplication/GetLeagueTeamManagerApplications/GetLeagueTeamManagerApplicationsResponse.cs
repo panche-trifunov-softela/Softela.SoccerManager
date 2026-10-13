@@ -8,7 +8,7 @@ namespace SoccerManager.Application.Queries.LeagueTeamManagerApplication.GetLeag
 public sealed record GetLeagueTeamManagerApplicationsResponse
 {
     /// <summary>
-    /// The applications belonging to the requested league and team, newest first.
+    /// The applications belonging to the requested league roster entry, newest first.
     /// </summary>
     public required List<LeagueTeamManagerApplicationDto> Data { get; init; }
 }

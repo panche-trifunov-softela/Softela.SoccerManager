@@ -9,12 +9,7 @@ namespace SoccerManager.Application.Commands.LeagueTeamManagerApplication.Create
 public sealed record CreateLeagueTeamManagerApplicationRequest : IRequest<int>
 {
     /// <summary>
-    /// The identifier of the league the application is for.
+    /// The identifier of the league roster entry (the club in its league) the caller applies to manage.
     /// </summary>
-    public int LeagueId { get; init; }
-
-    /// <summary>
-    /// The identifier of the team the caller applies to manage.
-    /// </summary>
-    public int TeamId { get; init; }
+    public int LeagueTeamId { get; init; }
 }

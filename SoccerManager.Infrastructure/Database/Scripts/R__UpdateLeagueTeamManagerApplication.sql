@@ -8,7 +8,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Only the answer changes; LeagueId, TeamId and ManagerId are fixed once the application exists.
+    -- Only the answer changes; LeagueTeamId and ManagerId are fixed once the application exists.
     UPDATE dbo.LeagueTeamManagerApplications
     SET Status       = @Status,
         ResponseDate = @ResponseDate,

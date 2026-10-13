@@ -35,15 +35,14 @@ public interface ILeagueTeamManagerApplicationRepository
     Task<LeagueTeamManagerApplication?> GetByIdAsync(int id);
 
     /// <summary>
-    /// Retrieves every application belonging to the given league and team, newest first.
+    /// Retrieves every application belonging to the given league roster entry, newest first.
     /// </summary>
-    /// <param name="leagueId">The identifier of the league to filter by.</param>
-    /// <param name="teamId">The identifier of the team to filter by.</param>
-    /// <returns>A list of every application belonging to the league and team.</returns>
-    Task<List<LeagueTeamManagerApplication>> GetByLeagueAndTeamAsync(int leagueId, int teamId);
+    /// <param name="leagueTeamId">The identifier of the league roster entry to filter by.</param>
+    /// <returns>A list of every application belonging to the league roster entry.</returns>
+    Task<List<LeagueTeamManagerApplication>> GetByLeagueTeamIdAsync(int leagueTeamId);
 
     /// <summary>
-    /// Rejects every other pending application that accepting the given one makes moot: the other pending applications for the same team in the league, and the applicant's other pending applications in the league.
+    /// Rejects every other pending application that accepting the given one makes moot: the other pending applications for the same club, and the applicant's other pending applications in the club's league.
     /// </summary>
     /// <param name="acceptedApplication">The application that was just accepted, carrying the response date and audit values to stamp on the rejected ones.</param>
     Task RejectOtherPendingAsync(LeagueTeamManagerApplication acceptedApplication);

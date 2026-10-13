@@ -10,7 +10,7 @@ public static class CreateLeagueTeamManagerApplicationMapper
     /// <summary>
     /// Creates a new, pending league team manager application from the given request.
     /// </summary>
-    /// <param name="request">The request carrying the league and team values.</param>
+    /// <param name="request">The request carrying the league roster entry value.</param>
     /// <param name="managerId">The identifier of the applying manager, taken from the caller's manager profile.</param>
     /// <param name="now">The UTC timestamp to stamp on the created and modified fields.</param>
     /// <param name="userId">The identifier of the user creating the application.</param>
@@ -19,8 +19,7 @@ public static class CreateLeagueTeamManagerApplicationMapper
     {
         return new SoccerManager.Domain.Entities.LeagueTeamManagerApplication
         {
-            LeagueId = request.LeagueId,
-            TeamId = request.TeamId,
+            LeagueTeamId = request.LeagueTeamId,
             ManagerId = managerId,
             Status = ApplicationStatus.Pending,
             ResponseDate = null,

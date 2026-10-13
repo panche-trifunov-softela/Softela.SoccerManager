@@ -1,7 +1,6 @@
 CREATE OR ALTER PROCEDURE dbo.RejectPendingLeagueTeamManagerApplications
     @AcceptedId   INT,
-    @LeagueId     INT,
-    @TeamId       INT,
+    @LeagueTeamId INT,
     @ManagerId    INT,
     @ResponseDate DATETIME2(7),
     @ModifiedAt   DATETIME2(7),
@@ -10,7 +9,10 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Rejects the pending applications an acceptance makes moot: the other ones for the same team in the league, and the applicant's other ones in the league.
+    -- The accepted club's league, reached through its roster entry.
+    DECLARE @LeagueId INT = (SELECT LeagueId FROM dbo.LeagueTeams WHERE Id = @LeagueTeamId);
+
+    -- Rejects the pending applications an acceptance makes moot: the other ones for the same club, and the applicant's other ones in the club's league.
     -- Status 1 is ApplicationStatus Pending and 3 is Rejected.
     UPDATE dbo.LeagueTeamManagerApplications
     SET Status = 3,
@@ -19,6 +21,6 @@ BEGIN
         ModifiedBy = @ModifiedBy
     WHERE Status = 1
       AND Id <> @AcceptedId
-      AND LeagueId = @LeagueId
-      AND (TeamId = @TeamId OR ManagerId = @ManagerId);
+      AND LeagueTeamId IN (SELECT Id FROM dbo.LeagueTeams WHERE LeagueId = @LeagueId)
+      AND (LeagueTeamId = @LeagueTeamId OR ManagerId = @ManagerId);
 END

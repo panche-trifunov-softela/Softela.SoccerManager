@@ -8,14 +8,9 @@ namespace SoccerManager.Domain.Entities;
 public class LeagueTeamManagerApplication : BaseEntity
 {
     /// <summary>
-    /// Gets or sets the identifier of the league the application is for.
+    /// Gets or sets the identifier of the league roster entry (the club in its league) the manager applies to manage.
     /// </summary>
-    public int LeagueId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the identifier of the team the manager applies to manage.
-    /// </summary>
-    public int TeamId { get; set; }
+    public int LeagueTeamId { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the manager who applied.
