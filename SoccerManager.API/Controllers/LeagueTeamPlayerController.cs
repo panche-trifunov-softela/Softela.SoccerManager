@@ -33,17 +33,16 @@ public class LeagueTeamPlayerController : ControllerBase
     }
 
     /// <summary>
-    /// Returns every player registration belonging to the given league and team.
+    /// Returns every player registration belonging to the given league team (a club's roster entry in a league).
     /// </summary>
-    /// <param name="leagueId">The identifier of the league to filter by.</param>
-    /// <param name="teamId">The identifier of the team to filter by.</param>
+    /// <param name="leagueTeamId">The identifier of the league team to filter by.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The list of player registrations belonging to the league and team.</returns>
+    /// <returns>The list of player registrations belonging to the league team.</returns>
     [HttpGet]
-    public async Task<IActionResult> GetLeagueTeamPlayers([FromQuery] int leagueId, [FromQuery] int teamId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetLeagueTeamPlayers([FromQuery] int leagueTeamId, CancellationToken cancellationToken)
     {
-        // leagueId and teamId are both required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
-        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamPlayersRequest { LeagueId = leagueId, TeamId = teamId }, cancellationToken);
+        // leagueTeamId is required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamPlayersRequest { LeagueTeamId = leagueTeamId }, cancellationToken);
 
         return Ok(result.Data);
     }

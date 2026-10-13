@@ -20,17 +20,17 @@ public class GetLeagueTeamPlayersHandler : IRequestHandler<GetLeagueTeamPlayersR
     }
 
     /// <summary>
-    /// Retrieves every player registration belonging to the requested league and team.
+    /// Retrieves every player registration belonging to the requested league team.
     /// </summary>
     /// <param name="request">The query request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The response carrying the matching league team players.</returns>
     public async Task<GetLeagueTeamPlayersResponse> Handle(GetLeagueTeamPlayersRequest request, CancellationToken cancellationToken)
     {
-        // No league/team-existence check here: a filter matching nothing is not an
-        // error, just an empty list, and this keeps ILeagueRepository and ITeamRepository
-        // out of a handler that only needs ILeagueTeamPlayerRepository.
-        var leagueTeamPlayers = await _leagueTeamPlayerRepository.GetByLeagueAndTeamAsync(request.LeagueId, request.TeamId);
+        // No league-team-existence check here: a filter matching nothing is not an
+        // error, just an empty list, and this keeps ILeagueTeamRepository out of a
+        // handler that only needs ILeagueTeamPlayerRepository.
+        var leagueTeamPlayers = await _leagueTeamPlayerRepository.GetByLeagueTeamIdAsync(request.LeagueTeamId);
 
         return new GetLeagueTeamPlayersResponse { Data = leagueTeamPlayers.Select(GetLeagueTeamPlayersMapper.ToDto).ToList() };
     }

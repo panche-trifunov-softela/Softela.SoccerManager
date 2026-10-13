@@ -12,10 +12,9 @@ public sealed class GetLeagueTeamPlayersValidator : AbstractValidator<GetLeagueT
     /// </summary>
     public GetLeagueTeamPlayersValidator()
     {
-        // This query is always scoped to one team within one league, so a
-        // missing or zero LeagueId or TeamId must fail fast rather than
-        // silently returning nothing.
-        RuleFor(x => x.LeagueId).GreaterThan(0);
-        RuleFor(x => x.TeamId).GreaterThan(0);
+        // This query is always scoped to one club's roster entry in a league, so a
+        // missing or zero LeagueTeamId must fail fast rather than silently
+        // returning nothing.
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
     }
 }

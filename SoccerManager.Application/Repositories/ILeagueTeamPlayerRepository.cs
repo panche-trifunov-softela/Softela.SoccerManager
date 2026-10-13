@@ -35,15 +35,16 @@ public interface ILeagueTeamPlayerRepository
     Task<LeagueTeamPlayer?> GetByIdAsync(int id);
 
     /// <summary>
-    /// Retrieves every player registration belonging to a team within a league.
+    /// Retrieves every player registration belonging to a club's roster entry in a league.
     /// </summary>
-    /// <param name="leagueId">The identifier of the league to filter by.</param>
-    /// <param name="teamId">The identifier of the team to filter by.</param>
-    /// <returns>A list of every player registration belonging to the league and team.</returns>
-    Task<List<LeagueTeamPlayer>> GetByLeagueAndTeamAsync(int leagueId, int teamId);
+    /// <param name="leagueTeamId">The identifier of the league team to filter by.</param>
+    /// <returns>A list of every player registration belonging to the league team.</returns>
+    Task<List<LeagueTeamPlayer>> GetByLeagueTeamIdAsync(int leagueTeamId);
 
     /// <summary>
     /// Retrieves a player's registration within a league.
+    /// No constraint guarantees at most one registration per player per league any more; when a race left
+    /// duplicates, the oldest one is returned.
     /// </summary>
     /// <param name="leagueId">The identifier of the league.</param>
     /// <param name="playerId">The identifier of the player.</param>

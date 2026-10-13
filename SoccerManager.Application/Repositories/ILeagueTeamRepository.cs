@@ -1,3 +1,4 @@
+using SoccerManager.Application.Models;
 using SoccerManager.Domain.Entities;
 
 namespace SoccerManager.Application.Repositories;
@@ -15,10 +16,15 @@ public interface ILeagueTeamRepository
     Task<int> CreateAsync(LeagueTeam leagueTeam);
 
     /// <summary>
-    /// Removes a league team by its identifier.
+    /// Removes a league team by its identifier, but only when nothing is still attached to the club in
+    /// that league. The check and the delete are atomic inside the stored procedure.
     /// </summary>
     /// <param name="id">The identifier of the league team to delete.</param>
-    Task DeleteAsync(int id);
+    /// <returns>
+    /// Whether the league team was removed and, when it was not, which kinds of record still block it.
+    /// When nothing is flagged as blocking, the league team did not exist.
+    /// </returns>
+    Task<DeleteLeagueTeamResult> DeleteAsync(int id);
 
     /// <summary>
     /// Retrieves a league team by its identifier.

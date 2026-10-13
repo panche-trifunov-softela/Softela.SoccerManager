@@ -1,7 +1,6 @@
 CREATE OR ALTER PROCEDURE dbo.UpdateLeagueTeamPlayer
     @Id                                INT,
-    @LeagueId                          INT,
-    @TeamId                            INT,
+    @LeagueTeamId                      INT,
     @PlayerId                          INT,
     @ContractLength                    INT,
     @ContractSalaryPerWeek             BIGINT,
@@ -21,8 +20,7 @@ BEGIN
     SET NOCOUNT ON;
 
     UPDATE dbo.LeagueTeamPlayers
-    SET LeagueId                          = @LeagueId,
-        TeamId                            = @TeamId,
+    SET LeagueTeamId                      = @LeagueTeamId,
         PlayerId                          = @PlayerId,
         ContractLength                    = @ContractLength,
         ContractSalaryPerWeek             = @ContractSalaryPerWeek,

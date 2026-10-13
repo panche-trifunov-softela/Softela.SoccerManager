@@ -3,20 +3,16 @@ using SoccerManager.Domain.Enums;
 namespace SoccerManager.Domain.Entities;
 
 /// <summary>
-/// Represents a player's registration with a team within a league, together with the contract and
+/// Represents a player's registration with a club on a league's roster, together with the contract and
 /// squad details that go with it.
 /// </summary>
 public class LeagueTeamPlayer : BaseEntity
 {
     /// <summary>
-    /// Gets or sets the identifier of the league the registration belongs to.
+    /// Gets or sets the identifier of the league team (the club's roster entry in a league) the player
+    /// is registered with. It identifies both the league and the team.
     /// </summary>
-    public int LeagueId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the identifier of the team the player is registered with.
-    /// </summary>
-    public int TeamId { get; set; }
+    public int LeagueTeamId { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the registered player.
