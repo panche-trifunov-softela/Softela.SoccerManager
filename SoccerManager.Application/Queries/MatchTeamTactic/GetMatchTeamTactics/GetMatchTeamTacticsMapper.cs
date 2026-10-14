@@ -18,7 +18,7 @@ public static class GetMatchTeamTacticsMapper
         {
             Id = matchTeamTactic.Id,
             MatchId = matchTeamTactic.MatchId,
-            TeamId = matchTeamTactic.TeamId,
+            LeagueTeamId = matchTeamTactic.LeagueTeamId,
             Mentality = matchTeamTactic.Mentality,
             Tempo = matchTeamTactic.Tempo,
             Passing = matchTeamTactic.Passing,

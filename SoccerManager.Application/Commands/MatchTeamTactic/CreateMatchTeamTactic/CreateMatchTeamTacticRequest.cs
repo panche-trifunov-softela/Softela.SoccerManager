@@ -14,9 +14,9 @@ public sealed record CreateMatchTeamTacticRequest : IRequest<int>
     public int MatchId { get; init; }
 
     /// <summary>
-    /// The identifier of the team the tactic belongs to.
+    /// The identifier of the league roster entry (the club in its league) this tactic is for.
     /// </summary>
-    public int TeamId { get; init; }
+    public int LeagueTeamId { get; init; }
 
     /// <summary>
     /// The team's mentality.
