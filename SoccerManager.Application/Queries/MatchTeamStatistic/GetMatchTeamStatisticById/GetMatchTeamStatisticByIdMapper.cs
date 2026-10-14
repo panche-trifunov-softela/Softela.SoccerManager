@@ -17,7 +17,7 @@ public static class GetMatchTeamStatisticByIdMapper
         return new MatchTeamStatisticDto
         {
             Id = matchTeamStatistic.Id,
-            TeamId = matchTeamStatistic.TeamId,
+            LeagueTeamId = matchTeamStatistic.LeagueTeamId,
             MatchId = matchTeamStatistic.MatchId,
             IsHomeTeam = matchTeamStatistic.IsHomeTeam,
             ShotsTotal = matchTeamStatistic.ShotsTotal,

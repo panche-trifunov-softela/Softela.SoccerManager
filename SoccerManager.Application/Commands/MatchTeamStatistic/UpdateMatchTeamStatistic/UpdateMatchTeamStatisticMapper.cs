@@ -14,7 +14,7 @@ public static class UpdateMatchTeamStatisticMapper
     /// <param name="userId">The identifier of the user performing the update.</param>
     public static void ApplyTo(UpdateMatchTeamStatisticRequest request, SoccerManager.Domain.Entities.MatchTeamStatistic matchTeamStatistic, DateTime now, Guid userId)
     {
-        matchTeamStatistic.TeamId = request.TeamId;
+        matchTeamStatistic.LeagueTeamId = request.LeagueTeamId;
         matchTeamStatistic.MatchId = request.MatchId;
         matchTeamStatistic.IsHomeTeam = request.IsHomeTeam;
         matchTeamStatistic.ShotsTotal = request.ShotsTotal;

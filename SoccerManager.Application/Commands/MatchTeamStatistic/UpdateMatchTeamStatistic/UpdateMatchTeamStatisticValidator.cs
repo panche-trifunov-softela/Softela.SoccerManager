@@ -13,7 +13,7 @@ public sealed class UpdateMatchTeamStatisticValidator : AbstractValidator<Update
     public UpdateMatchTeamStatisticValidator()
     {
         RuleFor(x => x.Id).GreaterThan(0);
-        RuleFor(x => x.TeamId).GreaterThan(0);
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
         RuleFor(x => x.MatchId).GreaterThan(0);
 
         RuleFor(x => x.ShotsTotal).GreaterThanOrEqualTo(0);

@@ -12,7 +12,7 @@ public sealed class CreateMatchTeamStatisticValidator : AbstractValidator<Create
     /// </summary>
     public CreateMatchTeamStatisticValidator()
     {
-        RuleFor(x => x.TeamId).GreaterThan(0);
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
         RuleFor(x => x.MatchId).GreaterThan(0);
 
         RuleFor(x => x.ShotsTotal).GreaterThanOrEqualTo(0);
