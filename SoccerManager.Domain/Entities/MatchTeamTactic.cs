@@ -14,9 +14,9 @@ public class MatchTeamTactic : BaseEntity
     public int MatchId { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the team the tactic belongs to.
+    /// Gets or sets the identifier of the league roster entry (the club in its league) this tactic is for.
     /// </summary>
-    public int TeamId { get; set; }
+    public int LeagueTeamId { get; set; }
 
     /// <summary>
     /// Gets or sets the team's mentality.

@@ -15,7 +15,7 @@ public static class UpdateMatchTeamTacticMapper
     public static void ApplyTo(UpdateMatchTeamTacticRequest request, SoccerManager.Domain.Entities.MatchTeamTactic matchTeamTactic, DateTime now, Guid userId)
     {
         matchTeamTactic.MatchId = request.MatchId;
-        matchTeamTactic.TeamId = request.TeamId;
+        matchTeamTactic.LeagueTeamId = request.LeagueTeamId;
         matchTeamTactic.Mentality = request.Mentality;
         matchTeamTactic.Tempo = request.Tempo;
         matchTeamTactic.Passing = request.Passing;

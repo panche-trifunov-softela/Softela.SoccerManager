@@ -31,7 +31,7 @@ public class MatchTeamTacticRepository : IMatchTeamTacticRepository
     {
         var parameters = new DynamicParameters();
         parameters.Add("@MatchId", matchTeamTactic.MatchId, DbType.Int32);
-        parameters.Add("@TeamId", matchTeamTactic.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", matchTeamTactic.LeagueTeamId, DbType.Int32);
         parameters.Add("@Mentality", (byte)matchTeamTactic.Mentality, DbType.Byte);
         parameters.Add("@Tempo", (byte)matchTeamTactic.Tempo, DbType.Byte);
         parameters.Add("@Passing", (byte)matchTeamTactic.Passing, DbType.Byte);
@@ -65,7 +65,7 @@ public class MatchTeamTacticRepository : IMatchTeamTacticRepository
         var parameters = new DynamicParameters();
         parameters.Add("@Id", matchTeamTactic.Id, DbType.Int32);
         parameters.Add("@MatchId", matchTeamTactic.MatchId, DbType.Int32);
-        parameters.Add("@TeamId", matchTeamTactic.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", matchTeamTactic.LeagueTeamId, DbType.Int32);
         parameters.Add("@Mentality", (byte)matchTeamTactic.Mentality, DbType.Byte);
         parameters.Add("@Tempo", (byte)matchTeamTactic.Tempo, DbType.Byte);
         parameters.Add("@Passing", (byte)matchTeamTactic.Passing, DbType.Byte);

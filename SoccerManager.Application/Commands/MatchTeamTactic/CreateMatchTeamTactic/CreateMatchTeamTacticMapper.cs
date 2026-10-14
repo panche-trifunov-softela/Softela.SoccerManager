@@ -17,7 +17,7 @@ public static class CreateMatchTeamTacticMapper
         return new SoccerManager.Domain.Entities.MatchTeamTactic
         {
             MatchId = request.MatchId,
-            TeamId = request.TeamId,
+            LeagueTeamId = request.LeagueTeamId,
             Mentality = request.Mentality,
             Tempo = request.Tempo,
             Passing = request.Passing,

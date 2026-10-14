@@ -14,7 +14,7 @@ public sealed class UpdateMatchTeamTacticValidator : AbstractValidator<UpdateMat
     {
         RuleFor(x => x.Id).GreaterThan(0);
         RuleFor(x => x.MatchId).GreaterThan(0);
-        RuleFor(x => x.TeamId).GreaterThan(0);
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
 
         // Every enum starts at 1, so IsInEnum also rejects an omitted or default zero.
         RuleFor(x => x.Mentality).IsInEnum();
