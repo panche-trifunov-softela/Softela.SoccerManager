@@ -50,7 +50,7 @@ public class UpdateMatchFormationPlayerPositionHandler : IRequestHandler<UpdateM
                 ?? throw new KeyNotFoundException($"Match formation player position {request.Id} not found.");
 
             // Re-snapshotted on every update: the request may move a different player into the slot, and the copied values follow it.
-            var snapshot = await _snapshotResolver.ResolveAsync(request.MatchId, request.TeamId, request.PlayerPositionId);
+            var snapshot = await _snapshotResolver.ResolveAsync(request.MatchId, request.LeagueTeamId, request.PlayerPositionId);
 
             var now = DateTime.UtcNow;
 

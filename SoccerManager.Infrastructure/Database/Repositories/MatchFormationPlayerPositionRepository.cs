@@ -31,7 +31,7 @@ public class MatchFormationPlayerPositionRepository : IMatchFormationPlayerPosit
     {
         var parameters = new DynamicParameters();
         parameters.Add("@MatchId", matchFormationPlayerPosition.MatchId, DbType.Int32);
-        parameters.Add("@TeamId", matchFormationPlayerPosition.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", matchFormationPlayerPosition.LeagueTeamId, DbType.Int32);
         parameters.Add("@FormationPositionId", matchFormationPlayerPosition.FormationPositionId, DbType.Int32);
         parameters.Add("@PlayerPositionId", matchFormationPlayerPosition.PlayerPositionId, DbType.Int32);
         parameters.Add("@ConditionOnMatch", matchFormationPlayerPosition.ConditionOnMatch, DbType.Int32);
@@ -59,7 +59,7 @@ public class MatchFormationPlayerPositionRepository : IMatchFormationPlayerPosit
         var parameters = new DynamicParameters();
         parameters.Add("@Id", matchFormationPlayerPosition.Id, DbType.Int32);
         parameters.Add("@MatchId", matchFormationPlayerPosition.MatchId, DbType.Int32);
-        parameters.Add("@TeamId", matchFormationPlayerPosition.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", matchFormationPlayerPosition.LeagueTeamId, DbType.Int32);
         parameters.Add("@FormationPositionId", matchFormationPlayerPosition.FormationPositionId, DbType.Int32);
         parameters.Add("@PlayerPositionId", matchFormationPlayerPosition.PlayerPositionId, DbType.Int32);
         parameters.Add("@ConditionOnMatch", matchFormationPlayerPosition.ConditionOnMatch, DbType.Int32);

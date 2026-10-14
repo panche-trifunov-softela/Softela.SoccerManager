@@ -15,9 +15,9 @@ public sealed record CreateMatchFormationPlayerPositionRequest : IRequest<int>
     public int MatchId { get; init; }
 
     /// <summary>
-    /// The identifier of the team lining up.
+    /// The identifier of the league roster entry (the club in its league) lining up.
     /// </summary>
-    public int TeamId { get; init; }
+    public int LeagueTeamId { get; init; }
 
     /// <summary>
     /// The identifier of the formation slot being filled.

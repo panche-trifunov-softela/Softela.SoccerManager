@@ -14,7 +14,7 @@ public sealed class UpdateMatchFormationPlayerPositionValidator : AbstractValida
     {
         RuleFor(x => x.Id).GreaterThan(0);
         RuleFor(x => x.MatchId).GreaterThan(0);
-        RuleFor(x => x.TeamId).GreaterThan(0);
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
         RuleFor(x => x.FormationPositionId).GreaterThan(0);
         RuleFor(x => x.PlayerPositionId).GreaterThan(0);
     }

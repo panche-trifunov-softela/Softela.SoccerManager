@@ -20,7 +20,7 @@ public static class CreateMatchFormationPlayerPositionMapper
         return new SoccerManager.Domain.Entities.MatchFormationPlayerPosition
         {
             MatchId = request.MatchId,
-            TeamId = request.TeamId,
+            LeagueTeamId = request.LeagueTeamId,
             FormationPositionId = request.FormationPositionId,
             PlayerPositionId = request.PlayerPositionId,
             ConditionOnMatch = snapshot.ConditionOnMatch,

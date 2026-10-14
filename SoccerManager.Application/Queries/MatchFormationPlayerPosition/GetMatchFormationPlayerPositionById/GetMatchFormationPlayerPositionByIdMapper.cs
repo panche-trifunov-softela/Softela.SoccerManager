@@ -18,7 +18,7 @@ public static class GetMatchFormationPlayerPositionByIdMapper
         {
             Id = matchFormationPlayerPosition.Id,
             MatchId = matchFormationPlayerPosition.MatchId,
-            TeamId = matchFormationPlayerPosition.TeamId,
+            LeagueTeamId = matchFormationPlayerPosition.LeagueTeamId,
             FormationPositionId = matchFormationPlayerPosition.FormationPositionId,
             PlayerPositionId = matchFormationPlayerPosition.PlayerPositionId,
             ConditionOnMatch = matchFormationPlayerPosition.ConditionOnMatch,
