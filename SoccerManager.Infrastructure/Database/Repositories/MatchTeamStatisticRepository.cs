@@ -30,7 +30,7 @@ public class MatchTeamStatisticRepository : IMatchTeamStatisticRepository
     public async Task<int> CreateAsync(MatchTeamStatistic matchTeamStatistic)
     {
         var parameters = new DynamicParameters();
-        parameters.Add("@TeamId", matchTeamStatistic.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", matchTeamStatistic.LeagueTeamId, DbType.Int32);
         parameters.Add("@MatchId", matchTeamStatistic.MatchId, DbType.Int32);
         parameters.Add("@IsHomeTeam", matchTeamStatistic.IsHomeTeam, DbType.Boolean);
         parameters.Add("@ShotsTotal", matchTeamStatistic.ShotsTotal, DbType.Int32);
@@ -57,7 +57,7 @@ public class MatchTeamStatisticRepository : IMatchTeamStatisticRepository
     {
         var parameters = new DynamicParameters();
         parameters.Add("@Id", matchTeamStatistic.Id, DbType.Int32);
-        parameters.Add("@TeamId", matchTeamStatistic.TeamId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", matchTeamStatistic.LeagueTeamId, DbType.Int32);
         parameters.Add("@MatchId", matchTeamStatistic.MatchId, DbType.Int32);
         parameters.Add("@IsHomeTeam", matchTeamStatistic.IsHomeTeam, DbType.Boolean);
         parameters.Add("@ShotsTotal", matchTeamStatistic.ShotsTotal, DbType.Int32);

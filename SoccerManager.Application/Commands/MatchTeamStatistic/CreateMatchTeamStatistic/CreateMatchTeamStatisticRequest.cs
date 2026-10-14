@@ -8,9 +8,9 @@ namespace SoccerManager.Application.Commands.MatchTeamStatistic.CreateMatchTeamS
 public sealed record CreateMatchTeamStatisticRequest : IRequest<int>
 {
     /// <summary>
-    /// The identifier of the team the statistics belong to.
+    /// The identifier of the league roster entry (the club in its league) this record is for.
     /// </summary>
-    public int TeamId { get; init; }
+    public int LeagueTeamId { get; init; }
 
     /// <summary>
     /// The identifier of the match the statistics belong to.

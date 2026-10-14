@@ -16,7 +16,7 @@ public static class CreateMatchTeamStatisticMapper
     {
         return new SoccerManager.Domain.Entities.MatchTeamStatistic
         {
-            TeamId = request.TeamId,
+            LeagueTeamId = request.LeagueTeamId,
             MatchId = request.MatchId,
             IsHomeTeam = request.IsHomeTeam,
             ShotsTotal = request.ShotsTotal,
