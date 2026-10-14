@@ -19,7 +19,7 @@ public static class UpdateMatchFormationPlayerPositionMapper
     public static void ApplyTo(UpdateMatchFormationPlayerPositionRequest request, MatchFormationPlayerPositionSnapshot snapshot, SoccerManager.Domain.Entities.MatchFormationPlayerPosition matchFormationPlayerPosition, DateTime now, Guid userId)
     {
         matchFormationPlayerPosition.MatchId = request.MatchId;
-        matchFormationPlayerPosition.TeamId = request.TeamId;
+        matchFormationPlayerPosition.LeagueTeamId = request.LeagueTeamId;
         matchFormationPlayerPosition.FormationPositionId = request.FormationPositionId;
         matchFormationPlayerPosition.PlayerPositionId = request.PlayerPositionId;
         matchFormationPlayerPosition.ConditionOnMatch = snapshot.ConditionOnMatch;

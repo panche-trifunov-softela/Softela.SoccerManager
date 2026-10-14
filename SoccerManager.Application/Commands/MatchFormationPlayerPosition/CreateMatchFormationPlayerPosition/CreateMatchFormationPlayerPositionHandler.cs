@@ -47,7 +47,7 @@ public class CreateMatchFormationPlayerPositionHandler : IRequestHandler<CreateM
         try
         {
             // Resolved inside the transaction so the snapshot and the insert see the same data.
-            var snapshot = await _snapshotResolver.ResolveAsync(request.MatchId, request.TeamId, request.PlayerPositionId);
+            var snapshot = await _snapshotResolver.ResolveAsync(request.MatchId, request.LeagueTeamId, request.PlayerPositionId);
 
             var now = DateTime.UtcNow;
 
