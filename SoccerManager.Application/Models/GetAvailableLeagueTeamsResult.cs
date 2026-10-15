@@ -4,9 +4,10 @@ namespace SoccerManager.Application.Models;
 
 /// <summary>
 /// One row returned by the <c>dbo.GetAvailableLeagueTeams</c> stored procedure: a club on a league's
-/// roster, denormalised with the team details the procedure joins in and whether it has a current manager. Kept
-/// separate from <see cref="Dtos.AvailableLeagueTeamDto"/> because Dapper populates a result by setting
-/// properties, and the Dto is an init-only record that cannot be a Dapper target.
+/// roster, denormalised with the team details the procedure joins in, whether it has a current manager and
+/// whether the caller has a pending application for it. Kept separate from <see cref="Dtos.AvailableLeagueTeamDto"/>
+/// because Dapper populates a result by setting properties, and the Dto is an init-only record that cannot be a
+/// Dapper target.
 /// </summary>
 public class GetAvailableLeagueTeamsResult
 {
@@ -34,4 +35,9 @@ public class GetAvailableLeagueTeamsResult
     /// Whether the club has a current manager in the league.
     /// </summary>
     public bool IsManaged { get; set; }
+
+    /// <summary>
+    /// Whether the caller has a pending application to manage the club; another manager's does not count.
+    /// </summary>
+    public bool HasPendingApplication { get; set; }
 }

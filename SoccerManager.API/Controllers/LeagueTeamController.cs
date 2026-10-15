@@ -48,8 +48,8 @@ public class LeagueTeamController : ControllerBase
     }
 
     /// <summary>
-    /// Returns every club on the given league's roster, by team name, with whether each one has a current manager there.
-    /// A pending application does not count as a manager.
+    /// Returns every club on the given league's roster, by team name, with whether each one has a current manager there
+    /// and whether the caller has a pending application for it. A pending application does not count as a manager.
     /// </summary>
     /// <param name="leagueId">The identifier of the league whose available clubs to return.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>

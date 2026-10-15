@@ -4,7 +4,7 @@ namespace SoccerManager.Application.Dtos;
 
 /// <summary>
 /// Represents a club on one league's roster, as the available-clubs list shows it, with whether it
-/// currently has a manager.
+/// currently has a manager and whether the caller has a pending application for it.
 /// </summary>
 public sealed record AvailableLeagueTeamDto
 {
@@ -32,4 +32,9 @@ public sealed record AvailableLeagueTeamDto
     /// Whether the club has a current manager in the league; a managed club cannot be applied for.
     /// </summary>
     public bool IsManaged { get; init; }
+
+    /// <summary>
+    /// Whether the caller has a pending application to manage the club; another manager's does not count.
+    /// </summary>
+    public bool HasPendingApplication { get; init; }
 }
