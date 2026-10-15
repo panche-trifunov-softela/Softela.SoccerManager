@@ -1,3 +1,4 @@
+using SoccerManager.Application.Models.SearchPlayers;
 using SoccerManager.Domain.Entities;
 
 namespace SoccerManager.Application.Repositories;
@@ -39,4 +40,11 @@ public interface IPlayerRepository
     /// </summary>
     /// <returns>A list of every player.</returns>
     Task<List<Player>> GetAllAsync();
+
+    /// <summary>
+    /// Retrieves one page of the players matching a search, with the number of matches across all pages.
+    /// </summary>
+    /// <param name="criteria">The filters, sort order and page to apply.</param>
+    /// <returns>The requested page of players, empty past the last page, and the total match count.</returns>
+    Task<SearchPlayersPage> SearchAsync(SearchPlayersCriteria criteria);
 }

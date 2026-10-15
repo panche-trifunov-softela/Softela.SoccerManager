@@ -1,0 +1,84 @@
+-- One page of the players matching every given filter, with the match count first as its own result set.
+-- CHARINDEX matches the term literally under an accent- and case-insensitive collation, so a term typed
+-- without accents still finds an accented name whatever the database's own collation; the caller turns a
+-- blank term into NULL. The NULL defaults (rating, descending, page 1 of 25) let a caller passing no
+-- parameters get the first page.
+CREATE OR ALTER PROCEDURE dbo.SearchPlayers
+    @SearchTerm     NVARCHAR(100) = NULL,
+    @PositionId     INT           = NULL,
+    @TeamId         INT           = NULL,
+    @NationalTeamId INT           = NULL,
+    @MinRating      INT           = NULL,
+    @MaxRating      INT           = NULL,
+    @SortBy         TINYINT       = NULL,
+    @SortDescending BIT           = NULL,
+    @Page           INT           = NULL,
+    @PageSize       INT           = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- A NULL OFFSET or FETCH is an error, so NULL means the default.
+    SET @SortBy = COALESCE(@SortBy, 2);
+    SET @SortDescending = COALESCE(@SortDescending, 1);
+    SET @Page = COALESCE(@Page, 1);
+    SET @PageSize = COALESCE(@PageSize, 25);
+
+    -- A player's main position is its highest-Quality row, the first entered winning a tie, and
+    -- @PositionId matches only that one. The matches are kept once so the count and the page agree.
+    SELECT p.Id, mp.PositionId
+    INTO #Matches
+    FROM dbo.Players p
+        OUTER APPLY (
+            SELECT TOP (1) pp.PositionId
+            FROM dbo.PlayerPositions pp
+            WHERE pp.PlayerId = p.Id
+            ORDER BY pp.Quality DESC, pp.Id
+        ) mp
+    WHERE (@SearchTerm IS NULL OR CHARINDEX(@SearchTerm, p.Name COLLATE Latin1_General_100_CI_AI) > 0)
+      AND (@PositionId IS NULL OR mp.PositionId = @PositionId)
+      AND (@TeamId IS NULL OR p.TeamId = @TeamId)
+      AND (@NationalTeamId IS NULL OR p.NationalTeamId = @NationalTeamId)
+      AND (@MinRating IS NULL OR p.Rating >= @MinRating)
+      AND (@MaxRating IS NULL OR p.Rating <= @MaxRating);
+
+    -- Counted on its own: on a page past the end, a COUNT(*) OVER () would return no row at all.
+    SELECT COUNT(*) AS TotalCount
+    FROM #Matches;
+
+    -- @SortBy: 1 name, 2 rating, 3 age (ascending is youngest first, so date of birth runs the other way),
+    -- 4 value, 5 wage. Ties fall back to Id in the same direction, so reversing it reverses the whole list.
+    SELECT p.Id,
+           p.Name,
+           p.DateOfBirth,
+           p.Rating,
+           p.[Value],
+           p.Wage,
+           p.ImageUrl,
+           p.TeamId,
+           t.Name   AS TeamName,
+           p.NationalTeamId,
+           nt.Name  AS NationalTeamName,
+           m.PositionId,
+           pos.Name AS PositionName
+    FROM #Matches m
+        INNER JOIN dbo.Players p ON p.Id = m.Id
+        LEFT JOIN dbo.Teams t ON t.Id = p.TeamId
+        LEFT JOIN dbo.NationalTeams nt ON nt.Id = p.NationalTeamId
+        LEFT JOIN dbo.Positions pos ON pos.Id = m.PositionId
+    ORDER BY CASE WHEN @SortBy = 1 AND @SortDescending = 0 THEN p.Name END,
+             CASE WHEN @SortBy = 1 AND @SortDescending = 1 THEN p.Name END DESC,
+             CASE WHEN @SortBy = 2 AND @SortDescending = 0 THEN p.Rating END,
+             CASE WHEN @SortBy = 2 AND @SortDescending = 1 THEN p.Rating END DESC,
+             CASE WHEN @SortBy = 3 AND @SortDescending = 0 THEN p.DateOfBirth END DESC,
+             CASE WHEN @SortBy = 3 AND @SortDescending = 1 THEN p.DateOfBirth END,
+             CASE WHEN @SortBy = 4 AND @SortDescending = 0 THEN p.[Value] END,
+             CASE WHEN @SortBy = 4 AND @SortDescending = 1 THEN p.[Value] END DESC,
+             CASE WHEN @SortBy = 5 AND @SortDescending = 0 THEN p.Wage END,
+             CASE WHEN @SortBy = 5 AND @SortDescending = 1 THEN p.Wage END DESC,
+             CASE WHEN @SortDescending = 0 THEN p.Id END,
+             CASE WHEN @SortDescending = 1 THEN p.Id END DESC
+    -- BIGINT, so a huge @Page gives an empty page instead of an arithmetic overflow.
+    OFFSET (CAST(@Page AS BIGINT) - 1) * @PageSize ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+END

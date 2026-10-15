@@ -7,6 +7,7 @@ using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.Player.GetPlayerById;
 using SoccerManager.Application.Queries.Player.GetPlayers;
+using SoccerManager.Application.Queries.Player.SearchPlayers;
 
 namespace SoccerManager.API.Controllers;
 
@@ -41,6 +42,54 @@ public class PlayerController : ControllerBase
     public async Task<IActionResult> GetPlayers(CancellationToken cancellationToken)
     {
         var result = await _queryDispatcher.QueryAsync(new GetPlayersRequest(), cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns one page of the players matching the given search, filters and sort order.
+    /// </summary>
+    /// <param name="searchTerm">Text a player name must contain, ignoring case and accents; omitted or blank means no name filter.</param>
+    /// <param name="positionId">The identifier of the main position a player must have.</param>
+    /// <param name="teamId">The identifier of the current real-life club a player must have.</param>
+    /// <param name="nationalTeamId">The identifier of the national team a player must have.</param>
+    /// <param name="minRating">The lowest rating to include, from 1 to 100.</param>
+    /// <param name="maxRating">The highest rating to include, from 1 to 100 and not below <paramref name="minRating"/>.</param>
+    /// <param name="sortBy">The column to order by: name, rating, age (ascending is youngest first), value or wage, in any case; rating when omitted.</param>
+    /// <param name="sortDescending">Whether to order in descending order; descending when omitted.</param>
+    /// <param name="page">The 1-based page to return; the first when omitted.</param>
+    /// <param name="pageSize">The number of players per page, from 1 to 100; 25 when omitted.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The page of players with the total match count, and the page and page size applied.</returns>
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchPlayers(
+        [FromQuery] string? searchTerm,
+        [FromQuery] int? positionId,
+        [FromQuery] int? teamId,
+        [FromQuery] int? nationalTeamId,
+        [FromQuery] int? minRating,
+        [FromQuery] int? maxRating,
+        [FromQuery] string? sortBy,
+        [FromQuery] bool? sortDescending,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
+        CancellationToken cancellationToken)
+    {
+        var request = new SearchPlayersRequest
+        {
+            SearchTerm = searchTerm,
+            PositionId = positionId,
+            TeamId = teamId,
+            NationalTeamId = nationalTeamId,
+            MinRating = minRating,
+            MaxRating = maxRating,
+            SortBy = sortBy,
+            SortDescending = sortDescending,
+            Page = page,
+            PageSize = pageSize,
+        };
+
+        var result = await _queryDispatcher.QueryAsync(request, cancellationToken);
 
         return Ok(result.Data);
     }

@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using SoccerManager.Application.Models.SearchPlayers;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Entities;
 using SoccerManager.Infrastructure.Database.Dapper;
@@ -127,5 +128,37 @@ public class PlayerRepository : IPlayerRepository
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
 
         return players.ToList();
+    }
+
+    /// <summary>
+    /// Retrieves one page of the players matching a search, with the number of matches across all pages.
+    /// </summary>
+    /// <param name="criteria">The filters, sort order and page to apply.</param>
+    /// <returns>The requested page of players, empty past the last page, and the total match count.</returns>
+    public async Task<SearchPlayersPage> SearchAsync(SearchPlayersCriteria criteria)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@SearchTerm", criteria.SearchTerm, DbType.String);
+        parameters.Add("@PositionId", criteria.PositionId, DbType.Int32);
+        parameters.Add("@TeamId", criteria.TeamId, DbType.Int32);
+        parameters.Add("@NationalTeamId", criteria.NationalTeamId, DbType.Int32);
+        parameters.Add("@MinRating", criteria.MinRating, DbType.Int32);
+        parameters.Add("@MaxRating", criteria.MaxRating, DbType.Int32);
+        parameters.Add("@SortBy", (byte)criteria.SortBy, DbType.Byte);
+        parameters.Add("@SortDescending", criteria.SortDescending, DbType.Boolean);
+        parameters.Add("@Page", criteria.Page, DbType.Int32);
+        parameters.Add("@PageSize", criteria.PageSize, DbType.Int32);
+
+        // The procedure returns the match count first and the page second.
+        using var results = await _dapperDataContext.Connection.QueryMultipleAsync(
+            "dbo.SearchPlayers",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        var totalCount = await results.ReadSingleAsync<int>().ConfigureAwait(false);
+        var rows = await results.ReadAsync<SearchPlayersResult>().ConfigureAwait(false);
+
+        return new SearchPlayersPage { Rows = rows.ToList(), TotalCount = totalCount };
     }
 }
