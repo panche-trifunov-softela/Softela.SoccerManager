@@ -103,14 +103,17 @@ public class LeagueTeamRepository : ILeagueTeamRepository
     }
 
     /// <summary>
-    /// Retrieves every club on the given league's roster, ordered by team name, with whether each one has a current manager there.
+    /// Retrieves every club on the given league's roster, ordered by team name, with whether each one has a current manager there
+    /// and whether the given user has a pending application for it.
     /// </summary>
     /// <param name="leagueId">The identifier of the league whose roster to look through.</param>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose pending applications are flagged.</param>
     /// <returns>A list of the league's clubs, empty when the league is unknown.</returns>
-    public async Task<List<GetAvailableLeagueTeamsResult>> GetAvailableByLeagueIdAsync(int leagueId)
+    public async Task<List<GetAvailableLeagueTeamsResult>> GetAvailableByLeagueIdAsync(int leagueId, Guid userId)
     {
         var parameters = new DynamicParameters();
         parameters.Add("@LeagueId", leagueId, DbType.Int32);
+        parameters.Add("@UserId", userId, DbType.Guid);
 
         var rows = await _dapperDataContext.Connection.QueryAsync<GetAvailableLeagueTeamsResult>(
             "dbo.GetAvailableLeagueTeams",

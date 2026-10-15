@@ -22,6 +22,7 @@ public static class GetAvailableLeagueTeamsMapper
             TeamLogoUrl = row.TeamLogoUrl,
             TeamFinancialState = row.TeamFinancialState,
             IsManaged = row.IsManaged,
+            HasPendingApplication = row.HasPendingApplication,
         };
     }
 }
