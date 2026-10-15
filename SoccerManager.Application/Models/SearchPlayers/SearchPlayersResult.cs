@@ -2,8 +2,9 @@ namespace SoccerManager.Application.Models.SearchPlayers;
 
 /// <summary>
 /// One row returned by the <c>dbo.SearchPlayers</c> stored procedure: a player denormalised with the names of its
-/// club, national team and main position. Kept separate from <see cref="Dtos.PlayerSearch.PlayerSearchItemDto"/> because Dapper
-/// populates a result by setting properties, and the Dto is an init-only record that cannot be a Dapper target.
+/// club, national team and main position, and the caller's vote on its current rating. Kept separate from
+/// <see cref="Dtos.PlayerSearch.PlayerSearchItemDto"/> because Dapper populates a result by setting properties, and the Dto
+/// is an init-only record that cannot be a Dapper target.
 /// </summary>
 public class SearchPlayersResult
 {
@@ -71,4 +72,10 @@ public class SearchPlayersResult
     /// The name of the player's main position, or <see langword="null"/> when it has none.
     /// </summary>
     public string? PositionName { get; set; }
+
+    /// <summary>
+    /// The caller's vote on the player's current rating: <see langword="true"/> up, <see langword="false"/> down, or
+    /// <see langword="null"/> when they have not voted on it.
+    /// </summary>
+    public bool? MyVote { get; set; }
 }

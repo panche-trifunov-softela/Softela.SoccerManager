@@ -1,7 +1,8 @@
 namespace SoccerManager.Application.Dtos.PlayerSearch;
 
 /// <summary>
-/// Represents a player as a players search lists it, with the names of its club, national team and main position.
+/// Represents a player as a players search lists it, with the names of its club, national team and main position, and the
+/// caller's vote on its current rating.
 /// </summary>
 public sealed record PlayerSearchItemDto
 {
@@ -69,4 +70,10 @@ public sealed record PlayerSearchItemDto
     /// The name of the player's main position, or <see langword="null"/> when it has none.
     /// </summary>
     public string? PositionName { get; init; }
+
+    /// <summary>
+    /// The caller's vote on the player's current rating: <see langword="true"/> up, <see langword="false"/> down, or
+    /// <see langword="null"/> when they have not voted on it.
+    /// </summary>
+    public bool? MyVote { get; init; }
 }

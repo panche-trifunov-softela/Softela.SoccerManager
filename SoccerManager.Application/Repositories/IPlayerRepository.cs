@@ -42,9 +42,11 @@ public interface IPlayerRepository
     Task<List<Player>> GetAllAsync();
 
     /// <summary>
-    /// Retrieves one page of the players matching a search, with the number of matches across all pages.
+    /// Retrieves one page of the players matching a search, with the number of matches across all pages and the given
+    /// user's vote on each player's current rating.
     /// </summary>
     /// <param name="criteria">The filters, sort order and page to apply.</param>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose votes are returned.</param>
     /// <returns>The requested page of players, empty past the last page, and the total match count.</returns>
-    Task<SearchPlayersPage> SearchAsync(SearchPlayersCriteria criteria);
+    Task<SearchPlayersPage> SearchAsync(SearchPlayersCriteria criteria, Guid userId);
 }

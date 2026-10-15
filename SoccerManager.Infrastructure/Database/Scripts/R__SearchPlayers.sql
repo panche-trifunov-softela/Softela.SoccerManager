@@ -3,6 +3,10 @@
 -- without accents still finds an accented name whatever the database's own collation; the caller turns a
 -- blank term into NULL. The NULL defaults (rating, descending, page 1 of 25) let a caller passing no
 -- parameters get the first page.
+-- MyVote is @UserId's vote on each listed player's CURRENT rating (1 up, 0 down), or NULL when they have
+-- cast none on it; a vote on an earlier rating does not count. UQ_Managers_UserId and the votes' unique
+-- key allow at most one such vote. A NULL @UserId (an older API build on the shared database passes none)
+-- gives NULL throughout.
 CREATE OR ALTER PROCEDURE dbo.SearchPlayers
     @SearchTerm     NVARCHAR(100) = NULL,
     @PositionId     INT           = NULL,
@@ -13,7 +17,8 @@ CREATE OR ALTER PROCEDURE dbo.SearchPlayers
     @SortBy         TINYINT       = NULL,
     @SortDescending BIT           = NULL,
     @Page           INT           = NULL,
-    @PageSize       INT           = NULL
+    @PageSize       INT           = NULL,
+    @UserId         UNIQUEIDENTIFIER = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -60,7 +65,13 @@ BEGIN
            p.NationalTeamId,
            nt.Name  AS NationalTeamName,
            m.PositionId,
-           pos.Name AS PositionName
+           pos.Name AS PositionName,
+           (SELECT v.UpOrDown
+            FROM dbo.ManagerPlayerRatingVotes v
+                INNER JOIN dbo.Managers mgr ON mgr.Id = v.ManagerId
+            WHERE v.PlayerId = p.Id
+              AND v.RatingAtTheMoment = p.Rating
+              AND mgr.UserId = @UserId) AS MyVote
     FROM #Matches m
         INNER JOIN dbo.Players p ON p.Id = m.Id
         LEFT JOIN dbo.Teams t ON t.Id = p.TeamId

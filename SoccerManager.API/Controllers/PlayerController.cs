@@ -60,7 +60,7 @@ public class PlayerController : ControllerBase
     /// <param name="page">The 1-based page to return; the first when omitted.</param>
     /// <param name="pageSize">The number of players per page, from 1 to 100; 25 when omitted.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The page of players with the total match count, and the page and page size applied.</returns>
+    /// <returns>The page of players, each with the caller's vote on its current rating, the total match count, and the page and page size applied.</returns>
     [HttpGet("search")]
     public async Task<IActionResult> SearchPlayers(
         [FromQuery] string? searchTerm,
