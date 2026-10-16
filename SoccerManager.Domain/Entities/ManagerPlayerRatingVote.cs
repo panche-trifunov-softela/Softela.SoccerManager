@@ -11,14 +11,9 @@ public class ManagerPlayerRatingVote : BaseEntity
     public int ManagerId { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the player the vote is about.
+    /// Gets or sets the identifier of the player rating the vote was cast on; the player is reached through it.
     /// </summary>
-    public int PlayerId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the player's rating when the vote was cast.
-    /// </summary>
-    public int RatingAtTheMoment { get; set; }
+    public int PlayerRatingId { get; set; }
 
     /// <summary>
     /// Gets or sets whether the vote is up (<see langword="true"/>) or down (<see langword="false"/>).

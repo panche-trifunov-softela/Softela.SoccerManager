@@ -10,6 +10,7 @@ namespace SoccerManager.Application.Commands.Player.UpdatePlayer;
 public class UpdatePlayerHandler : IRequestHandler<UpdatePlayerRequest, bool>
 {
     private readonly IPlayerRepository _playerRepository;
+    private readonly IPlayerRatingRepository _playerRatingRepository;
     private readonly ICurrentUser _currentUser;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -17,11 +18,13 @@ public class UpdatePlayerHandler : IRequestHandler<UpdatePlayerRequest, bool>
     /// Initializes a new instance of the <see cref="UpdatePlayerHandler"/> class.
     /// </summary>
     /// <param name="playerRepository">The repository used to load and persist players.</param>
+    /// <param name="playerRatingRepository">The repository used to write a changed rating.</param>
     /// <param name="currentUser">The currently authenticated user.</param>
     /// <param name="unitOfWork">The unit of work used to group the write into one transaction.</param>
-    public UpdatePlayerHandler(IPlayerRepository playerRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
+    public UpdatePlayerHandler(IPlayerRepository playerRepository, IPlayerRatingRepository playerRatingRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
     {
         _playerRepository = playerRepository;
+        _playerRatingRepository = playerRatingRepository;
         _currentUser = currentUser;
         _unitOfWork = unitOfWork;
     }
@@ -44,9 +47,17 @@ public class UpdatePlayerHandler : IRequestHandler<UpdatePlayerRequest, bool>
 
             var now = DateTime.UtcNow;
 
+            // A different value starts a new rating round, so the votes on the old rating stay with it; the same value changes nothing.
+            var ratingChanged = player.Rating != request.Rating;
+
             UpdatePlayerMapper.ApplyTo(request, player, now, _currentUser.UserId);
 
             await _playerRepository.UpdateAsync(player);
+
+            if (ratingChanged)
+            {
+                await _playerRatingRepository.CreateAsync(UpdatePlayerMapper.ToPlayerRating(request, now, _currentUser.UserId));
+            }
 
             await _unitOfWork.CommitAsync(cancellationToken);
 

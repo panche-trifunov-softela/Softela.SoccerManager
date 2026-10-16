@@ -11,7 +11,7 @@ public class CreateManagerPlayerRatingVoteHandler : IRequestHandler<CreateManage
 {
     private readonly IManagerPlayerRatingVoteRepository _managerPlayerRatingVoteRepository;
     private readonly IManagerRepository _managerRepository;
-    private readonly IPlayerRepository _playerRepository;
+    private readonly IPlayerRatingRepository _playerRatingRepository;
     private readonly ICurrentUser _currentUser;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -20,14 +20,14 @@ public class CreateManagerPlayerRatingVoteHandler : IRequestHandler<CreateManage
     /// </summary>
     /// <param name="managerPlayerRatingVoteRepository">The repository used to persist votes.</param>
     /// <param name="managerRepository">The repository used to find the caller's manager profile.</param>
-    /// <param name="playerRepository">The repository used to read the player's current rating.</param>
+    /// <param name="playerRatingRepository">The repository used to find the player's current rating.</param>
     /// <param name="currentUser">The currently authenticated user.</param>
     /// <param name="unitOfWork">The unit of work used to group the write into one transaction.</param>
-    public CreateManagerPlayerRatingVoteHandler(IManagerPlayerRatingVoteRepository managerPlayerRatingVoteRepository, IManagerRepository managerRepository, IPlayerRepository playerRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
+    public CreateManagerPlayerRatingVoteHandler(IManagerPlayerRatingVoteRepository managerPlayerRatingVoteRepository, IManagerRepository managerRepository, IPlayerRatingRepository playerRatingRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
     {
         _managerPlayerRatingVoteRepository = managerPlayerRatingVoteRepository;
         _managerRepository = managerRepository;
-        _playerRepository = playerRepository;
+        _playerRatingRepository = playerRatingRepository;
         _currentUser = currentUser;
         _unitOfWork = unitOfWork;
     }
@@ -44,15 +44,15 @@ public class CreateManagerPlayerRatingVoteHandler : IRequestHandler<CreateManage
         var now = DateTime.UtcNow;
 
         // The validator already rejects both, so each is reachable only if the row disappears between
-        // validation and here.
+        // validation and here: the manager profile, or the player's current rating.
         var manager = await _managerRepository.GetByUserIdAsync(_currentUser.UserId)
             ?? throw new KeyNotFoundException("The caller has no manager profile.");
 
-        var player = await _playerRepository.GetByIdAsync(request.PlayerId)
+        var currentRating = await _playerRatingRepository.GetCurrentByPlayerIdAsync(request.PlayerId)
             ?? throw new KeyNotFoundException($"Player {request.PlayerId} not found.");
 
-        // The rating is copied now, so the vote keeps the rating it was cast against after the player's rating changes.
-        var managerPlayerRatingVote = CreateManagerPlayerRatingVoteMapper.ToDomainEntity(request, manager.Id, player.Rating, now, _currentUser.UserId);
+        // The vote belongs to the rating in force now, so a later rating, even one with the same value, starts a new round.
+        var managerPlayerRatingVote = CreateManagerPlayerRatingVoteMapper.ToDomainEntity(request, manager.Id, currentRating.Id, now, _currentUser.UserId);
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 

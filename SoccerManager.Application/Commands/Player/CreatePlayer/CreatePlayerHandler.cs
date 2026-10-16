@@ -10,6 +10,7 @@ namespace SoccerManager.Application.Commands.Player.CreatePlayer;
 public class CreatePlayerHandler : IRequestHandler<CreatePlayerRequest, int>
 {
     private readonly IPlayerRepository _playerRepository;
+    private readonly IPlayerRatingRepository _playerRatingRepository;
     private readonly ICurrentUser _currentUser;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -17,11 +18,13 @@ public class CreatePlayerHandler : IRequestHandler<CreatePlayerRequest, int>
     /// Initializes a new instance of the <see cref="CreatePlayerHandler"/> class.
     /// </summary>
     /// <param name="playerRepository">The repository used to persist players.</param>
+    /// <param name="playerRatingRepository">The repository used to write the player's first rating.</param>
     /// <param name="currentUser">The currently authenticated user.</param>
     /// <param name="unitOfWork">The unit of work used to group the write into one transaction.</param>
-    public CreatePlayerHandler(IPlayerRepository playerRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
+    public CreatePlayerHandler(IPlayerRepository playerRepository, IPlayerRatingRepository playerRatingRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
     {
         _playerRepository = playerRepository;
+        _playerRatingRepository = playerRatingRepository;
         _currentUser = currentUser;
         _unitOfWork = unitOfWork;
     }
@@ -43,6 +46,9 @@ public class CreatePlayerHandler : IRequestHandler<CreatePlayerRequest, int>
         try
         {
             var id = await _playerRepository.CreateAsync(player);
+
+            // The player's rating lives in dbo.PlayerRatings, so its first rating is written in the same transaction.
+            await _playerRatingRepository.CreateAsync(CreatePlayerMapper.ToPlayerRating(id, request, now, _currentUser.UserId));
 
             await _unitOfWork.CommitAsync(cancellationToken);
 

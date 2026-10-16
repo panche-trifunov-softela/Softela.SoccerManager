@@ -34,7 +34,6 @@ public class PlayerRepository : IPlayerRepository
         parameters.Add("@Name", player.Name, DbType.String);
         // No DbType here: DynamicParameters only looks up a registered type handler (DateOnlyTypeHandler) when the DbType is null; passing DbType.Date would bypass it.
         parameters.Add("@DateOfBirth", player.DateOfBirth);
-        parameters.Add("@Rating", player.Rating, DbType.Int32);
         parameters.Add("@Value", player.Value, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@Wage", player.Wage, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@ImageUrl", player.ImageUrl, DbType.String);
@@ -65,7 +64,6 @@ public class PlayerRepository : IPlayerRepository
         parameters.Add("@Name", player.Name, DbType.String);
         // No DbType here: DynamicParameters only looks up a registered type handler (DateOnlyTypeHandler) when the DbType is null; passing DbType.Date would bypass it.
         parameters.Add("@DateOfBirth", player.DateOfBirth);
-        parameters.Add("@Rating", player.Rating, DbType.Int32);
         parameters.Add("@Value", player.Value, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@Wage", player.Wage, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@ImageUrl", player.ImageUrl, DbType.String);
@@ -131,11 +129,13 @@ public class PlayerRepository : IPlayerRepository
     }
 
     /// <summary>
-    /// Retrieves one page of the players matching a search, with the number of matches across all pages.
+    /// Retrieves one page of the players matching a search, with the number of matches across all pages and the given
+    /// user's vote on each player's current rating.
     /// </summary>
     /// <param name="criteria">The filters, sort order and page to apply.</param>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose votes are returned.</param>
     /// <returns>The requested page of players, empty past the last page, and the total match count.</returns>
-    public async Task<SearchPlayersPage> SearchAsync(SearchPlayersCriteria criteria)
+    public async Task<SearchPlayersPage> SearchAsync(SearchPlayersCriteria criteria, Guid userId)
     {
         var parameters = new DynamicParameters();
         parameters.Add("@SearchTerm", criteria.SearchTerm, DbType.String);
@@ -148,6 +148,7 @@ public class PlayerRepository : IPlayerRepository
         parameters.Add("@SortDescending", criteria.SortDescending, DbType.Boolean);
         parameters.Add("@Page", criteria.Page, DbType.Int32);
         parameters.Add("@PageSize", criteria.PageSize, DbType.Int32);
+        parameters.Add("@UserId", userId, DbType.Guid);
 
         // The procedure returns the match count first and the page second.
         using var results = await _dapperDataContext.Connection.QueryMultipleAsync(

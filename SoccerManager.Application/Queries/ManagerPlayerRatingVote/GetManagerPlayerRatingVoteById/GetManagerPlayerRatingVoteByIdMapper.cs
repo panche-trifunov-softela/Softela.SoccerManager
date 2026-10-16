@@ -18,8 +18,7 @@ public static class GetManagerPlayerRatingVoteByIdMapper
         {
             Id = managerPlayerRatingVote.Id,
             ManagerId = managerPlayerRatingVote.ManagerId,
-            PlayerId = managerPlayerRatingVote.PlayerId,
-            RatingAtTheMoment = managerPlayerRatingVote.RatingAtTheMoment,
+            PlayerRatingId = managerPlayerRatingVote.PlayerRatingId,
             UpOrDown = managerPlayerRatingVote.UpOrDown,
             CreatedAt = managerPlayerRatingVote.CreatedAt,
             ModifiedAt = managerPlayerRatingVote.ModifiedAt,

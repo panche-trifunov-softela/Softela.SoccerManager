@@ -3,6 +3,11 @@
 -- without accents still finds an accented name whatever the database's own collation; the caller turns a
 -- blank term into NULL. The NULL defaults (rating, descending, page 1 of 25) let a caller passing no
 -- parameters get the first page.
+-- A player's rating is its current dbo.PlayerRatings row, and MyVote is @UserId's vote on that row (1 up,
+-- 0 down), or NULL when they have cast none on it: a vote on an earlier rating does not count, even one
+-- with the same value. UQ_Managers_UserId and UQ_ManagerPlayerRatingVotes_ManagerId_PlayerRatingId allow
+-- at most one such vote. A NULL @UserId (an older API build on the shared database passes none) gives
+-- NULL throughout.
 CREATE OR ALTER PROCEDURE dbo.SearchPlayers
     @SearchTerm     NVARCHAR(100) = NULL,
     @PositionId     INT           = NULL,
@@ -13,7 +18,8 @@ CREATE OR ALTER PROCEDURE dbo.SearchPlayers
     @SortBy         TINYINT       = NULL,
     @SortDescending BIT           = NULL,
     @Page           INT           = NULL,
-    @PageSize       INT           = NULL
+    @PageSize       INT           = NULL,
+    @UserId         UNIQUEIDENTIFIER = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -25,10 +31,12 @@ BEGIN
     SET @PageSize = COALESCE(@PageSize, 25);
 
     -- A player's main position is its highest-Quality row, the first entered winning a tie, and
-    -- @PositionId matches only that one. The matches are kept once so the count and the page agree.
-    SELECT p.Id, mp.PositionId
+    -- @PositionId matches only that one. The matches are kept once, with the current rating, so the count
+    -- and the page agree.
+    SELECT p.Id, mp.PositionId, cr.Id AS PlayerRatingId, cr.Rating
     INTO #Matches
     FROM dbo.Players p
+        INNER JOIN dbo.PlayerRatings cr ON cr.PlayerId = p.Id AND cr.IsCurrent = 1
         OUTER APPLY (
             SELECT TOP (1) pp.PositionId
             FROM dbo.PlayerPositions pp
@@ -39,8 +47,8 @@ BEGIN
       AND (@PositionId IS NULL OR mp.PositionId = @PositionId)
       AND (@TeamId IS NULL OR p.TeamId = @TeamId)
       AND (@NationalTeamId IS NULL OR p.NationalTeamId = @NationalTeamId)
-      AND (@MinRating IS NULL OR p.Rating >= @MinRating)
-      AND (@MaxRating IS NULL OR p.Rating <= @MaxRating);
+      AND (@MinRating IS NULL OR cr.Rating >= @MinRating)
+      AND (@MaxRating IS NULL OR cr.Rating <= @MaxRating);
 
     -- Counted on its own: on a page past the end, a COUNT(*) OVER () would return no row at all.
     SELECT COUNT(*) AS TotalCount
@@ -51,7 +59,7 @@ BEGIN
     SELECT p.Id,
            p.Name,
            p.DateOfBirth,
-           p.Rating,
+           m.Rating,
            p.[Value],
            p.Wage,
            p.ImageUrl,
@@ -60,7 +68,12 @@ BEGIN
            p.NationalTeamId,
            nt.Name  AS NationalTeamName,
            m.PositionId,
-           pos.Name AS PositionName
+           pos.Name AS PositionName,
+           (SELECT v.UpOrDown
+            FROM dbo.ManagerPlayerRatingVotes v
+                INNER JOIN dbo.Managers mgr ON mgr.Id = v.ManagerId
+            WHERE v.PlayerRatingId = m.PlayerRatingId
+              AND mgr.UserId = @UserId) AS MyVote
     FROM #Matches m
         INNER JOIN dbo.Players p ON p.Id = m.Id
         LEFT JOIN dbo.Teams t ON t.Id = p.TeamId
@@ -68,8 +81,8 @@ BEGIN
         LEFT JOIN dbo.Positions pos ON pos.Id = m.PositionId
     ORDER BY CASE WHEN @SortBy = 1 AND @SortDescending = 0 THEN p.Name END,
              CASE WHEN @SortBy = 1 AND @SortDescending = 1 THEN p.Name END DESC,
-             CASE WHEN @SortBy = 2 AND @SortDescending = 0 THEN p.Rating END,
-             CASE WHEN @SortBy = 2 AND @SortDescending = 1 THEN p.Rating END DESC,
+             CASE WHEN @SortBy = 2 AND @SortDescending = 0 THEN m.Rating END,
+             CASE WHEN @SortBy = 2 AND @SortDescending = 1 THEN m.Rating END DESC,
              CASE WHEN @SortBy = 3 AND @SortDescending = 0 THEN p.DateOfBirth END DESC,
              CASE WHEN @SortBy = 3 AND @SortDescending = 1 THEN p.DateOfBirth END,
              CASE WHEN @SortBy = 4 AND @SortDescending = 0 THEN p.[Value] END,

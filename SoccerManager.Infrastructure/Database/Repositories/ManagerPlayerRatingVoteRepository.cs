@@ -31,8 +31,7 @@ public class ManagerPlayerRatingVoteRepository : IManagerPlayerRatingVoteReposit
     {
         var parameters = new DynamicParameters();
         parameters.Add("@ManagerId", managerPlayerRatingVote.ManagerId, DbType.Int32);
-        parameters.Add("@PlayerId", managerPlayerRatingVote.PlayerId, DbType.Int32);
-        parameters.Add("@RatingAtTheMoment", managerPlayerRatingVote.RatingAtTheMoment, DbType.Int32);
+        parameters.Add("@PlayerRatingId", managerPlayerRatingVote.PlayerRatingId, DbType.Int32);
         parameters.Add("@UpOrDown", managerPlayerRatingVote.UpOrDown, DbType.Boolean);
         parameters.Add("@CreatedAt", managerPlayerRatingVote.CreatedAt, DbType.DateTime2);
         parameters.Add("@ModifiedAt", managerPlayerRatingVote.ModifiedAt, DbType.DateTime2);
@@ -100,10 +99,10 @@ public class ManagerPlayerRatingVoteRepository : IManagerPlayerRatingVoteReposit
     }
 
     /// <summary>
-    /// Gets every vote on a player, newest first.
+    /// Gets every vote cast on any of the player's ratings, newest first.
     /// </summary>
     /// <param name="playerId">The identifier of the player whose votes to retrieve.</param>
-    /// <returns>A list of every vote on the player, newest first.</returns>
+    /// <returns>A list of every vote cast on any of the player's ratings, newest first.</returns>
     public async Task<List<ManagerPlayerRatingVote>> GetByPlayerIdAsync(int playerId)
     {
         var parameters = new DynamicParameters();
@@ -119,21 +118,19 @@ public class ManagerPlayerRatingVoteRepository : IManagerPlayerRatingVoteReposit
     }
 
     /// <summary>
-    /// Gets a manager's vote on a player at one rating, if they cast one.
+    /// Gets a manager's vote on one player rating, if they cast one.
     /// </summary>
     /// <param name="managerId">The identifier of the manager.</param>
-    /// <param name="playerId">The identifier of the player.</param>
-    /// <param name="ratingAtTheMoment">The player's rating the vote was cast against.</param>
-    /// <returns>The matching vote, or <see langword="null"/> when the manager has not voted at that rating.</returns>
-    public async Task<ManagerPlayerRatingVote?> GetByManagerPlayerAndRatingAsync(int managerId, int playerId, int ratingAtTheMoment)
+    /// <param name="playerRatingId">The identifier of the player rating.</param>
+    /// <returns>The matching vote, or <see langword="null"/> when the manager has not voted on that rating.</returns>
+    public async Task<ManagerPlayerRatingVote?> GetByManagerAndPlayerRatingAsync(int managerId, int playerRatingId)
     {
         var parameters = new DynamicParameters();
         parameters.Add("@ManagerId", managerId, DbType.Int32);
-        parameters.Add("@PlayerId", playerId, DbType.Int32);
-        parameters.Add("@RatingAtTheMoment", ratingAtTheMoment, DbType.Int32);
+        parameters.Add("@PlayerRatingId", playerRatingId, DbType.Int32);
 
         return await _dapperDataContext.Connection.QueryFirstOrDefaultAsync<ManagerPlayerRatingVote>(
-            "dbo.GetManagerPlayerRatingVoteByManagerPlayerAndRating",
+            "dbo.GetManagerPlayerRatingVoteByManagerAndPlayerRating",
             parameters,
             transaction: _dapperDataContext.Transaction,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);

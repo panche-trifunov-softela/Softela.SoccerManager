@@ -81,6 +81,7 @@ public static class SearchPlayersMapper
             NationalTeamName = row.NationalTeamName,
             PositionId = row.PositionId,
             PositionName = row.PositionName,
+            MyVote = row.MyVote,
         };
     }
 }
