@@ -1,11 +1,13 @@
+-- Every vote on any of the player's ratings: a vote reaches its player through dbo.PlayerRatings.
 CREATE OR ALTER PROCEDURE dbo.GetManagerPlayerRatingVotes
     @PlayerId INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT Id, ManagerId, PlayerId, RatingAtTheMoment, UpOrDown, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy
-    FROM dbo.ManagerPlayerRatingVotes
-    WHERE PlayerId = @PlayerId
-    ORDER BY CreatedAt DESC, Id DESC;
+    SELECT v.Id, v.ManagerId, v.PlayerRatingId, v.UpOrDown, v.CreatedAt, v.ModifiedAt, v.CreatedBy, v.ModifiedBy
+    FROM dbo.ManagerPlayerRatingVotes v
+        INNER JOIN dbo.PlayerRatings pr ON pr.Id = v.PlayerRatingId
+    WHERE pr.PlayerId = @PlayerId
+    ORDER BY v.CreatedAt DESC, v.Id DESC;
 END

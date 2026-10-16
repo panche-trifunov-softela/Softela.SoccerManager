@@ -4,7 +4,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT Id, ManagerId, PlayerId, RatingAtTheMoment, UpOrDown, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy
+    SELECT Id, ManagerId, PlayerRatingId, UpOrDown, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy
     FROM dbo.ManagerPlayerRatingVotes
     WHERE Id = @Id;
 END

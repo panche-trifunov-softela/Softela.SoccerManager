@@ -26,4 +26,25 @@ public static class UpdatePlayerMapper
         player.ModifiedAt = now;
         player.ModifiedBy = userId;
     }
+
+    /// <summary>
+    /// Creates the player's new current rating, for an update that changes the rating.
+    /// </summary>
+    /// <param name="request">The request carrying the new rating value.</param>
+    /// <param name="now">The UTC timestamp to stamp on the created and modified fields.</param>
+    /// <param name="userId">The identifier of the user performing the update.</param>
+    /// <returns>A new, unsaved current rating entity.</returns>
+    public static SoccerManager.Domain.Entities.PlayerRating ToPlayerRating(UpdatePlayerRequest request, DateTime now, Guid userId)
+    {
+        return new SoccerManager.Domain.Entities.PlayerRating
+        {
+            PlayerId = request.Id,
+            Rating = request.Rating,
+            IsCurrent = true,
+            CreatedAt = now,
+            CreatedBy = userId,
+            ModifiedAt = now,
+            ModifiedBy = userId,
+        };
+    }
 }

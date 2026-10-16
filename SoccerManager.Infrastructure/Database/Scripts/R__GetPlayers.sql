@@ -1,9 +1,11 @@
+-- The rating is the player's current dbo.PlayerRatings row; every player has exactly one.
 CREATE OR ALTER PROCEDURE dbo.GetPlayers
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT Id, Name, DateOfBirth, Rating, [Value], Wage, ImageUrl, NationalTeamId, TeamId, TransfermarktId, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy
-    FROM dbo.Players
-    ORDER BY Name;
+    SELECT p.Id, p.Name, p.DateOfBirth, cr.Rating, p.[Value], p.Wage, p.ImageUrl, p.NationalTeamId, p.TeamId, p.TransfermarktId, p.CreatedAt, p.ModifiedAt, p.CreatedBy, p.ModifiedBy
+    FROM dbo.Players p
+        INNER JOIN dbo.PlayerRatings cr ON cr.PlayerId = p.Id AND cr.IsCurrent = 1
+    ORDER BY p.Name;
 END

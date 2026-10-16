@@ -16,14 +16,9 @@ public sealed record ManagerPlayerRatingVoteDto
     public int ManagerId { get; init; }
 
     /// <summary>
-    /// The identifier of the player the vote is about.
+    /// The identifier of the player rating the vote was cast on.
     /// </summary>
-    public int PlayerId { get; init; }
-
-    /// <summary>
-    /// The player's rating when the vote was cast.
-    /// </summary>
-    public int RatingAtTheMoment { get; init; }
+    public int PlayerRatingId { get; init; }
 
     /// <summary>
     /// Whether the vote is up; false means down.

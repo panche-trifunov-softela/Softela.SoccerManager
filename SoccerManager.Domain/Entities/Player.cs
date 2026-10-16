@@ -16,7 +16,8 @@ public class Player : BaseEntity
     public DateOnly DateOfBirth { get; set; }
 
     /// <summary>
-    /// Gets or sets the player's overall rating.
+    /// Gets or sets the player's current rating: the value of its current PlayerRating row, read through a join,
+    /// since dbo.Players has no Rating column. The player commands write ratings through IPlayerRatingRepository.
     /// </summary>
     public int Rating { get; set; }
 

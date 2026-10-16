@@ -34,7 +34,6 @@ public class PlayerRepository : IPlayerRepository
         parameters.Add("@Name", player.Name, DbType.String);
         // No DbType here: DynamicParameters only looks up a registered type handler (DateOnlyTypeHandler) when the DbType is null; passing DbType.Date would bypass it.
         parameters.Add("@DateOfBirth", player.DateOfBirth);
-        parameters.Add("@Rating", player.Rating, DbType.Int32);
         parameters.Add("@Value", player.Value, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@Wage", player.Wage, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@ImageUrl", player.ImageUrl, DbType.String);
@@ -65,7 +64,6 @@ public class PlayerRepository : IPlayerRepository
         parameters.Add("@Name", player.Name, DbType.String);
         // No DbType here: DynamicParameters only looks up a registered type handler (DateOnlyTypeHandler) when the DbType is null; passing DbType.Date would bypass it.
         parameters.Add("@DateOfBirth", player.DateOfBirth);
-        parameters.Add("@Rating", player.Rating, DbType.Int32);
         parameters.Add("@Value", player.Value, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@Wage", player.Wage, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@ImageUrl", player.ImageUrl, DbType.String);
