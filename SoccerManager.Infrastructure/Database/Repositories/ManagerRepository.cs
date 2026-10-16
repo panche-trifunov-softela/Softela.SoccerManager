@@ -115,6 +115,29 @@ public class ManagerRepository : IManagerRepository
     }
 
     /// <summary>
+    /// Returns the identifier of the given user's manager profile, creating the profile first when the user has
+    /// none. Safe to call on every login: a second call, even a simultaneous one, creates nothing.
+    /// </summary>
+    /// <param name="manager">The profile to create when missing; its UserId names the user.</param>
+    /// <returns>The identifier of the user's manager profile, new or existing.</returns>
+    public async Task<int> EnsureAsync(Manager manager)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@UserId", manager.UserId, DbType.Guid);
+        parameters.Add("@ImageUrl", manager.ImageUrl, DbType.String);
+        parameters.Add("@CreatedAt", manager.CreatedAt, DbType.DateTime2);
+        parameters.Add("@ModifiedAt", manager.ModifiedAt, DbType.DateTime2);
+        parameters.Add("@CreatedBy", manager.CreatedBy, DbType.Guid);
+        parameters.Add("@ModifiedBy", manager.ModifiedBy, DbType.Guid);
+
+        return await _dapperDataContext.Connection.QuerySingleAsync<int>(
+            "dbo.EnsureManager",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Retrieves all managers.
     /// </summary>
     /// <returns>A list of every manager.</returns>

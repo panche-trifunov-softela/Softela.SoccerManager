@@ -42,6 +42,14 @@ public interface IManagerRepository
     Task<Manager?> GetByUserIdAsync(Guid userId);
 
     /// <summary>
+    /// Returns the identifier of the given user's manager profile, creating the profile first when the user has
+    /// none. Safe to call on every login: a second call, even a simultaneous one, creates nothing.
+    /// </summary>
+    /// <param name="manager">The profile to create when missing; its UserId names the user.</param>
+    /// <returns>The identifier of the user's manager profile, new or existing.</returns>
+    Task<int> EnsureAsync(Manager manager);
+
+    /// <summary>
     /// Retrieves all managers.
     /// </summary>
     /// <returns>A list of every manager.</returns>
