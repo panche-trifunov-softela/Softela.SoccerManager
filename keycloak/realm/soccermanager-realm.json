@@ -1,5 +1,6 @@
 {
   "realm": "soccermanager",
+  "displayName": "The 11 Master",
   "enabled": true,
   "loginTheme": "soccermanager",
   "rememberMe": true,
@@ -7,7 +8,12 @@
   "registrationEmailAsUsername": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
-  "verifyEmail": false,
+  "resetPasswordAllowed": true,
+  "verifyEmail": true,
+  "attributes": {
+    "actionTokenGeneratedByUserLifespan.verify-email": "86400",
+    "actionTokenGeneratedByUserLifespan.reset-credentials": "3600"
+  },
   "defaultRole": {
     "name": "default-roles-soccermanager",
     "description": "${role_default-roles}",

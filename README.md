@@ -211,6 +211,42 @@ deployed before a live realm is pointed at it, or the login page breaks for
 everyone. Local and Azure Keycloak share one database, so the switch is
 global and immediate.
 
+### Emails
+
+Keycloak sends its own account emails: the verification link after
+registration, the forgot-password link, and the "update your password" link an
+admin sends from Users → *user* → Credentials → Credential reset. The
+application itself sends no email.
+
+The realm file turns on **Verify email** and **Forgot password**, sets the
+display name the emails use ("The 11 Master"), and keeps a verification link
+valid for a day and a password-reset link for an hour — Keycloak's default is
+five minutes. An admin-sent link lasts twelve hours, adjustable in that dialog.
+
+The SMTP server is not in the realm file: it differs per environment and
+carries a password. The shared realm sends through Brevo — Realm settings →
+Email, host `smtp-relay.brevo.com`, port 587, StartTLS, with the SMTP login and
+SMTP key from Brevo's SMTP & API page.
+
+**Ordering matters on a live realm.** With Verify email on, an unverified
+account is sent a link at its next sign-in and cannot get past that page until
+it follows the link; if SMTP is broken at that moment, it gets "Failed to send
+email, please try again later." instead. So, in this order:
+
+1. Give your own admin account an email address — **Test connection** sends
+   to it, and stays disabled without one.
+2. Fill in Realm settings → Email and run **Test connection**.
+3. Set the display name (Realm settings → General) and the link lifetimes
+   (Realm settings → Tokens → Action tokens: Email Verification 1 day, Forgot
+   password 1 hour).
+4. Turn on Realm settings → Login → Forgot password.
+5. Switch **Email verified** on for every existing account that should not be
+   asked to verify (Users → *user*).
+6. Turn on Realm settings → Login → Verify email, last.
+
+A user created in the admin console needs **Email verified** switched on too,
+or its first sign-in asks for verification.
+
 ### Running Keycloak locally
 
 Keycloak's store is the `keycloak` database on the shared Azure SQL server, so
