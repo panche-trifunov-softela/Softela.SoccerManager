@@ -42,6 +42,14 @@ public interface ILeagueTeamManagerApplicationRepository
     Task<List<LeagueTeamManagerApplication>> GetByLeagueTeamIdAsync(int leagueTeamId);
 
     /// <summary>
+    /// Retrieves a user's pending applications for the clubs of a league that have no current manager, newest first.
+    /// </summary>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose pending applications are retrieved.</param>
+    /// <param name="leagueId">The identifier of the league whose clubs to look through.</param>
+    /// <returns>A list of the user's pending applications in the league; empty when the user has no manager profile.</returns>
+    Task<List<LeagueTeamManagerApplication>> GetPendingByUserAndLeagueAsync(Guid userId, int leagueId);
+
+    /// <summary>
     /// Rejects every other pending application that accepting the given one makes moot: the other pending applications for the same club, and the applicant's other pending applications in the club's league.
     /// </summary>
     /// <param name="acceptedApplication">The application that was just accepted, carrying the response date and audit values to stamp on the rejected ones.</param>
