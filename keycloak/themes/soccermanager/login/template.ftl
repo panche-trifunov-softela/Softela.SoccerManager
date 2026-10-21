@@ -14,7 +14,9 @@
         </#list>
     </#if>
     <title>${msg("loginTitle",(realm.displayName!''))}</title>
-    <link rel="icon" type="image/png" href="${url.resourcesPath}/img/logo.png" />
+    <link rel="icon" href="${url.resourcesPath}/img/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="${url.resourcesPath}/img/favicon.svg" />
+    <link rel="apple-touch-icon" href="${url.resourcesPath}/img/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -206,8 +208,10 @@
     </main>
     <aside class="auth_cover" aria-hidden="true">
         <div class="auth_cover_logo">
-            <img class="auth_cover_logo_image" src="${url.resourcesPath}/img/logo.png" alt="" />
-            <span class="auth_cover_logo_text">Soccer Manager</span>
+            <picture>
+                <source srcset="${url.resourcesPath}/img/the11master-header-logo-dark.svg" media="(prefers-color-scheme: dark)" />
+                <img class="auth_cover_logo_image" src="${url.resourcesPath}/img/the11master-header-logo-light.svg" alt="" />
+            </picture>
         </div>
     </aside>
 </div>

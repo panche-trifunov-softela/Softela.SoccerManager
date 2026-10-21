@@ -160,7 +160,6 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
     background: var(--widget);
     border-radius: 8px;
     position: relative;
@@ -182,21 +181,14 @@ button {
 }
 
 .auth_cover_logo_image {
+    display: block;
     height: 1.6em;
     width: auto;
     font-size: 48px;
 }
 
-.auth_cover_logo_text {
-    font-family: var(--heading-font);
-    font-weight: 700;
-    color: var(--header);
-    font-size: 48px;
-}
-
 @media (min-width: 1920px) {
-    .auth_cover_logo_image,
-    .auth_cover_logo_text {
+    .auth_cover_logo_image {
         font-size: 64px;
     }
 }
