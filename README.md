@@ -160,8 +160,8 @@ Two clients, split by job:
 | `soccermanager-spa` | public | The React web app signs in through it: Authorization Code with PKCE (`S256`), no direct grants, no implicit flow. Its audience mapper puts `soccermanager-api` into every access token. |
 
 The SPA client's redirect URIs and web origins list the Vite dev server,
-`http://localhost:5173`; a deployed frontend origin is added alongside it once
-one exists. The same origin has to be in `Cors:AllowedOrigins` in
+`http://localhost:5173`, and the deployed frontend, `https://the11master.com`.
+The same origins have to be in `Cors:AllowedOrigins` in
 [`SoccerManager.API/appsettings.json`](SoccerManager.API/appsettings.json), or
 the browser blocks the call before the API ever sees the token.
 
