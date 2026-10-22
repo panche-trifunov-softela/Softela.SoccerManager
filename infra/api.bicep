@@ -26,8 +26,8 @@ param image string
 @description('SQL connection string for the API, using its own database user.')
 param dbConnectionString string
 
-@description('GitHub repository allowed to deploy, as owner/name.')
-param githubRepository string = 'panche-trifunov-softela/Softela.SoccerManager'
+@description('GitHub repository allowed to deploy, written the way GitHub names it in the OIDC token subject: owner@ownerId/name@repositoryId. The plain owner/name form does not match.')
+param githubRepository string = 'panche-trifunov-softela@226723225/Softela.SoccerManager@1353429205'
 
 var appName = 'soccermanager-api'
 var apiHostname = '${apiSubdomain}.${dnsZoneName}'
