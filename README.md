@@ -123,7 +123,9 @@ The API fails at startup, rather than at the first request, when it is missing.
 
 `Database:RunMigrationsOnStartup` controls whether Evolve runs during startup. It
 is **`true` in Development and `false` otherwise**, so a deployment applies
-schema changes as its own step instead of implicitly on every replica start.
+schema changes as its own step instead of implicitly on every replica start. The
+Azure deployment turns it on, because the database is shared with local
+development; see [Deploying the API](#deploying-the-api).
 
 `GET /health` reports the database connection.
 
@@ -278,9 +280,10 @@ required:
 
 ```bash
 az acr create -g soccerteambuilder -n soccermanageracr --sku Basic --admin-enabled true
-az acr build -r soccermanageracr -t soccermanager-keycloak:latest ./keycloak
+az acr build -r soccermanageracr -t soccermanager-keycloak:<tag> ./keycloak
 
 set -a; . ./.env; set +a   # credentials, read by main.bicepparam
+export KEYCLOAK_IMAGE_TAG=<tag>   # the tag to run; see below
 az deployment group create -g soccerteambuilder --parameters infra/main.bicepparam
 ```
 
@@ -288,13 +291,109 @@ The parameter file reads every credential from the environment, so nothing
 secret is passed on the command line or written to disk. Override the registry
 name with `ACR_NAME` if you use a different one.
 
-The deployment's `keycloakAuthority` output is the value for
+`KEYCLOAK_IMAGE_TAG` is required: it is the image tag to run, normally the live
+one, or the tag you just built with `az acr build`. Without it the deployment
+fails instead of rolling Keycloak back to an older image. Read the live tag
+from the part after the colon of
+
+```bash
+az containerapp show -n soccermanager-keycloak -g soccerteambuilder --query "properties.template.containers[0].image" -o tsv
+```
+
+In PowerShell, set it with `$env:KEYCLOAK_IMAGE_TAG = 'the11master-branding'`.
+
+Keycloak is served at <https://auth.the11master.com>. `main.bicep` creates the
+`auth` CNAME, the `asuid.auth` TXT record and a free managed certificate, which
+is issued within a few minutes of the deployment. The admin console is at
+<https://auth.the11master.com/admin>.
+
+The host name is part of the token issuer, so changing it changes the issuer.
 `Keycloak:Authority` in
-[`SoccerManager.API/appsettings.json`](SoccerManager.API/appsettings.json);
-`Keycloak:Audience` is `soccermanager-api`.
+[`SoccerManager.API/appsettings.json`](SoccerManager.API/appsettings.json) is
+`https://auth.the11master.com/realms/soccermanager`, and the UI's Keycloak URL
+is `https://auth.the11master.com`; `Keycloak:Audience` is `soccermanager-api`.
 
 Keycloak runs on a single replica — more than one needs Infinispan cache
 clustering, which is not configured.
+
+## Deploying the API
+
+The API runs as the container app `soccermanager-api` in the same Container Apps
+environment as Keycloak, at <https://api.the11master.com>. GitHub Actions
+([`.github/workflows/deploy-api.yml`](.github/workflows/deploy-api.yml)) builds
+the image in the `soccermanageracr` registry and rolls it out on every push to
+`main` that touches the API projects. It signs in to Azure with OpenID Connect,
+so no Azure password is stored in GitHub. The infrastructure is
+[`infra/api.bicep`](infra/api.bicep). The API validates tokens against
+<https://auth.the11master.com>, so deploy the Keycloak changes (`main.bicep`)
+first.
+
+The database is shared with local development, so the deployed API applies
+pending migrations on start (`Database__RunMigrationsOnStartup=true`), the same
+as a local run.
+
+### One-time setup
+
+1. Create the API's database user. In the Azure portal open the
+   `soccerteambuilder` database, then Query editor, sign in as the server admin,
+   and run:
+
+   ```sql
+   CREATE USER soccermanager_api WITH PASSWORD = '<password>';
+   ALTER ROLE db_owner ADD MEMBER soccermanager_api;
+   ```
+
+   A long random password works, for example from PowerShell:
+
+   ```powershell
+   -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 32 | ForEach-Object { [char]$_ })
+   ```
+
+   The user exists only in this database; it is not the server admin.
+
+2. Deploy the infrastructure from the repository root (PowerShell). The first
+   run uses a public placeholder image, because GitHub Actions builds the real
+   one:
+
+   ```powershell
+   $env:API_IMAGE = 'mcr.microsoft.com/dotnet/samples:aspnetapp'
+   $env:API_DB_CONNECTION = 'Server=tcp:soccerteambuilder.database.windows.net,1433;Initial Catalog=soccerteambuilder;User ID=soccermanager_api;Password=<password>;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+   az deployment group create -g soccerteambuilder -p infra/api.bicepparam --query properties.outputs
+   ```
+
+   It creates the container app, the `api` CNAME and `asuid.api` TXT records, a
+   free managed certificate (issued within a few minutes), and the
+   `soccermanager-github` identity that GitHub Actions deploys with.
+
+3. In GitHub, Settings > Secrets and variables > Actions, add the repository
+   secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` with
+   the deployment outputs `githubClientId`, `githubTenantId` and
+   `githubSubscriptionId`.
+
+4. Merge to `main`, or run the "Deploy API" workflow by hand. It builds the
+   image, rolls it out, waits for the new revision and checks
+   <https://api.the11master.com/health>.
+
+### Day to day
+
+- Re-running `infra/api.bicep`: a deployment runs exactly the image it is given,
+  so pass the live one first, and set `API_DB_CONNECTION` again:
+
+  ```powershell
+  $env:API_IMAGE = az containerapp show -n soccermanager-api -g soccerteambuilder --query "properties.template.containers[0].image" -o tsv
+  ```
+
+- Roll back by pointing the app at an earlier commit's image:
+
+  ```bash
+  az containerapp update -n soccermanager-api -g soccerteambuilder --image soccermanageracr.azurecr.io/soccermanager-api:<earlier commit sha>
+  ```
+
+- Logs:
+
+  ```bash
+  az containerapp logs show -n soccermanager-api -g soccerteambuilder --follow
+  ```
 
 ## Next steps
 

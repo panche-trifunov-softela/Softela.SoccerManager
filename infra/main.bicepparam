@@ -14,3 +14,7 @@ param keycloakAdminPassword = readEnvironmentVariable('KEYCLOAK_ADMIN_PASSWORD')
 // A .bicepparam cannot be combined with inline -p arguments, so the registry
 // name is read here too rather than passed on the command line.
 param registryName = readEnvironmentVariable('ACR_NAME', 'soccermanageracr')
+
+// The tag to run, normally the one live now:
+//   az containerapp show -n soccermanager-keycloak -g soccerteambuilder --query "properties.template.containers[0].image" -o tsv
+param keycloakImageTag = readEnvironmentVariable('KEYCLOAK_IMAGE_TAG')

@@ -1,0 +1,18 @@
+# The image needs only the four API projects; everything else stays out of the
+# build context, local secrets above all.
+.env
+**/.env*
+**/appsettings.*.local.json
+**/secrets.json
+**/*.pfx
+**/*.user
+**/bin/
+**/obj/
+.git/
+.github/
+.vs/
+.vscode/
+.claude/
+infra/
+keycloak/
+SoccerManager.Importer/

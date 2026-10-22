@@ -2,7 +2,9 @@
 //
 // Creates a container registry, a Container Apps environment and the Keycloak
 // container app. The SQL server is pre-existing and shared with the
-// application; only Keycloak's own database is declared here.
+// application; only Keycloak's own database is declared here. Keycloak is
+// served on a custom domain from the existing DNS zone, with a free managed
+// certificate.
 
 @description('Azure region for new resources. Defaults to the resource group location.')
 param location string = resourceGroup().location
@@ -30,8 +32,14 @@ param keycloakAdminPassword string
 @description('Container registry name. Globally unique, alphanumeric only.')
 param registryName string = 'soccermanageracr${uniqueString(resourceGroup().id)}'
 
-@description('Tag of the Keycloak image to deploy.')
-param keycloakImageTag string = 'latest'
+@description('Tag of the Keycloak image to deploy. Required, so a redeploy cannot fall back to an older image.')
+param keycloakImageTag string
+
+@description('Existing Azure DNS zone that holds the public host names.')
+param dnsZoneName string = 'the11master.com'
+
+@description('Host label for Keycloak inside the DNS zone.')
+param keycloakSubdomain string = 'auth'
 
 var keycloakAppName = 'soccermanager-keycloak'
 var keycloakImageName = 'soccermanager-keycloak'
@@ -103,10 +111,44 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' 
   }
 }
 
-// Known once the environment exists, so it can be pinned without a second pass.
-var keycloakHostname = '${keycloakAppName}.${containerAppEnvironment.properties.defaultDomain}'
+// The app's own host name is known once the environment exists, so DNS can
+// point at it in the same deployment.
+var keycloakDefaultHostname = '${keycloakAppName}.${containerAppEnvironment.properties.defaultDomain}'
+var keycloakHostname = '${keycloakSubdomain}.${dnsZoneName}'
 
-resource keycloak 'Microsoft.App/containerApps@2024-03-01' = {
+resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' existing = {
+  name: dnsZoneName
+}
+
+// A managed certificate needs the CNAME to point straight at the app's own
+// host name; an intermediate CNAME blocks issuance and renewal.
+resource keycloakCname 'Microsoft.Network/dnsZones/CNAME@2018-05-01' = {
+  parent: dnsZone
+  name: keycloakSubdomain
+  properties: {
+    TTL: 3600
+    CNAMERecord: {
+      cname: keycloakDefaultHostname
+    }
+  }
+}
+
+resource keycloakDomainVerification 'Microsoft.Network/dnsZones/TXT@2018-05-01' = {
+  parent: dnsZone
+  name: 'asuid.${keycloakSubdomain}'
+  properties: {
+    TTL: 3600
+    TXTRecords: [
+      {
+        value: [
+          containerAppEnvironment.properties.customDomainConfiguration.customDomainVerificationId
+        ]
+      }
+    ]
+  }
+}
+
+resource keycloak 'Microsoft.App/containerApps@2025-07-01' = {
   name: keycloakAppName
   location: location
   properties: {
@@ -117,6 +159,13 @@ resource keycloak 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: 8080
         transport: 'auto'
         allowInsecure: false
+        // Auto binds the managed certificate below as soon as it is issued.
+        customDomains: [
+          {
+            name: keycloakHostname
+            bindingType: 'Auto'
+          }
+        ]
       }
       registries: [
         {
@@ -202,6 +251,21 @@ resource keycloak 'Microsoft.App/containerApps@2024-03-01' = {
   dependsOn: [
     keycloakDatabase
     allowAzureServices
+    keycloakCname
+    keycloakDomainVerification
+  ]
+}
+
+resource keycloakCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2025-07-01' = {
+  parent: containerAppEnvironment
+  name: replace(keycloakHostname, '.', '-')
+  location: location
+  properties: {
+    subjectName: keycloakHostname
+    domainControlValidation: 'CNAME'
+  }
+  dependsOn: [
+    keycloak
   ]
 }
 
