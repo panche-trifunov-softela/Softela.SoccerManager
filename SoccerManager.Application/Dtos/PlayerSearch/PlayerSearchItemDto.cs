@@ -76,4 +76,10 @@ public sealed record PlayerSearchItemDto
     /// <see langword="null"/> when they have not voted on it.
     /// </summary>
     public bool? MyVote { get; init; }
+
+    /// <summary>
+    /// The identifier of the caller's vote on the player's current rating, or <see langword="null"/> when they have not
+    /// voted on it.
+    /// </summary>
+    public int? MyVoteId { get; init; }
 }
