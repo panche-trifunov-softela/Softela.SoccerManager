@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.Season.CreateSeason;
 using SoccerManager.Application.Commands.Season.DeleteSeason;
 using SoccerManager.Application.Commands.Season.UpdateSeason;
@@ -68,6 +69,7 @@ public class SeasonController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created season.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateSeason([FromBody] CreateSeasonRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateSeasonRequest>(request, cancellationToken);
@@ -83,6 +85,7 @@ public class SeasonController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateSeason(int id, [FromBody] UpdateSeasonRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -98,6 +101,7 @@ public class SeasonController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteSeason(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteSeasonRequest>(new DeleteSeasonRequest { Id = id }, cancellationToken);

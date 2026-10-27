@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.Formation.CreateFormation;
 using SoccerManager.Application.Commands.Formation.DeleteFormation;
 using SoccerManager.Application.Commands.Formation.UpdateFormation;
@@ -66,6 +67,7 @@ public class FormationController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created formation.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateFormation([FromBody] CreateFormationRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateFormationRequest>(request, cancellationToken);
@@ -81,6 +83,7 @@ public class FormationController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateFormation(int id, [FromBody] UpdateFormationRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -96,6 +99,7 @@ public class FormationController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteFormation(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteFormationRequest>(new DeleteFormationRequest { Id = id }, cancellationToken);

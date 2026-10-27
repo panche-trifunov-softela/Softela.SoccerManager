@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.MatchTeamStatistic.CreateMatchTeamStatistic;
 using SoccerManager.Application.Commands.MatchTeamStatistic.DeleteMatchTeamStatistic;
 using SoccerManager.Application.Commands.MatchTeamStatistic.UpdateMatchTeamStatistic;
@@ -68,6 +69,7 @@ public class MatchTeamStatisticController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created match team statistic.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateMatchTeamStatistic([FromBody] CreateMatchTeamStatisticRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateMatchTeamStatisticRequest>(request, cancellationToken);
@@ -83,6 +85,7 @@ public class MatchTeamStatisticController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateMatchTeamStatistic(int id, [FromBody] UpdateMatchTeamStatisticRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -98,6 +101,7 @@ public class MatchTeamStatisticController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteMatchTeamStatistic(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteMatchTeamStatisticRequest>(new DeleteMatchTeamStatisticRequest { Id = id }, cancellationToken);

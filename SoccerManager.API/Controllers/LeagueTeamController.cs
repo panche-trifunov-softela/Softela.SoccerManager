@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.LeagueTeam.CreateLeagueTeam;
 using SoccerManager.Application.Commands.LeagueTeam.DeleteLeagueTeam;
 using SoccerManager.Application.Core.Command;
@@ -84,6 +85,7 @@ public class LeagueTeamController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created league team.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateLeagueTeam([FromBody] CreateLeagueTeamRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateLeagueTeamRequest>(request, cancellationToken);
@@ -100,6 +102,7 @@ public class LeagueTeamController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded; a 400 when something is still attached, or a 404 when no such league team exists.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteLeagueTeam(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteLeagueTeamRequest>(new DeleteLeagueTeamRequest { Id = id }, cancellationToken);

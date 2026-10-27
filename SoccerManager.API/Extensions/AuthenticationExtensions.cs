@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SoccerManager.API.Security;
 
 namespace SoccerManager.API.Extensions;
 
 /// <summary>
-/// Registers JWT bearer authentication against a Keycloak realm.
+/// Registers JWT bearer authentication against a Keycloak realm, and the authorization policies built on its roles.
 /// </summary>
 public static class AuthenticationExtensions
 {
@@ -23,9 +24,24 @@ public static class AuthenticationExtensions
                 options.Authority = configuration["Keycloak:Authority"];
                 options.Audience = configuration["Keycloak:Audience"];
                 options.RequireHttpsMetadata = configuration.GetValue<bool>("Keycloak:RequireHttpsMetadata");
+
+                // Keycloak nests realm roles inside realm_access, which the handler never maps to role claims.
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        if (context.Principal is not null)
+                            KeycloakRoleClaims.AddRealmRoles(context.Principal);
+
+                        return Task.CompletedTask;
+                    },
+                };
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(AuthorizationPolicies.Operator, policy => policy.RequireRole(AuthorizationPolicies.OperatorRole));
+        });
 
         return services;
     }

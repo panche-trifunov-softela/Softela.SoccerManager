@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.Standing.CreateStanding;
 using SoccerManager.Application.Commands.Standing.DeleteStanding;
 using SoccerManager.Application.Commands.Standing.UpdateStanding;
@@ -69,6 +70,7 @@ public class StandingController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created standing.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateStanding([FromBody] CreateStandingRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateStandingRequest>(request, cancellationToken);
@@ -84,6 +86,7 @@ public class StandingController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateStanding(int id, [FromBody] UpdateStandingRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -99,6 +102,7 @@ public class StandingController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteStanding(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteStandingRequest>(new DeleteStandingRequest { Id = id }, cancellationToken);

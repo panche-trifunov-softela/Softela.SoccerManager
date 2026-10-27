@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.MatchTeamTactic.CreateMatchTeamTactic;
 using SoccerManager.Application.Commands.MatchTeamTactic.DeleteMatchTeamTactic;
 using SoccerManager.Application.Commands.MatchTeamTactic.UpdateMatchTeamTactic;
@@ -68,6 +69,7 @@ public class MatchTeamTacticController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created match team tactic.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateMatchTeamTactic([FromBody] CreateMatchTeamTacticRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateMatchTeamTacticRequest>(request, cancellationToken);
@@ -83,6 +85,7 @@ public class MatchTeamTacticController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateMatchTeamTactic(int id, [FromBody] UpdateMatchTeamTacticRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -98,6 +101,7 @@ public class MatchTeamTacticController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteMatchTeamTactic(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteMatchTeamTacticRequest>(new DeleteMatchTeamTacticRequest { Id = id }, cancellationToken);

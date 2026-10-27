@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.LeagueTeamManager.CreateLeagueTeamManager;
 using SoccerManager.Application.Commands.LeagueTeamManager.DeleteLeagueTeamManager;
 using SoccerManager.Application.Commands.LeagueTeamManager.UpdateLeagueTeamManager;
@@ -85,6 +86,7 @@ public class LeagueTeamManagerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created league team manager appointment.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateLeagueTeamManager([FromBody] CreateLeagueTeamManagerRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateLeagueTeamManagerRequest>(request, cancellationToken);
@@ -100,6 +102,7 @@ public class LeagueTeamManagerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateLeagueTeamManager(int id, [FromBody] UpdateLeagueTeamManagerRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -115,6 +118,7 @@ public class LeagueTeamManagerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteLeagueTeamManager(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteLeagueTeamManagerRequest>(new DeleteLeagueTeamManagerRequest { Id = id }, cancellationToken);

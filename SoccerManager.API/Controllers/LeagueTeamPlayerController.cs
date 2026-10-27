@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.LeagueTeamPlayer.CreateLeagueTeamPlayer;
 using SoccerManager.Application.Commands.LeagueTeamPlayer.DeleteLeagueTeamPlayer;
 using SoccerManager.Application.Commands.LeagueTeamPlayer.UpdateLeagueTeamPlayer;
@@ -68,6 +69,7 @@ public class LeagueTeamPlayerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created league team player.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateLeagueTeamPlayer([FromBody] CreateLeagueTeamPlayerRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateLeagueTeamPlayerRequest>(request, cancellationToken);
@@ -83,6 +85,7 @@ public class LeagueTeamPlayerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateLeagueTeamPlayer(int id, [FromBody] UpdateLeagueTeamPlayerRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -98,6 +101,7 @@ public class LeagueTeamPlayerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteLeagueTeamPlayer(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteLeagueTeamPlayerRequest>(new DeleteLeagueTeamPlayerRequest { Id = id }, cancellationToken);

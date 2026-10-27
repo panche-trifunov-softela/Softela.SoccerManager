@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.FormationPosition.CreateFormationPosition;
 using SoccerManager.Application.Commands.FormationPosition.DeleteFormationPosition;
 using SoccerManager.Application.Commands.FormationPosition.UpdateFormationPosition;
@@ -68,6 +69,7 @@ public class FormationPositionController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created formation position slot.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateFormationPosition([FromBody] CreateFormationPositionRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateFormationPositionRequest>(request, cancellationToken);
@@ -83,6 +85,7 @@ public class FormationPositionController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateFormationPosition(int id, [FromBody] UpdateFormationPositionRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -98,6 +101,7 @@ public class FormationPositionController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteFormationPosition(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteFormationPositionRequest>(new DeleteFormationPositionRequest { Id = id }, cancellationToken);
