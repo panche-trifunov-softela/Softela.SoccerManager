@@ -29,17 +29,17 @@ public class GetLeagueTeamSquadResult
     public string? ImageUrl { get; set; }
 
     /// <summary>
-    /// The identifier of the player's main (highest-quality) position, or <see langword="null"/> when it has none.
+    /// The identifier of the player's main (highest-quality) position.
     /// </summary>
-    public int? PositionId { get; set; }
+    public int PositionId { get; set; }
 
     /// <summary>
-    /// The name of the player's main position, or <see langword="null"/> when it has none.
+    /// The name of the player's main position.
     /// </summary>
-    public string? PositionName { get; set; }
+    public string PositionName { get; set; } = string.Empty;
 
     /// <summary>
-    /// The short name of the player's main position, for example CB, or <see langword="null"/> when they have none.
+    /// The short name of the player's main position, for example CB.
     /// </summary>
-    public string? PositionShortName { get; set; }
+    public string PositionShortName { get; set; } = string.Empty;
 }

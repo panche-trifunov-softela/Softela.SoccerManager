@@ -26,17 +26,17 @@ public sealed record LeagueTeamSquadPlayerDto
     public string? ImageUrl { get; init; }
 
     /// <summary>
-    /// The identifier of the player's main (highest-quality) position, or <see langword="null"/> when it has none.
+    /// The identifier of the player's main (highest-quality) position.
     /// </summary>
-    public int? PositionId { get; init; }
+    public int PositionId { get; init; }
 
     /// <summary>
-    /// The name of the player's main position, or <see langword="null"/> when it has none.
+    /// The name of the player's main position.
     /// </summary>
-    public string? PositionName { get; init; }
+    public required string PositionName { get; init; }
 
     /// <summary>
-    /// The short name of the player's main position, for example CB, or <see langword="null"/> when they have none.
+    /// The short name of the player's main position, for example CB.
     /// </summary>
-    public string? PositionShortName { get; init; }
+    public required string PositionShortName { get; init; }
 }
