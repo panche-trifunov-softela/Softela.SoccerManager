@@ -22,8 +22,8 @@ public static class ProblemResponseExtensions
     {
         problem.Status = statusCode;
         context.Response.StatusCode = statusCode;
-        context.Response.ContentType = "application/problem+json";
 
-        await context.Response.WriteAsJsonAsync(problem);
+        // WriteAsJsonAsync overwrites Response.ContentType, so the problem media type has to be passed to it.
+        await context.Response.WriteAsJsonAsync(problem, options: null, contentType: "application/problem+json");
     }
 }
