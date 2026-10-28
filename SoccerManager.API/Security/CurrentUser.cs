@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using SoccerManager.Application.Core.User;
 
 namespace SoccerManager.API.Security;
@@ -27,12 +26,7 @@ public sealed class CurrentUser : ICurrentUser
     {
         get
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            // MapInboundClaims is left at its default, so "sub" normally arrives as ClaimTypes.NameIdentifier;
-            // the literal "sub" claim is checked too in case that mapping is ever turned off.
-            var subject = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                ?? user?.FindFirst("sub")?.Value;
+            var subject = _httpContextAccessor.HttpContext?.User.GetSubject();
 
             if (subject is not null && Guid.TryParse(subject, out var userId))
                 return userId;

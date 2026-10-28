@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using SoccerManager.API.RateLimiting;
 using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.Player.CreatePlayer;
 using SoccerManager.Application.Commands.Player.DeletePlayer;
@@ -40,6 +42,7 @@ public class PlayerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The list of players.</returns>
     [HttpGet]
+    [EnableRateLimiting(RateLimitPolicies.FullTable)]
     public async Task<IActionResult> GetPlayers(CancellationToken cancellationToken)
     {
         var result = await _queryDispatcher.QueryAsync(new GetPlayersRequest(), cancellationToken);
@@ -63,6 +66,7 @@ public class PlayerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The page of players, each with the caller's vote on its current rating, the total match count, and the page and page size applied.</returns>
     [HttpGet("search")]
+    [EnableRateLimiting(RateLimitPolicies.Search)]
     public async Task<IActionResult> SearchPlayers(
         [FromQuery] string? searchTerm,
         [FromQuery] int? positionId,
