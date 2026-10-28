@@ -62,14 +62,19 @@ public sealed record PlayerSearchItemDto
     public string? NationalTeamName { get; init; }
 
     /// <summary>
-    /// The identifier of the player's main (highest-quality) position, or <see langword="null"/> when it has none.
+    /// The identifier of the player's main (highest-quality) position.
     /// </summary>
-    public int? PositionId { get; init; }
+    public int PositionId { get; init; }
 
     /// <summary>
-    /// The name of the player's main position, or <see langword="null"/> when it has none.
+    /// The name of the player's main position.
     /// </summary>
-    public string? PositionName { get; init; }
+    public required string PositionName { get; init; }
+
+    /// <summary>
+    /// The short name of the player's main position, for example CB.
+    /// </summary>
+    public required string PositionShortName { get; init; }
 
     /// <summary>
     /// The caller's vote on the player's current rating: <see langword="true"/> up, <see langword="false"/> down, or

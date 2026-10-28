@@ -7,6 +7,7 @@ using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.LeagueTeam.GetAvailableLeagueTeams;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamById;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquad;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeams;
 
 namespace SoccerManager.API.Controllers;
@@ -60,6 +61,22 @@ public class LeagueTeamController : ControllerBase
     {
         // leagueId is required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
         var result = await _queryDispatcher.QueryAsync(new GetAvailableLeagueTeamsRequest { LeagueId = leagueId }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the squad of the given league team, each player with their current rating and main position, ordered by line
+    /// and position.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose squad to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The squad, empty for an unknown league team.</returns>
+    [HttpGet("{id}/players")]
+    public async Task<IActionResult> GetLeagueTeamSquad(int id, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline.
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamSquadRequest { LeagueTeamId = id }, cancellationToken);
 
         return Ok(result.Data);
     }

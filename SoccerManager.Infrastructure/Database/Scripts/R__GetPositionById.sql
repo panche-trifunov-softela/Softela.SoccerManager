@@ -4,7 +4,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT Id, Name, Area, Side, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy
+    SELECT Id, Name, Area, Side, ShortName, CatalogOrder, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy
     FROM dbo.Positions
     WHERE Id = @Id;
 END
