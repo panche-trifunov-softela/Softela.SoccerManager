@@ -4,6 +4,7 @@ using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.LeagueTeamPlayer.CreateLeagueTeamPlayer;
 using SoccerManager.Application.Commands.LeagueTeamPlayer.DeleteLeagueTeamPlayer;
 using SoccerManager.Application.Commands.LeagueTeamPlayer.UpdateLeagueTeamPlayer;
+using SoccerManager.Application.Commands.LeagueTeamPlayer.UpdateLeagueTeamPlayerSquadNumber;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.LeagueTeamPlayer.GetLeagueTeamPlayerById;
@@ -95,13 +96,30 @@ public class LeagueTeamPlayerController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes the league team player with the given identifier.
+    /// Changes the squad number of the league team player with the given identifier. Allowed for an
+    /// operator or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team player whose squad number to change.</param>
+    /// <param name="request">The new squad number.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>Whether the update succeeded.</returns>
+    [HttpPut("{id}/squad-number")]
+    public async Task<IActionResult> UpdateLeagueTeamPlayerSquadNumber(int id, [FromBody] UpdateLeagueTeamPlayerSquadNumberRequest request, CancellationToken cancellationToken)
+    {
+        var command = request with { Id = id };
+        var result = await _commandDispatcher.SendAsync<bool, UpdateLeagueTeamPlayerSquadNumberRequest>(command, cancellationToken);
+
+        return Ok(new { success = result });
+    }
+
+    /// <summary>
+    /// Releases the league team player with the given identifier, which also removes the player from the
+    /// club's lineups for matches that have not started. Allowed for an operator or the club's current manager.
     /// </summary>
     /// <param name="id">The identifier of the league team player to delete.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
-    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteLeagueTeamPlayer(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteLeagueTeamPlayerRequest>(new DeleteLeagueTeamPlayerRequest { Id = id }, cancellationToken);

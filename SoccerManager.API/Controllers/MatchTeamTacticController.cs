@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.MatchTeamTactic.CreateMatchTeamTactic;
 using SoccerManager.Application.Commands.MatchTeamTactic.DeleteMatchTeamTactic;
 using SoccerManager.Application.Commands.MatchTeamTactic.UpdateMatchTeamTactic;
@@ -63,13 +62,13 @@ public class MatchTeamTacticController : ControllerBase
     }
 
     /// <summary>
-    /// Creates a new match team tactic.
+    /// Creates a new match team tactic. Allowed for an operator, or for the club's current manager on a
+    /// match the club plays that has not started.
     /// </summary>
     /// <param name="request">The match team tactic to create.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created match team tactic.</returns>
     [HttpPost]
-    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateMatchTeamTactic([FromBody] CreateMatchTeamTacticRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateMatchTeamTacticRequest>(request, cancellationToken);
@@ -78,14 +77,15 @@ public class MatchTeamTacticController : ControllerBase
     }
 
     /// <summary>
-    /// Updates the match team tactic with the given identifier.
+    /// Updates the match team tactic with the given identifier. Allowed for an operator, or for the club's
+    /// current manager on a match the club plays that has not started; only an operator can move it to
+    /// another match or club.
     /// </summary>
     /// <param name="id">The identifier of the match team tactic to update.</param>
     /// <param name="request">The updated match team tactic values.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
-    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateMatchTeamTactic(int id, [FromBody] UpdateMatchTeamTacticRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -95,13 +95,13 @@ public class MatchTeamTacticController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes the match team tactic with the given identifier.
+    /// Deletes the match team tactic with the given identifier. Allowed for an operator, or for the club's
+    /// current manager on a match the club plays that has not started.
     /// </summary>
     /// <param name="id">The identifier of the match team tactic to delete.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
-    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteMatchTeamTactic(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteMatchTeamTacticRequest>(new DeleteMatchTeamTacticRequest { Id = id }, cancellationToken);

@@ -13,4 +13,10 @@ public sealed class ImportCurrentUser : ICurrentUser
 
     /// <summary>Gets the fixed <see cref="ImportUserId"/>.</summary>
     public Guid UserId => ImportUserId;
+
+    /// <summary>
+    /// Gets a value indicating whether the caller is an operator. Always <see langword="true"/>: the importer is a
+    /// trusted batch job run by an operator, and it never calls the handlers that check club ownership.
+    /// </summary>
+    public bool IsOperator => true;
 }

@@ -34,4 +34,12 @@ public sealed class CurrentUser : ICurrentUser
             throw new InvalidOperationException("No authenticated user is available.");
         }
     }
+
+    /// <summary>
+    /// Gets a value indicating whether the authenticated caller holds the operator realm role.
+    /// </summary>
+    /// <remarks>
+    /// <see langword="false"/> when there is no HTTP context.
+    /// </remarks>
+    public bool IsOperator => _httpContextAccessor.HttpContext?.User.IsInRole(AuthorizationPolicies.OperatorRole) ?? false;
 }

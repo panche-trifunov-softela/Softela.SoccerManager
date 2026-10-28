@@ -1,4 +1,5 @@
 using MediatR;
+using SoccerManager.Application.Core.Exceptions;
 using SoccerManager.Application.Core.User;
 using SoccerManager.Application.Repositories;
 
@@ -33,6 +34,7 @@ public class UpdateManagerHandler : IRequestHandler<UpdateManagerRequest, bool>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns><see langword="true"/> when the update succeeds.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when no manager with the given identifier exists.</exception>
+    /// <exception cref="ForbiddenAccessException">Thrown when the caller is neither an operator nor the owner of the profile.</exception>
     public async Task<bool> Handle(UpdateManagerRequest request, CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -41,6 +43,11 @@ public class UpdateManagerHandler : IRequestHandler<UpdateManagerRequest, bool>
         {
             var manager = await _managerRepository.GetByIdAsync(request.Id)
                 ?? throw new KeyNotFoundException($"Manager {request.Id} not found.");
+
+            if (!_currentUser.IsOperator && manager.UserId != _currentUser.UserId)
+            {
+                throw new ForbiddenAccessException("You can only change your own manager profile.");
+            }
 
             var now = DateTime.UtcNow;
 

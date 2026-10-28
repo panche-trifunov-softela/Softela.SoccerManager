@@ -29,9 +29,12 @@ public static class BuilderExtensions
 
         services.AddValidatorsFromAssembly(ApplicationAssembly);
 
-        // The one application service beyond the dispatchers: it reads several aggregates to snapshot a lineup
-        // slot, so it lives outside any single handler and is shared by the create and update handlers.
+        // The application services beyond the dispatchers: each reads several aggregates for a rule more than one
+        // handler needs, so it lives outside any single handler. The resolver snapshots a lineup slot, the rules
+        // guard it for every caller, and club access decides whether the caller may change a club at all.
         services.AddScoped<IMatchFormationPlayerPositionSnapshotResolver, MatchFormationPlayerPositionSnapshotResolver>();
+        services.AddScoped<IMatchFormationPlayerPositionRules, MatchFormationPlayerPositionRules>();
+        services.AddScoped<IClubAccess, ClubAccess>();
 
         // Registered after the validators so the behaviour resolves the ones scanned above.
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

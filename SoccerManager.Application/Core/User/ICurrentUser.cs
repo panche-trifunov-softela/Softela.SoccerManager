@@ -9,4 +9,9 @@ public interface ICurrentUser
     /// Gets the identifier of the authenticated caller.
     /// </summary>
     Guid UserId { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the authenticated caller is an operator, who may act on every club.
+    /// </summary>
+    bool IsOperator { get; }
 }
