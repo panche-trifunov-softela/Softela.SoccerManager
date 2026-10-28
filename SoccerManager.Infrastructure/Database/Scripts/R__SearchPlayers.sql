@@ -64,6 +64,7 @@ BEGIN
            nt.Name  AS NationalTeamName,
            m.PositionId,
            pos.Name AS PositionName,
+           pos.ShortName AS PositionShortName,
            mv.UpOrDown AS MyVote,
            mv.Id       AS MyVoteId
     FROM #Matches m

@@ -13,6 +13,8 @@ public sealed class CreatePositionValidator : AbstractValidator<CreatePositionRe
     public CreatePositionValidator()
     {
         RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.ShortName).NotEmpty().MaximumLength(10);
+        RuleFor(x => x.CatalogOrder).GreaterThan((byte)0);
         RuleFor(x => x.Area).IsInEnum();
         RuleFor(x => x.Side).IsInEnum();
     }

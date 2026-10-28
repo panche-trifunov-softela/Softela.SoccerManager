@@ -23,6 +23,7 @@ public static class GetLeagueTeamSquadMapper
             ImageUrl = row.ImageUrl,
             PositionId = row.PositionId,
             PositionName = row.PositionName,
+            PositionShortName = row.PositionShortName,
         };
     }
 }

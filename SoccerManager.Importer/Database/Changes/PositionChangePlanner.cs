@@ -6,7 +6,8 @@ namespace SoccerManager.Importer.Database.Changes;
 
 /// <summary>
 /// Plans the position writes: the 13-position catalog is create-only, since a position's shape never changes once
-/// seeded, so a match is left exactly as it is even when its area or side disagrees with the catalog.
+/// seeded, so a match is left exactly as it is even when its area, side, short name or catalog order disagrees with
+/// the catalog.
 /// </summary>
 public static class PositionChangePlanner
 {
@@ -36,11 +37,16 @@ public static class PositionChangePlanner
                 ids.Positions.Set(position.Name, existing.Id);
                 unchanged++;
 
-                if (existing.Area != position.Area || existing.Side != position.Side)
+                if (existing.Area != position.Area
+                    || existing.Side != position.Side
+                    || existing.ShortName != position.ShortName
+                    || existing.CatalogOrder != position.CatalogOrder)
                 {
                     notes.Add(
-                        $"Position '{position.Name}' exists with Area={existing.Area}, Side={existing.Side}; " +
-                        $"the catalog expects Area={position.Area}, Side={position.Side}. Left unchanged.");
+                        $"Position '{position.Name}' exists with Area={existing.Area}, Side={existing.Side}, " +
+                        $"ShortName={existing.ShortName}, CatalogOrder={existing.CatalogOrder}; " +
+                        $"the catalog expects Area={position.Area}, Side={position.Side}, " +
+                        $"ShortName={position.ShortName}, CatalogOrder={position.CatalogOrder}. Left unchanged.");
                 }
 
                 continue;
@@ -49,7 +55,14 @@ public static class PositionChangePlanner
             writes.Add(new RowWrite(ChangeKind.Create, position.Name, position.Name, Array.Empty<FieldChange>(), async context =>
             {
                 var id = await context.Dispatcher.SendAsync<int, CreatePositionRequest>(
-                    new CreatePositionRequest { Name = position.Name, Area = position.Area, Side = position.Side },
+                    new CreatePositionRequest
+                    {
+                        Name = position.Name,
+                        ShortName = position.ShortName,
+                        CatalogOrder = position.CatalogOrder,
+                        Area = position.Area,
+                        Side = position.Side,
+                    },
                     context.CancellationToken).ConfigureAwait(false);
 
                 context.Ids.Positions.Set(position.Name, id);

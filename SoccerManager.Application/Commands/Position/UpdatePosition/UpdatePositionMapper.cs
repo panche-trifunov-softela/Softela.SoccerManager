@@ -15,6 +15,8 @@ public static class UpdatePositionMapper
     public static void ApplyTo(UpdatePositionRequest request, SoccerManager.Domain.Entities.Position position, DateTime now, Guid userId)
     {
         position.Name = request.Name;
+        position.ShortName = request.ShortName;
+        position.CatalogOrder = request.CatalogOrder;
         position.Area = request.Area;
         position.Side = request.Side;
         position.ModifiedAt = now;

@@ -72,6 +72,11 @@ public sealed record PlayerSearchItemDto
     public string? PositionName { get; init; }
 
     /// <summary>
+    /// The short name of the player's main position, for example CB, or <see langword="null"/> when they have none.
+    /// </summary>
+    public string? PositionShortName { get; init; }
+
+    /// <summary>
     /// The caller's vote on the player's current rating: <see langword="true"/> up, <see langword="false"/> down, or
     /// <see langword="null"/> when they have not voted on it.
     /// </summary>

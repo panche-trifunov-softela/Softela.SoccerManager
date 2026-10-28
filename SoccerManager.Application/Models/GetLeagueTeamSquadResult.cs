@@ -37,4 +37,9 @@ public class GetLeagueTeamSquadResult
     /// The name of the player's main position, or <see langword="null"/> when it has none.
     /// </summary>
     public string? PositionName { get; set; }
+
+    /// <summary>
+    /// The short name of the player's main position, for example CB, or <see langword="null"/> when they have none.
+    /// </summary>
+    public string? PositionShortName { get; set; }
 }

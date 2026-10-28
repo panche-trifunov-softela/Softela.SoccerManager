@@ -17,6 +17,8 @@ public static class CreatePositionMapper
         return new SoccerManager.Domain.Entities.Position
         {
             Name = request.Name,
+            ShortName = request.ShortName,
+            CatalogOrder = request.CatalogOrder,
             Area = request.Area,
             Side = request.Side,
             CreatedAt = now,

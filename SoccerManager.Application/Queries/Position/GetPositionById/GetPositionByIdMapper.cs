@@ -18,6 +18,8 @@ public static class GetPositionByIdMapper
         {
             Id = position.Id,
             Name = position.Name,
+            ShortName = position.ShortName,
+            CatalogOrder = position.CatalogOrder,
             Area = position.Area,
             Side = position.Side,
             CreatedAt = position.CreatedAt,

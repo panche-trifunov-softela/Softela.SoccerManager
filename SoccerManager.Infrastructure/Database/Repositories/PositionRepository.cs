@@ -31,6 +31,8 @@ public class PositionRepository : IPositionRepository
     {
         var parameters = new DynamicParameters();
         parameters.Add("@Name", position.Name, DbType.String);
+        parameters.Add("@ShortName", position.ShortName, DbType.String);
+        parameters.Add("@CatalogOrder", position.CatalogOrder, DbType.Byte);
         parameters.Add("@Area", (byte)position.Area, DbType.Byte);
         parameters.Add("@Side", (byte)position.Side, DbType.Byte);
         parameters.Add("@CreatedAt", position.CreatedAt, DbType.DateTime2);
@@ -55,6 +57,8 @@ public class PositionRepository : IPositionRepository
         var parameters = new DynamicParameters();
         parameters.Add("@Id", position.Id, DbType.Int32);
         parameters.Add("@Name", position.Name, DbType.String);
+        parameters.Add("@ShortName", position.ShortName, DbType.String);
+        parameters.Add("@CatalogOrder", position.CatalogOrder, DbType.Byte);
         parameters.Add("@Area", (byte)position.Area, DbType.Byte);
         parameters.Add("@Side", (byte)position.Side, DbType.Byte);
         parameters.Add("@ModifiedAt", position.ModifiedAt, DbType.DateTime2);

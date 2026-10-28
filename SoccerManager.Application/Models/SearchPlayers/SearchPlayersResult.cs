@@ -74,6 +74,11 @@ public class SearchPlayersResult
     public string? PositionName { get; set; }
 
     /// <summary>
+    /// The short name of the player's main position, for example CB, or <see langword="null"/> when they have none.
+    /// </summary>
+    public string? PositionShortName { get; set; }
+
+    /// <summary>
     /// The caller's vote on the player's current rating: <see langword="true"/> up, <see langword="false"/> down, or
     /// <see langword="null"/> when they have not voted on it.
     /// </summary>
