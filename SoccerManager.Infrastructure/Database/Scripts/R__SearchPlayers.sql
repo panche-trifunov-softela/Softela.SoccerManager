@@ -31,19 +31,13 @@ BEGIN
     SET @Page = COALESCE(@Page, 1);
     SET @PageSize = COALESCE(@PageSize, 25);
 
-    -- A player's main position is its highest-Quality row, the first entered winning a tie, and
-    -- @PositionId matches only that one. The matches are kept once, with the current rating, so the count
-    -- and the page agree.
+    -- @PositionId matches only the player's main position (dbo.GetPlayerMainPosition). The matches are kept once,
+    -- with the current rating, so the count and the page agree.
     SELECT p.Id, mp.PositionId, cr.Id AS PlayerRatingId, cr.Rating
     INTO #Matches
     FROM dbo.Players p
         INNER JOIN dbo.PlayerRatings cr ON cr.PlayerId = p.Id AND cr.IsCurrent = 1
-        OUTER APPLY (
-            SELECT TOP (1) pp.PositionId
-            FROM dbo.PlayerPositions pp
-            WHERE pp.PlayerId = p.Id
-            ORDER BY pp.Quality DESC, pp.Id
-        ) mp
+        OUTER APPLY dbo.GetPlayerMainPosition(p.Id) mp
     WHERE (@SearchTerm IS NULL OR CHARINDEX(@SearchTerm, p.Name COLLATE Latin1_General_100_CI_AI) > 0)
       AND (@PositionId IS NULL OR mp.PositionId = @PositionId)
       AND (@TeamId IS NULL OR p.TeamId = @TeamId)

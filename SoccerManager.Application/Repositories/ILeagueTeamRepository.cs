@@ -50,6 +50,14 @@ public interface ILeagueTeamRepository
     Task<List<GetAvailableLeagueTeamsResult>> GetAvailableByLeagueIdAsync(int leagueId, Guid userId);
 
     /// <summary>
+    /// Retrieves the squad of the given league team, each player with their current rating and main position, ordered by line
+    /// and position. Every squad row is returned as stored.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose squad to retrieve.</param>
+    /// <returns>A list of the squad's players, empty when the league team is unknown or has no players.</returns>
+    Task<List<GetLeagueTeamSquadResult>> GetSquadAsync(int leagueTeamId);
+
+    /// <summary>
     /// Retrieves the roster entry of the given team in the given league.
     /// </summary>
     /// <param name="leagueId">The identifier of the league to look in.</param>
