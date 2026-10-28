@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Extensions;
 
 namespace SoccerManager.API.Middleware;
 
@@ -39,7 +40,7 @@ public class ExceptionHandlingMiddleware
             if (context.Response.HasStarted)
                 throw;
 
-            await WriteProblemAsync(context, BuildValidationProblem(ex), StatusCodes.Status400BadRequest);
+            await context.WriteProblemAsync(BuildValidationProblem(ex), StatusCodes.Status400BadRequest);
         }
         catch (KeyNotFoundException ex)
         {
@@ -52,7 +53,22 @@ public class ExceptionHandlingMiddleware
                 Detail = ex.Message,
             };
 
-            await WriteProblemAsync(context, problem, StatusCodes.Status404NotFound);
+            await context.WriteProblemAsync(problem, StatusCodes.Status404NotFound);
+        }
+        catch (BadHttpRequestException ex)
+        {
+            if (context.Response.HasStarted)
+                throw;
+
+            // Kestrel raises this for a request it refuses to read, such as a body over the size limit.
+            var problem = new ProblemDetails
+            {
+                Title = ex.StatusCode == StatusCodes.Status413PayloadTooLarge
+                    ? "The request body is too large"
+                    : "The request could not be read",
+            };
+
+            await context.WriteProblemAsync(problem, ex.StatusCode);
         }
         catch (Exception ex)
         {
@@ -66,7 +82,7 @@ public class ExceptionHandlingMiddleware
                 Title = "An unexpected error occurred",
             };
 
-            await WriteProblemAsync(context, problem, StatusCodes.Status500InternalServerError);
+            await context.WriteProblemAsync(problem, StatusCodes.Status500InternalServerError);
         }
     }
 
@@ -85,25 +101,5 @@ public class ExceptionHandlingMiddleware
         {
             Title = "Validation failed",
         };
-    }
-
-    /// <summary>
-    /// Writes the given problem details to the response with the given status code.
-    /// </summary>
-    /// <typeparam name="TProblem">The concrete problem-details type being written.</typeparam>
-    /// <param name="context">The current HTTP context.</param>
-    /// <param name="problem">The problem details to write.</param>
-    /// <param name="statusCode">The HTTP status code to return.</param>
-    /// <returns>A task that completes once the response has been written.</returns>
-    // Generic on the concrete type: serializing through the ProblemDetails base would drop
-    // ValidationProblemDetails.Errors, since System.Text.Json writes the declared type's properties.
-    private static async Task WriteProblemAsync<TProblem>(HttpContext context, TProblem problem, int statusCode)
-        where TProblem : ProblemDetails
-    {
-        problem.Status = statusCode;
-        context.Response.StatusCode = statusCode;
-        context.Response.ContentType = "application/problem+json";
-
-        await context.Response.WriteAsJsonAsync(problem);
     }
 }

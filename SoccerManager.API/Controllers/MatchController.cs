@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using SoccerManager.API.RateLimiting;
 using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.Match.CreateMatch;
 using SoccerManager.Application.Commands.Match.DeleteMatch;
@@ -39,6 +41,7 @@ public class MatchController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The list of every match.</returns>
     [HttpGet]
+    [EnableRateLimiting(RateLimitPolicies.FullTable)]
     public async Task<IActionResult> GetMatches(CancellationToken cancellationToken)
     {
         var result = await _queryDispatcher.QueryAsync(new GetMatchesRequest(), cancellationToken);
