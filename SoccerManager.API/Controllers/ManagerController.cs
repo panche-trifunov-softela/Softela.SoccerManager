@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.Manager.CreateManager;
 using SoccerManager.Application.Commands.Manager.DeleteManager;
 using SoccerManager.Application.Commands.Manager.EnsureMyManager;
@@ -39,6 +40,7 @@ public class ManagerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The list of every manager profile.</returns>
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> GetManagers(CancellationToken cancellationToken)
     {
         var result = await _queryDispatcher.QueryAsync(new GetManagersRequest(), cancellationToken);
@@ -67,6 +69,7 @@ public class ManagerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created manager profile.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateManager([FromBody] CreateManagerRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateManagerRequest>(request, cancellationToken);
@@ -98,6 +101,7 @@ public class ManagerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateManager(int id, [FromBody] UpdateManagerRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -113,6 +117,7 @@ public class ManagerController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteManager(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteManagerRequest>(new DeleteManagerRequest { Id = id }, cancellationToken);

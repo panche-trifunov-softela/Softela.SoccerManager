@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.PlayerRating.CreatePlayerRating;
 using SoccerManager.Application.Commands.PlayerRating.DeletePlayerRating;
 using SoccerManager.Application.Commands.PlayerRating.UpdatePlayerRating;
@@ -68,6 +69,7 @@ public class PlayerRatingController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created player rating.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreatePlayerRating([FromBody] CreatePlayerRatingRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreatePlayerRatingRequest>(request, cancellationToken);
@@ -83,6 +85,7 @@ public class PlayerRatingController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdatePlayerRating(int id, [FromBody] UpdatePlayerRatingRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -98,6 +101,7 @@ public class PlayerRatingController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeletePlayerRating(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeletePlayerRatingRequest>(new DeletePlayerRatingRequest { Id = id }, cancellationToken);

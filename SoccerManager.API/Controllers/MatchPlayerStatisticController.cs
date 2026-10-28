@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.MatchPlayerStatistic.CreateMatchPlayerStatistic;
 using SoccerManager.Application.Commands.MatchPlayerStatistic.DeleteMatchPlayerStatistic;
 using SoccerManager.Application.Commands.MatchPlayerStatistic.UpdateMatchPlayerStatistic;
@@ -68,6 +69,7 @@ public class MatchPlayerStatisticController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created match player statistic.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateMatchPlayerStatistic([FromBody] CreateMatchPlayerStatisticRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateMatchPlayerStatisticRequest>(request, cancellationToken);
@@ -83,6 +85,7 @@ public class MatchPlayerStatisticController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateMatchPlayerStatistic(int id, [FromBody] UpdateMatchPlayerStatisticRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -98,6 +101,7 @@ public class MatchPlayerStatisticController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteMatchPlayerStatistic(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteMatchPlayerStatisticRequest>(new DeleteMatchPlayerStatisticRequest { Id = id }, cancellationToken);

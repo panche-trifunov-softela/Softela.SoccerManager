@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.Referee.CreateReferee;
 using SoccerManager.Application.Commands.Referee.DeleteReferee;
 using SoccerManager.Application.Commands.Referee.UpdateReferee;
@@ -66,6 +67,7 @@ public class RefereeController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created referee.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateReferee([FromBody] CreateRefereeRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateRefereeRequest>(request, cancellationToken);
@@ -81,6 +83,7 @@ public class RefereeController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateReferee(int id, [FromBody] UpdateRefereeRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -96,6 +99,7 @@ public class RefereeController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteReferee(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteRefereeRequest>(new DeleteRefereeRequest { Id = id }, cancellationToken);

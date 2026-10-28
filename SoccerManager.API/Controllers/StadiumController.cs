@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.Stadium.CreateStadium;
 using SoccerManager.Application.Commands.Stadium.DeleteStadium;
 using SoccerManager.Application.Commands.Stadium.UpdateStadium;
@@ -66,6 +67,7 @@ public class StadiumController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created stadium.</returns>
     [HttpPost]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> CreateStadium([FromBody] CreateStadiumRequest request, CancellationToken cancellationToken)
     {
         var id = await _commandDispatcher.SendAsync<int, CreateStadiumRequest>(request, cancellationToken);
@@ -81,6 +83,7 @@ public class StadiumController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateStadium(int id, [FromBody] UpdateStadiumRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
@@ -96,6 +99,7 @@ public class StadiumController : ControllerBase
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the deletion succeeded.</returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteStadium(int id, CancellationToken cancellationToken)
     {
         var result = await _commandDispatcher.SendAsync<bool, DeleteStadiumRequest>(new DeleteStadiumRequest { Id = id }, cancellationToken);
