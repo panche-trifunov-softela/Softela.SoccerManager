@@ -1,5 +1,8 @@
+using FluentValidation;
 using MediatR;
+using SoccerManager.Application.Core.Exceptions;
 using SoccerManager.Application.Repositories;
+using SoccerManager.Application.Services;
 
 namespace SoccerManager.Application.Commands.MatchTeamTactic.DeleteMatchTeamTactic;
 
@@ -10,16 +13,19 @@ namespace SoccerManager.Application.Commands.MatchTeamTactic.DeleteMatchTeamTact
 public class DeleteMatchTeamTacticHandler : IRequestHandler<DeleteMatchTeamTacticRequest, bool>
 {
     private readonly IMatchTeamTacticRepository _matchTeamTacticRepository;
+    private readonly IClubAccess _clubAccess;
     private readonly IUnitOfWork _unitOfWork;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteMatchTeamTacticHandler"/> class.
     /// </summary>
     /// <param name="matchTeamTacticRepository">The repository used to load and delete match team tactics.</param>
+    /// <param name="clubAccess">The check that the caller may change the club's tactics for the match.</param>
     /// <param name="unitOfWork">The unit of work used to group the write into one transaction.</param>
-    public DeleteMatchTeamTacticHandler(IMatchTeamTacticRepository matchTeamTacticRepository, IUnitOfWork unitOfWork)
+    public DeleteMatchTeamTacticHandler(IMatchTeamTacticRepository matchTeamTacticRepository, IClubAccess clubAccess, IUnitOfWork unitOfWork)
     {
         _matchTeamTacticRepository = matchTeamTacticRepository;
+        _clubAccess = clubAccess;
         _unitOfWork = unitOfWork;
     }
 
@@ -29,15 +35,19 @@ public class DeleteMatchTeamTacticHandler : IRequestHandler<DeleteMatchTeamTacti
     /// <param name="request">The delete request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns><see langword="true"/> when the deletion succeeds.</returns>
-    /// <exception cref="KeyNotFoundException">Thrown when no match team tactic with the given identifier exists.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown when no match team tactic with the given identifier exists, or when the match does not exist.</exception>
+    /// <exception cref="ForbiddenAccessException">Thrown when the caller is neither an operator nor the club's current manager.</exception>
+    /// <exception cref="ValidationException">Thrown when a non-operator caller's club does not play in the match or the match has already started.</exception>
     public async Task<bool> Handle(DeleteMatchTeamTacticRequest request, CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            _ = await _matchTeamTacticRepository.GetByIdAsync(request.Id)
+            var matchTeamTactic = await _matchTeamTacticRepository.GetByIdAsync(request.Id)
                 ?? throw new KeyNotFoundException($"Match team tactic {request.Id} not found.");
+
+            await _clubAccess.EnsureCanManageMatchAsync(matchTeamTactic.MatchId, matchTeamTactic.LeagueTeamId);
 
             await _matchTeamTacticRepository.DeleteAsync(request.Id);
 

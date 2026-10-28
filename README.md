@@ -61,6 +61,7 @@ Handlers throw and `ExceptionHandlingMiddleware` translates:
 | Exception | Response |
 | --- | --- |
 | `ValidationException` (FluentValidation) | 400 with the per-property failures |
+| `ForbiddenAccessException` | 403, titled "Access denied" |
 | `KeyNotFoundException` | 404 |
 | anything else | 500, logged, with no exception detail in the body |
 

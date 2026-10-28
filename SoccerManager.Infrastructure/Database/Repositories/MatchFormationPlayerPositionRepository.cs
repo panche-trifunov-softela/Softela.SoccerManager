@@ -92,6 +92,25 @@ public class MatchFormationPlayerPositionRepository : IMatchFormationPlayerPosit
     }
 
     /// <summary>
+    /// Removes a player's lineup slots for a club in matches that have not started. Slots in started matches
+    /// are kept as the record of who played.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league roster entry (the club in its league) whose slots to remove.</param>
+    /// <param name="playerId">The identifier of the player whose slots to remove.</param>
+    public async Task DeleteUnstartedByLeagueTeamAndPlayerAsync(int leagueTeamId, int playerId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+        parameters.Add("@PlayerId", playerId, DbType.Int32);
+
+        await _dapperDataContext.Connection.ExecuteAsync(
+            "dbo.DeleteUnstartedMatchFormationPlayerPositionsByLeagueTeamAndPlayer",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Retrieves a match formation player position by its identifier.
     /// </summary>
     /// <param name="id">The identifier of the match formation player position to retrieve.</param>

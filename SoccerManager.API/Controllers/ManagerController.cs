@@ -94,14 +94,13 @@ public class ManagerController : ControllerBase
     }
 
     /// <summary>
-    /// Updates the manager profile with the given identifier.
+    /// Updates the manager profile with the given identifier. Allowed for the profile's owner or an operator.
     /// </summary>
     /// <param name="id">The identifier of the manager profile to update.</param>
     /// <param name="request">The updated manager profile values.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the update succeeded.</returns>
     [HttpPut("{id}")]
-    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateManager(int id, [FromBody] UpdateManagerRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };

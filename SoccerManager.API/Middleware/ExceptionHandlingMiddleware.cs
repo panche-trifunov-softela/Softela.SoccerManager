@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using SoccerManager.API.Extensions;
+using SoccerManager.Application.Core.Exceptions;
 
 namespace SoccerManager.API.Middleware;
 
@@ -54,6 +55,19 @@ public class ExceptionHandlingMiddleware
             };
 
             await context.WriteProblemAsync(problem, StatusCodes.Status404NotFound);
+        }
+        catch (ForbiddenAccessException ex)
+        {
+            if (context.Response.HasStarted)
+                throw;
+
+            var problem = new ProblemDetails
+            {
+                Title = "Access denied",
+                Detail = ex.Message,
+            };
+
+            await context.WriteProblemAsync(problem, StatusCodes.Status403Forbidden);
         }
         catch (BadHttpRequestException ex)
         {
