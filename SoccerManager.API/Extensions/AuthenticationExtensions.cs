@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using SoccerManager.API.Security;
 
 namespace SoccerManager.API.Extensions;
@@ -23,7 +24,13 @@ public static class AuthenticationExtensions
             {
                 options.Authority = configuration["Keycloak:Authority"];
                 options.Audience = configuration["Keycloak:Audience"];
-                options.RequireHttpsMetadata = configuration.GetValue<bool>("Keycloak:RequireHttpsMetadata");
+                options.RequireHttpsMetadata = configuration.GetValue("Keycloak:RequireHttpsMetadata", true);
+
+                // Keycloak signs with RS256, so a token signed with any other algorithm is refused.
+                options.TokenValidationParameters.ValidAlgorithms = [SecurityAlgorithms.RsaSha256];
+
+                // An expired token gets 30 seconds of grace for clock drift, not the 5-minute default.
+                options.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
 
                 // Keycloak nests realm roles inside realm_access, which the handler never maps to role claims.
                 options.Events = new JwtBearerEvents
