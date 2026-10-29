@@ -1,4 +1,5 @@
 using FluentValidation;
+using SoccerManager.Application.Core.Extensions;
 using SoccerManager.Application.Core.User;
 using SoccerManager.Application.Repositories;
 
@@ -34,25 +35,10 @@ public sealed class CreateManagerPlayerRatingVoteValidator : AbstractValidator<C
         // one vote per manager and player rating, and the losing request fails.
         When(x => x.PlayerId > 0, () =>
         {
-            RuleFor(x => x)
-                .MustAsync(HaveManagerProfileAsync)
-                .OverridePropertyName("Manager")
-                .WithMessage("Create a manager profile first.");
+            RuleFor(x => x).MustHaveManagerProfile(managerRepository, currentUser);
 
             RuleFor(x => x.PlayerId).CustomAsync(ValidatePlayerAsync);
         });
-    }
-
-    /// <summary>
-    /// Checks that the caller has a manager profile.
-    /// </summary>
-    /// <param name="request">The request being validated.</param>
-    /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns><see langword="true"/> when the caller has a manager profile.</returns>
-    private async Task<bool> HaveManagerProfileAsync(CreateManagerPlayerRatingVoteRequest request, CancellationToken cancellationToken)
-    {
-        // A caller who is not yet a manager is told to create a profile; one is never created on their behalf.
-        return await _managerRepository.GetByUserIdAsync(_currentUser.UserId) is not null;
     }
 
     /// <summary>

@@ -16,6 +16,11 @@ public sealed record LeagueDto
     public required string Name { get; init; }
 
     /// <summary>
+    /// The identifier of the manager who owns the league, or <see langword="null"/> when it has no owner.
+    /// </summary>
+    public int? OwnerManagerId { get; init; }
+
+    /// <summary>
     /// The UTC date and time the league was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }

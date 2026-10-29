@@ -38,21 +38,21 @@ public class CreateManagerPlayerRatingVoteHandler : IRequestHandler<CreateManage
     /// <param name="request">The create request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The identifier of the created vote.</returns>
-    /// <exception cref="KeyNotFoundException">Thrown when the caller has no manager profile or the player does not exist.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown when the player does not exist.</exception>
     public async Task<int> Handle(CreateManagerPlayerRatingVoteRequest request, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
 
-        // The validator already rejects both, so each is reachable only if the row disappears between
-        // validation and here: the manager profile, or the player's current rating.
-        var manager = await _managerRepository.GetByUserIdAsync(_currentUser.UserId)
-            ?? throw new KeyNotFoundException("The caller has no manager profile.");
+        // The validator has already checked the caller has a manager profile.
+        var manager = await _managerRepository.GetByUserIdAsync(_currentUser.UserId);
 
+        // The validator already rejects a player with no current rating, so this is reachable only if
+        // the rating disappears between validation and here.
         var currentRating = await _playerRatingRepository.GetCurrentByPlayerIdAsync(request.PlayerId)
             ?? throw new KeyNotFoundException($"Player {request.PlayerId} not found.");
 
         // The vote belongs to the rating in force now, so a later rating, even one with the same value, starts a new round.
-        var managerPlayerRatingVote = CreateManagerPlayerRatingVoteMapper.ToDomainEntity(request, manager.Id, currentRating.Id, now, _currentUser.UserId);
+        var managerPlayerRatingVote = CreateManagerPlayerRatingVoteMapper.ToDomainEntity(request, manager!.Id, currentRating.Id, now, _currentUser.UserId);
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 

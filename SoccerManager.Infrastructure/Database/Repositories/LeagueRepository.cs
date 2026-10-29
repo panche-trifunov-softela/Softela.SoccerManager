@@ -31,6 +31,7 @@ public class LeagueRepository : ILeagueRepository
     {
         var parameters = new DynamicParameters();
         parameters.Add("@Name", league.Name, DbType.String);
+        parameters.Add("@OwnerManagerId", league.OwnerManagerId, DbType.Int32);
         parameters.Add("@CreatedAt", league.CreatedAt, DbType.DateTime2);
         parameters.Add("@ModifiedAt", league.ModifiedAt, DbType.DateTime2);
         parameters.Add("@CreatedBy", league.CreatedBy, DbType.Guid);

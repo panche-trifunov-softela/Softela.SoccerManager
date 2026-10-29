@@ -12,7 +12,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT TOP (COALESCE(@MaxCount, 2147483647)) l.Id, l.Name, l.CreatedAt, l.ModifiedAt, l.CreatedBy, l.ModifiedBy
+    SELECT TOP (COALESCE(@MaxCount, 2147483647)) l.Id, l.Name, l.OwnerManagerId, l.CreatedAt, l.ModifiedAt, l.CreatedBy, l.ModifiedBy
     FROM dbo.Leagues l
     WHERE (@SearchTerm IS NULL OR CHARINDEX(@SearchTerm, l.Name) > 0)
       AND NOT EXISTS (

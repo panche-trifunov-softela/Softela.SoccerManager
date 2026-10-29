@@ -1,4 +1,5 @@
 using FluentValidation;
+using SoccerManager.Application.Core.Extensions;
 using SoccerManager.Application.Core.User;
 using SoccerManager.Application.Repositories;
 
@@ -9,7 +10,6 @@ namespace SoccerManager.Application.Commands.LeagueTeamManagerApplication.Create
 /// </summary>
 public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValidator<CreateLeagueTeamManagerApplicationRequest>
 {
-    private readonly IManagerRepository _managerRepository;
     private readonly ILeagueTeamManagerRepository _leagueTeamManagerRepository;
     private readonly ILeagueTeamRepository _leagueTeamRepository;
     private readonly ILeagueTeamManagerApplicationRepository _applicationRepository;
@@ -25,7 +25,6 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
     /// <param name="currentUser">The currently authenticated user.</param>
     public CreateLeagueTeamManagerApplicationValidator(IManagerRepository managerRepository, ILeagueTeamManagerRepository leagueTeamManagerRepository, ILeagueTeamRepository leagueTeamRepository, ILeagueTeamManagerApplicationRepository applicationRepository, ICurrentUser currentUser)
     {
-        _managerRepository = managerRepository;
         _leagueTeamManagerRepository = leagueTeamManagerRepository;
         _leagueTeamRepository = leagueTeamRepository;
         _applicationRepository = applicationRepository;
@@ -39,25 +38,10 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
         // also enforced by FK_LeagueTeamManagerApplications_Managers.
         When(x => x.LeagueTeamId > 0, () =>
         {
-            RuleFor(x => x)
-                .MustAsync(HaveManagerProfileAsync)
-                .OverridePropertyName("Manager")
-                .WithMessage("Create a manager profile first.");
+            RuleFor(x => x).MustHaveManagerProfile(managerRepository, currentUser);
 
             RuleFor(x => x.LeagueTeamId).CustomAsync(ValidateClubAsync);
         });
-    }
-
-    /// <summary>
-    /// Checks that the caller has a manager profile.
-    /// </summary>
-    /// <param name="request">The request being validated.</param>
-    /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns><see langword="true"/> when the caller has a manager profile.</returns>
-    private async Task<bool> HaveManagerProfileAsync(CreateLeagueTeamManagerApplicationRequest request, CancellationToken cancellationToken)
-    {
-        // A caller who is not yet a manager is told to create a profile; one is never created on their behalf.
-        return await _managerRepository.GetByUserIdAsync(_currentUser.UserId) is not null;
     }
 
     /// <summary>

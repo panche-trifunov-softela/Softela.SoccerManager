@@ -63,7 +63,7 @@ public class LeagueController : ControllerBase
     }
 
     /// <summary>
-    /// Creates a new league.
+    /// Creates a new league owned by the authenticated caller's manager profile.
     /// </summary>
     /// <param name="request">The league to create.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
