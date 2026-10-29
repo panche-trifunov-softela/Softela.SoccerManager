@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using SoccerManager.Application.Models;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Entities;
 using SoccerManager.Infrastructure.Database.Dapper;
@@ -133,6 +134,26 @@ public class LeagueTeamManagerApplicationRepository : ILeagueTeamManagerApplicat
 
         var applications = await _dapperDataContext.Connection.QueryAsync<LeagueTeamManagerApplication>(
             "dbo.GetPendingLeagueTeamManagerApplicationsByUserAndLeague",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        return applications.ToList();
+    }
+
+    /// <summary>
+    /// Retrieves a user's pending applications that can still be accepted, in every league, newest first, enriched with league and team names.
+    /// An application to a club that has a current manager, or in a league where the user already manages a club, is skipped.
+    /// </summary>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose pending applications are retrieved.</param>
+    /// <returns>A list of the user's pending applications; empty when the user has no manager profile.</returns>
+    public async Task<List<GetPendingLeagueTeamManagerApplicationsByUserIdResult>> GetPendingByUserIdAsync(Guid userId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@UserId", userId, DbType.Guid);
+
+        var applications = await _dapperDataContext.Connection.QueryAsync<GetPendingLeagueTeamManagerApplicationsByUserIdResult>(
+            "dbo.GetPendingLeagueTeamManagerApplicationsByUserId",
             parameters,
             transaction: _dapperDataContext.Transaction,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
