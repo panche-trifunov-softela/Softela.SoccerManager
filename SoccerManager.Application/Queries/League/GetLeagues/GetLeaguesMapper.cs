@@ -18,6 +18,7 @@ public static class GetLeaguesMapper
         {
             Id = league.Id,
             Name = league.Name,
+            OwnerManagerId = league.OwnerManagerId,
             CreatedAt = league.CreatedAt,
             ModifiedAt = league.ModifiedAt,
         };

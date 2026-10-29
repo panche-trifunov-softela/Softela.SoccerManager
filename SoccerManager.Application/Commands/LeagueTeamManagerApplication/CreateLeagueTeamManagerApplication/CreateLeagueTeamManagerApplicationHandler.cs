@@ -35,17 +35,14 @@ public class CreateLeagueTeamManagerApplicationHandler : IRequestHandler<CreateL
     /// <param name="request">The create request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The identifier of the created application.</returns>
-    /// <exception cref="KeyNotFoundException">Thrown when the caller has no manager profile.</exception>
     public async Task<int> Handle(CreateLeagueTeamManagerApplicationRequest request, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
 
-        // The validator already rejects a caller with no manager profile, so this is reachable only
-        // if the profile disappears between validation and here.
-        var manager = await _managerRepository.GetByUserIdAsync(_currentUser.UserId)
-            ?? throw new KeyNotFoundException("The caller has no manager profile.");
+        // The validator has already checked the caller has a manager profile.
+        var manager = await _managerRepository.GetByUserIdAsync(_currentUser.UserId);
 
-        var application = CreateLeagueTeamManagerApplicationMapper.ToDomainEntity(request, manager.Id, now, _currentUser.UserId);
+        var application = CreateLeagueTeamManagerApplicationMapper.ToDomainEntity(request, manager!.Id, now, _currentUser.UserId);
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 

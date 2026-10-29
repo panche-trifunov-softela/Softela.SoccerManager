@@ -10,6 +10,7 @@ namespace SoccerManager.Application.Commands.League.CreateLeague;
 public class CreateLeagueHandler : IRequestHandler<CreateLeagueRequest, int>
 {
     private readonly ILeagueRepository _leagueRepository;
+    private readonly IManagerRepository _managerRepository;
     private readonly ICurrentUser _currentUser;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -17,17 +18,19 @@ public class CreateLeagueHandler : IRequestHandler<CreateLeagueRequest, int>
     /// Initializes a new instance of the <see cref="CreateLeagueHandler"/> class.
     /// </summary>
     /// <param name="leagueRepository">The repository used to persist leagues.</param>
+    /// <param name="managerRepository">The repository used to find the caller's manager profile.</param>
     /// <param name="currentUser">The currently authenticated user.</param>
     /// <param name="unitOfWork">The unit of work used to group the write into one transaction.</param>
-    public CreateLeagueHandler(ILeagueRepository leagueRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
+    public CreateLeagueHandler(ILeagueRepository leagueRepository, IManagerRepository managerRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
     {
         _leagueRepository = leagueRepository;
+        _managerRepository = managerRepository;
         _currentUser = currentUser;
         _unitOfWork = unitOfWork;
     }
 
     /// <summary>
-    /// Creates a new league from the given request.
+    /// Creates a new league from the given request, owned by the caller's manager profile.
     /// </summary>
     /// <param name="request">The create request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -36,7 +39,10 @@ public class CreateLeagueHandler : IRequestHandler<CreateLeagueRequest, int>
     {
         var now = DateTime.UtcNow;
 
-        var league = CreateLeagueMapper.ToDomainEntity(request, now, _currentUser.UserId);
+        // The validator has already checked the caller has a manager profile.
+        var manager = await _managerRepository.GetByUserIdAsync(_currentUser.UserId);
+
+        var league = CreateLeagueMapper.ToDomainEntity(request, manager!.Id, now, _currentUser.UserId);
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
