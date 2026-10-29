@@ -8,6 +8,7 @@ using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.LeagueTeamManagerApplication.GetLeagueTeamManagerApplicationById;
 using SoccerManager.Application.Queries.LeagueTeamManagerApplication.GetLeagueTeamManagerApplications;
+using SoccerManager.Application.Queries.LeagueTeamManagerApplication.GetMyLeagueTeamManagerApplications;
 
 namespace SoccerManager.API.Controllers;
 
@@ -44,6 +45,21 @@ public class LeagueTeamManagerApplicationController : ControllerBase
     {
         // leagueTeamId is required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
         var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamManagerApplicationsRequest { LeagueTeamId = leagueTeamId }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the authenticated caller's pending applications that can still be accepted, newest first.
+    /// </summary>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The list of pending applications belonging to the authenticated caller.</returns>
+    [HttpGet("mine")]
+    public async Task<IActionResult> GetMyLeagueTeamManagerApplications(CancellationToken cancellationToken)
+    {
+        // The caller is identified from the bearer token rather than any route or query value.
+        // A caller with no manager profile receives an empty list rather than a 404.
+        var result = await _queryDispatcher.QueryAsync(new GetMyLeagueTeamManagerApplicationsRequest(), cancellationToken);
 
         return Ok(result.Data);
     }

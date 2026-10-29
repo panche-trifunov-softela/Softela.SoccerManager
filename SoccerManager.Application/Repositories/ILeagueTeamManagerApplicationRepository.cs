@@ -1,3 +1,4 @@
+using SoccerManager.Application.Models;
 using SoccerManager.Domain.Entities;
 
 namespace SoccerManager.Application.Repositories;
@@ -48,6 +49,14 @@ public interface ILeagueTeamManagerApplicationRepository
     /// <param name="leagueId">The identifier of the league whose clubs to look through.</param>
     /// <returns>A list of the user's pending applications in the league; empty when the user has no manager profile.</returns>
     Task<List<LeagueTeamManagerApplication>> GetPendingByUserAndLeagueAsync(Guid userId, int leagueId);
+
+    /// <summary>
+    /// Retrieves a user's pending applications that can still be accepted, in every league, newest first, enriched with league and team names.
+    /// An application to a club that has a current manager, or in a league where the user already manages a club, is skipped.
+    /// </summary>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose pending applications are retrieved.</param>
+    /// <returns>A list of the user's pending applications; empty when the user has no manager profile.</returns>
+    Task<List<GetPendingLeagueTeamManagerApplicationsByUserIdResult>> GetPendingByUserIdAsync(Guid userId);
 
     /// <summary>
     /// Rejects every other pending application that accepting the given one makes moot: the other pending applications for the same club, and the applicant's other pending applications in the club's league.
