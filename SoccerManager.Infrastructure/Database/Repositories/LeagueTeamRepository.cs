@@ -145,6 +145,27 @@ public class LeagueTeamRepository : ILeagueTeamRepository
     }
 
     /// <summary>
+    /// Retrieves the squad entries of the given league team, each with the player's date of birth, current rating, main
+    /// position and national team, and the entry's squad number, value, weekly wage, morale and condition. The order is
+    /// <see cref="GetSquadAsync"/>'s, and every squad row is returned as stored.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose squad to retrieve.</param>
+    /// <returns>A list of the squad entries, empty when the league team is unknown or has no players.</returns>
+    public async Task<List<GetLeagueTeamSquadMembersResult>> GetSquadMembersAsync(int leagueTeamId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+
+        var rows = await _dapperDataContext.Connection.QueryAsync<GetLeagueTeamSquadMembersResult>(
+            "dbo.GetLeagueTeamSquadMembers",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        return rows.ToList();
+    }
+
+    /// <summary>
     /// Retrieves the roster entry of the given team in the given league.
     /// </summary>
     /// <param name="leagueId">The identifier of the league to look in.</param>
