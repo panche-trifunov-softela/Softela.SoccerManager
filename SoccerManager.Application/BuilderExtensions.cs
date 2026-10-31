@@ -31,10 +31,12 @@ public static class BuilderExtensions
 
         // The application services beyond the dispatchers: each reads several aggregates for a rule more than one
         // handler needs, so it lives outside any single handler. The resolver snapshots a lineup slot, the rules
-        // guard it for every caller, and club access decides whether the caller may change a club at all.
+        // guard it for every caller, club access decides whether the caller may change a club at all, and league
+        // access whether they may manage a league.
         services.AddScoped<IMatchFormationPlayerPositionSnapshotResolver, MatchFormationPlayerPositionSnapshotResolver>();
         services.AddScoped<IMatchFormationPlayerPositionRules, MatchFormationPlayerPositionRules>();
         services.AddScoped<IClubAccess, ClubAccess>();
+        services.AddScoped<ILeagueAccess, LeagueAccess>();
 
         // Registered after the validators so the behaviour resolves the ones scanned above.
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
