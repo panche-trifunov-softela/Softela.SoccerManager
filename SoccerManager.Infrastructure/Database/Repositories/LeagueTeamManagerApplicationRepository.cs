@@ -162,6 +162,28 @@ public class LeagueTeamManagerApplicationRepository : ILeagueTeamManagerApplicat
     }
 
     /// <summary>
+    /// Retrieves the pending applications that can still be accepted for clubs in the leagues a user owns, or in every league for an operator, newest first, enriched with league and team names and the applicant's photo.
+    /// The user's own applications are skipped, and so is an application to a club that has a current manager, or in a league where the applicant already manages a club.
+    /// </summary>
+    /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose owned leagues are listed and whose own applications are skipped.</param>
+    /// <param name="isOperator">Whether the user is an operator, which lists every league; it must come from the token, never from a request value.</param>
+    /// <returns>A list of the matching applications; empty when the user owns no league and is not an operator.</returns>
+    public async Task<List<GetPendingLeagueTeamManagerApplicationsByLeagueOwnerResult>> GetPendingByLeagueOwnerAsync(Guid userId, bool isOperator)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@UserId", userId, DbType.Guid);
+        parameters.Add("@IsOperator", isOperator, DbType.Boolean);
+
+        var applications = await _dapperDataContext.Connection.QueryAsync<GetPendingLeagueTeamManagerApplicationsByLeagueOwnerResult>(
+            "dbo.GetPendingLeagueTeamManagerApplicationsByLeagueOwner",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        return applications.ToList();
+    }
+
+    /// <summary>
     /// Rejects every other pending application that accepting the given one makes moot: the other pending applications for the same club, and the applicant's other pending applications in the club's league.
     /// </summary>
     /// <param name="acceptedApplication">The application that was just accepted, carrying the response date and audit values to stamp on the rejected ones.</param>

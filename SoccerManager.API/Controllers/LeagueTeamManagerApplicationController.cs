@@ -6,6 +6,7 @@ using SoccerManager.Application.Commands.LeagueTeamManagerApplication.DeleteLeag
 using SoccerManager.Application.Commands.LeagueTeamManagerApplication.UpdateLeagueTeamManagerApplication;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
+using SoccerManager.Application.Queries.LeagueTeamManagerApplication.GetIncomingLeagueTeamManagerApplications;
 using SoccerManager.Application.Queries.LeagueTeamManagerApplication.GetLeagueTeamManagerApplicationById;
 using SoccerManager.Application.Queries.LeagueTeamManagerApplication.GetLeagueTeamManagerApplications;
 using SoccerManager.Application.Queries.LeagueTeamManagerApplication.GetMyLeagueTeamManagerApplications;
@@ -60,6 +61,21 @@ public class LeagueTeamManagerApplicationController : ControllerBase
         // The caller is identified from the bearer token rather than any route or query value.
         // A caller with no manager profile receives an empty list rather than a 404.
         var result = await _queryDispatcher.QueryAsync(new GetMyLeagueTeamManagerApplicationsRequest(), cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the pending applications that can still be accepted for clubs in the leagues the authenticated caller owns, or in every league for an operator, newest first.
+    /// </summary>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The list of pending applications for clubs in the caller's leagues.</returns>
+    [HttpGet("incoming")]
+    public async Task<IActionResult> GetIncomingLeagueTeamManagerApplications(CancellationToken cancellationToken)
+    {
+        // The caller, and whether they are an operator, are taken from the bearer token rather than any route or query value.
+        // A caller who owns no league receives an empty list rather than a 404.
+        var result = await _queryDispatcher.QueryAsync(new GetIncomingLeagueTeamManagerApplicationsRequest(), cancellationToken);
 
         return Ok(result.Data);
     }
