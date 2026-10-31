@@ -18,12 +18,12 @@ public sealed record UpdateFormationPositionRequest : IRequest<bool>
     public int FormationId { get; init; }
 
     /// <summary>
-    /// The identifier of the position filling the slot.
+    /// The identifier of the position filling the slot: required for a starter slot (1 to 11), and <see langword="null"/> for a reserve slot (12 to 19).
     /// </summary>
-    public int PositionId { get; init; }
+    public int? PositionId { get; init; }
 
     /// <summary>
-    /// The slot the position fills within the formation, from 1 to 19.
+    /// The slot within the formation, from 1 to 19: 1 to 11 are the starters and 12 to 19 the reserves.
     /// </summary>
     public int SlotNumber { get; init; }
 }
