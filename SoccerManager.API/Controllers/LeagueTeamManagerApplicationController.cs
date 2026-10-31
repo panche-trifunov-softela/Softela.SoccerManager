@@ -111,13 +111,13 @@ public class LeagueTeamManagerApplicationController : ControllerBase
 
     /// <summary>
     /// Answers the league team manager application with the given identifier by accepting or rejecting it.
+    /// Only the owner of the application's league, or an operator, may answer it.
     /// </summary>
     /// <param name="id">The identifier of the application to answer.</param>
     /// <param name="request">The answer to give.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>Whether the answer was recorded.</returns>
     [HttpPut("{id}")]
-    [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> UpdateLeagueTeamManagerApplication(int id, [FromBody] UpdateLeagueTeamManagerApplicationRequest request, CancellationToken cancellationToken)
     {
         var command = request with { Id = id };
