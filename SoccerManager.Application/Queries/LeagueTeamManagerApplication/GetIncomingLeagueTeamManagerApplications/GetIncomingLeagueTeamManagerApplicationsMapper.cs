@@ -24,6 +24,7 @@ public static class GetIncomingLeagueTeamManagerApplicationsMapper
             TeamName = row.TeamName,
             TeamLogoUrl = row.TeamLogoUrl,
             ManagerId = row.ManagerId,
+            ManagerName = row.ManagerName,
             ManagerImageUrl = row.ManagerImageUrl,
             CreatedAt = row.CreatedAt,
         };

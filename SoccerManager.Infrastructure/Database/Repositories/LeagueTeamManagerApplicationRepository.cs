@@ -162,7 +162,7 @@ public class LeagueTeamManagerApplicationRepository : ILeagueTeamManagerApplicat
     }
 
     /// <summary>
-    /// Retrieves the pending applications that can still be accepted for clubs in the leagues a user owns, or in every league for an operator, newest first, enriched with league and team names and the applicant's photo.
+    /// Retrieves the pending applications that can still be accepted for clubs in the leagues a user owns, or in every league for an operator, newest first, enriched with league and team names and the applicant's name and photo.
     /// The user's own applications are skipped, and so is an application to a club that has a current manager, or in a league where the applicant already manages a club.
     /// </summary>
     /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose owned leagues are listed and whose own applications are skipped.</param>

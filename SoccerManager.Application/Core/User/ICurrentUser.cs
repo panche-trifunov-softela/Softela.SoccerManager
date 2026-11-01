@@ -14,4 +14,16 @@ public interface ICurrentUser
     /// Gets a value indicating whether the authenticated caller is an operator, who may act on every club.
     /// </summary>
     bool IsOperator { get; }
+
+    /// <summary>
+    /// Gets the authenticated caller's first name from their Keycloak token, or <see langword="null"/> when it carries
+    /// none.
+    /// </summary>
+    string? FirstName { get; }
+
+    /// <summary>
+    /// Gets the authenticated caller's last name from their Keycloak token, or <see langword="null"/> when it carries
+    /// none.
+    /// </summary>
+    string? LastName { get; }
 }

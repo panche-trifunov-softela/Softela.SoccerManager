@@ -138,6 +138,27 @@ public class ManagerRepository : IManagerRepository
     }
 
     /// <summary>
+    /// Copies the manager's first and last name onto the stored profile of manager.UserId when either changed; a null
+    /// name leaves the stored one alone, and unchanged names write nothing.
+    /// </summary>
+    /// <param name="manager">The manager carrying the user id, the names and the modification stamp.</param>
+    public async Task UpdateNameAsync(Manager manager)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@UserId", manager.UserId, DbType.Guid);
+        parameters.Add("@FirstName", manager.FirstName, DbType.String);
+        parameters.Add("@LastName", manager.LastName, DbType.String);
+        parameters.Add("@ModifiedAt", manager.ModifiedAt, DbType.DateTime2);
+        parameters.Add("@ModifiedBy", manager.ModifiedBy, DbType.Guid);
+
+        await _dapperDataContext.Connection.ExecuteAsync(
+            "dbo.UpdateManagerName",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Retrieves all managers.
     /// </summary>
     /// <returns>A list of every manager.</returns>

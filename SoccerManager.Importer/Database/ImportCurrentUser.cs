@@ -19,4 +19,14 @@ public sealed class ImportCurrentUser : ICurrentUser
     /// trusted batch job run by an operator, and it never calls the handlers that check club ownership.
     /// </summary>
     public bool IsOperator => true;
+
+    /// <summary>
+    /// Gets the first name of the caller. Always <see langword="null"/>: the import acts for no person.
+    /// </summary>
+    public string? FirstName => null;
+
+    /// <summary>
+    /// Gets the last name of the caller. Always <see langword="null"/>: the import acts for no person.
+    /// </summary>
+    public string? LastName => null;
 }

@@ -3,7 +3,7 @@ using SoccerManager.Application.Core.User;
 namespace SoccerManager.API.Security;
 
 /// <summary>
-/// Exposes the authenticated caller's identifier from the current HTTP request.
+/// Exposes the authenticated caller's identifier and name from the current HTTP request.
 /// </summary>
 public sealed class CurrentUser : ICurrentUser
 {
@@ -42,4 +42,20 @@ public sealed class CurrentUser : ICurrentUser
     /// <see langword="false"/> when there is no HTTP context.
     /// </remarks>
     public bool IsOperator => _httpContextAccessor.HttpContext?.User.IsInRole(AuthorizationPolicies.OperatorRole) ?? false;
+
+    /// <summary>
+    /// Gets the authenticated caller's first name from their token.
+    /// </summary>
+    /// <remarks>
+    /// <see langword="null"/> when there is no HTTP context or the token carries no such claim.
+    /// </remarks>
+    public string? FirstName => _httpContextAccessor.HttpContext?.User.GetGivenName();
+
+    /// <summary>
+    /// Gets the authenticated caller's last name from their token.
+    /// </summary>
+    /// <remarks>
+    /// <see langword="null"/> when there is no HTTP context or the token carries no such claim.
+    /// </remarks>
+    public string? LastName => _httpContextAccessor.HttpContext?.User.GetFamilyName();
 }
