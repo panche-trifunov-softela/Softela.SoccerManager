@@ -28,6 +28,7 @@ public class EnsureMyManagerHandler : IRequestHandler<EnsureMyManagerRequest, in
 
     /// <summary>
     /// Returns the identifier of the caller's manager profile, creating the profile with no image when the caller has none.
+    /// Every call also refreshes their first and last name from their token.
     /// </summary>
     /// <param name="request">The ensure request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -36,7 +37,11 @@ public class EnsureMyManagerHandler : IRequestHandler<EnsureMyManagerRequest, in
     {
         var now = DateTime.UtcNow;
 
-        var manager = EnsureMyManagerMapper.ToDomainEntity(now, _currentUser.UserId);
+        var manager = EnsureMyManagerMapper.ToDomainEntity(
+            now,
+            _currentUser.UserId,
+            _currentUser.FirstName,
+            _currentUser.LastName);
 
         // The transaction keeps the procedure's existence-check lock until its insert, which is what makes two
         // first logins at once create a single profile.
@@ -45,6 +50,10 @@ public class EnsureMyManagerHandler : IRequestHandler<EnsureMyManagerRequest, in
         try
         {
             var id = await _managerRepository.EnsureAsync(manager);
+
+            // The name refresh runs in the same transaction, so the row EnsureManager just locked or created is the
+            // one updated.
+            await _managerRepository.UpdateNameAsync(manager);
 
             await _unitOfWork.CommitAsync(cancellationToken);
 

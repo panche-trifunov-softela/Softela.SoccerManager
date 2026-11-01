@@ -50,6 +50,13 @@ public interface IManagerRepository
     Task<int> EnsureAsync(Manager manager);
 
     /// <summary>
+    /// Copies the manager's first and last name onto the stored profile of manager.UserId when either changed; a null
+    /// name leaves the stored one alone, and unchanged names write nothing.
+    /// </summary>
+    /// <param name="manager">The manager carrying the user id, the names and the modification stamp.</param>
+    Task UpdateNameAsync(Manager manager);
+
+    /// <summary>
     /// Retrieves all managers.
     /// </summary>
     /// <returns>A list of every manager.</returns>

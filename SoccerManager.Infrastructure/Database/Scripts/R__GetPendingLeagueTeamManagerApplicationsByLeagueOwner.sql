@@ -1,6 +1,7 @@
 -- Pending applications (Status 1) that can still be accepted, for clubs in the leagues a user owns, or in every league when
 -- @IsOperator = 1, newest first (Id DESC breaks a tie), with the league and team names, the team's logo and the applicant's
--- photo for display. @IsOperator opens every league, so it must come from the caller's token, never from a request value.
+-- name and photo for display. @IsOperator opens every league, so it must come from the caller's token, never from a
+-- request value.
 -- A user with no manager profile owns no league, so they get no rows unless they are an operator, and a league with no owner
 -- (made before V1_0_0_47, or whose owner was deleted) is listed for operators only.
 -- The user's own applications are skipped: dbo.GetPendingLeagueTeamManagerApplicationsByUserId lists them. So are the two
@@ -25,6 +26,7 @@ BEGIN
            t.Name     AS TeamName,
            t.LogoUrl  AS TeamLogoUrl,
            ltma.ManagerId,
+           m.FullName AS ManagerName,
            m.ImageUrl AS ManagerImageUrl,
            ltma.CreatedAt
     FROM dbo.LeagueTeamManagerApplications ltma

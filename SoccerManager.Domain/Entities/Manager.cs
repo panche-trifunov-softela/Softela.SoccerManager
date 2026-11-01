@@ -15,4 +15,22 @@ public class Manager : BaseEntity
     /// Gets or sets the URL of the manager's image, or <see langword="null"/> when it has none.
     /// </summary>
     public string? ImageUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the manager's first name, copied from their Keycloak profile on each visit, or
+    /// <see langword="null"/> when none is known.
+    /// </summary>
+    /// <remarks>
+    /// A name is shown through <c>dbo.Managers.FullName</c>, never composed in C#.
+    /// </remarks>
+    public string? FirstName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the manager's last name, copied from their Keycloak profile on each visit, or
+    /// <see langword="null"/> when none is known.
+    /// </summary>
+    /// <remarks>
+    /// A name is shown through <c>dbo.Managers.FullName</c>, never composed in C#.
+    /// </remarks>
+    public string? LastName { get; set; }
 }

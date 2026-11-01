@@ -2,9 +2,9 @@ namespace SoccerManager.Application.Models;
 
 /// <summary>
 /// One row returned by the <c>dbo.GetPendingLeagueTeamManagerApplicationsByLeagueOwner</c> stored procedure: a
-/// pending application, denormalised with the league and team names and the applicant's photo the procedure joins in.
-/// Kept separate from <see cref="Dtos.IncomingLeagueTeamManagerApplicationDto"/> because Dapper populates a result by
-/// setting properties, and the Dto is an init-only record that cannot be a Dapper target.
+/// pending application, denormalised with the league and team names and the applicant's name and photo the procedure
+/// joins in. Kept separate from <see cref="Dtos.IncomingLeagueTeamManagerApplicationDto"/> because Dapper populates a
+/// result by setting properties, and the Dto is an init-only record that cannot be a Dapper target.
 /// </summary>
 public class GetPendingLeagueTeamManagerApplicationsByLeagueOwnerResult
 {
@@ -42,6 +42,11 @@ public class GetPendingLeagueTeamManagerApplicationsByLeagueOwnerResult
     /// The identifier of the manager who applied.
     /// </summary>
     public int ManagerId { get; set; }
+
+    /// <summary>
+    /// The applicant's display name (first and last name), or <see langword="null"/> when none is known.
+    /// </summary>
+    public string? ManagerName { get; set; }
 
     /// <summary>
     /// The URL of the applicant's photo, or <see langword="null"/> when they have none.

@@ -78,8 +78,8 @@ public class ManagerController : ControllerBase
     }
 
     /// <summary>
-    /// Makes sure the authenticated caller has a manager profile: the first call creates it with no image, and later
-    /// calls change nothing. The UI calls this after every login.
+    /// Makes sure the authenticated caller has a manager profile: the first call creates it with no image, and every
+    /// call refreshes their first and last name from their token. The UI calls this after every login.
     /// </summary>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the caller's manager profile.</returns>

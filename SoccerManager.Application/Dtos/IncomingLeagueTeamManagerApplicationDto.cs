@@ -2,7 +2,7 @@ namespace SoccerManager.Application.Dtos;
 
 /// <summary>
 /// A pending application to manage a club in a league the authenticated caller owns (in any league, for an operator), with
-/// the league and team names and the applicant's photo for display.
+/// the league and team names and the applicant's name and photo for display.
 /// </summary>
 public sealed record IncomingLeagueTeamManagerApplicationDto
 {
@@ -40,6 +40,11 @@ public sealed record IncomingLeagueTeamManagerApplicationDto
     /// The identifier of the manager who applied.
     /// </summary>
     public int ManagerId { get; init; }
+
+    /// <summary>
+    /// The applicant's display name (first and last name), or <see langword="null"/> when none is known.
+    /// </summary>
+    public string? ManagerName { get; init; }
 
     /// <summary>
     /// The URL of the applicant's photo, or <see langword="null"/> when they have none.
