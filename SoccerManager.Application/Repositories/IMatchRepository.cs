@@ -1,3 +1,4 @@
+using SoccerManager.Application.Models;
 using SoccerManager.Domain.Entities;
 
 namespace SoccerManager.Application.Repositories;
@@ -39,4 +40,12 @@ public interface IMatchRepository
     /// </summary>
     /// <returns>A list of every match.</returns>
     Task<List<Match>> GetAllAsync();
+
+    /// <summary>
+    /// Retrieves the earliest match of the given club that has not started, with whether the club plays at home and who the
+    /// opponent is.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) whose next match to retrieve.</param>
+    /// <returns>The club's next match, or <see langword="null"/> when it has none to come.</returns>
+    Task<GetNextMatchByLeagueTeamResult?> GetNextByLeagueTeamAsync(int leagueTeamId);
 }

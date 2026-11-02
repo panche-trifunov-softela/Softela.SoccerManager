@@ -183,4 +183,24 @@ public class LeagueTeamRepository : ILeagueTeamRepository
             transaction: _dapperDataContext.Transaction,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Retrieves the squad of the given league team as the lineup logic reads it: one row per registered player and position
+    /// rating, for the caller to group by player. A player registered twice is read through the oldest registration.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose squad to retrieve.</param>
+    /// <returns>A list of flat candidate rows, empty when the league team is unknown or has no players.</returns>
+    public async Task<List<GetLeagueTeamLineupCandidatesResult>> GetLineupCandidatesAsync(int leagueTeamId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+
+        var rows = await _dapperDataContext.Connection.QueryAsync<GetLeagueTeamLineupCandidatesResult>(
+            "dbo.GetLeagueTeamLineupCandidates",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        return rows.ToList();
+    }
 }

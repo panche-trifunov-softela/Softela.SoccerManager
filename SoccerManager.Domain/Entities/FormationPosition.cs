@@ -19,4 +19,14 @@ public class FormationPosition : BaseEntity
     /// Gets or sets the slot within the formation, from 1 to 19: 1 to 11 are the starters and 12 to 19 the reserves.
     /// </summary>
     public int SlotNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets how far across the pitch the slot sits, from 0 (the team's left touchline) to 100 (its right), or <see langword="null"/> for a reserve slot and for a starter slot that has not been placed yet.
+    /// </summary>
+    public byte? PitchX { get; set; }
+
+    /// <summary>
+    /// Gets or sets how far up the pitch the slot sits, from 0 (the team's own goal line) to 100 (the opponent's), or <see langword="null"/> for a reserve slot and for a starter slot that has not been placed yet.
+    /// </summary>
+    public byte? PitchY { get; set; }
 }

@@ -21,4 +21,16 @@ public sealed record CreateFormationPositionRequest : IRequest<int>
     /// The slot within the formation, from 1 to 19: 1 to 11 are the starters and 12 to 19 the reserves.
     /// </summary>
     public int SlotNumber { get; init; }
+
+    /// <summary>
+    /// How far across the pitch the slot sits, from 0 (the team's left touchline) to 100 (its right). Optional: sent together
+    /// with <see cref="PitchY"/> and only for a starter slot (1 to 11); when omitted the new slot has no place on the pitch yet.
+    /// </summary>
+    public byte? PitchX { get; init; }
+
+    /// <summary>
+    /// How far up the pitch the slot sits, from 0 (the team's own goal line) to 100 (the opponent's). Optional: sent together
+    /// with <see cref="PitchX"/> and only for a starter slot (1 to 11); when omitted the new slot has no place on the pitch yet.
+    /// </summary>
+    public byte? PitchY { get; init; }
 }

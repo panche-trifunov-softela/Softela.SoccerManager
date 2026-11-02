@@ -7,6 +7,7 @@
 -- the national team are LEFT JOINs, so a player with neither is still listed, with NULLs.
 -- The main position comes from dbo.GetPlayerMainPosition, and the order is kept identical to dbo.GetLeagueTeamSquad's: by
 -- line and position, a player with no position last of all, then by rating, highest first, then name.
+-- IsSuspended is the domestic competition suspension flag, the one lineups read; the continental flag is not read anywhere yet.
 CREATE OR ALTER PROCEDURE dbo.GetLeagueTeamSquadMembers
     @LeagueTeamId INT
 AS
@@ -29,7 +30,8 @@ BEGIN
            ltp.TransfermarketValue AS Value,
            ltp.ContractSalaryPerWeek AS Wage,
            ltp.Morale,
-           ltp.Condition
+           ltp.Condition,
+           ltp.IsSuspendedDomesticCompetition AS IsSuspended
     FROM dbo.LeagueTeamPlayers ltp
         INNER JOIN dbo.Players p ON p.Id = ltp.PlayerId
         LEFT JOIN dbo.PlayerRatings cr ON cr.PlayerId = p.Id AND cr.IsCurrent = 1

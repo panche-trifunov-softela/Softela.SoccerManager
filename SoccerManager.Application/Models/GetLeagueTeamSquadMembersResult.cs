@@ -94,4 +94,9 @@ public class GetLeagueTeamSquadMembersResult
     /// The player's physical condition, from 1 to 100 inclusive.
     /// </summary>
     public int Condition { get; set; }
+
+    /// <summary>
+    /// Whether the club's registration of the player is suspended in the domestic competition.
+    /// </summary>
+    public bool IsSuspended { get; set; }
 }

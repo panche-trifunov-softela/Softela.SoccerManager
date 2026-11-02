@@ -26,6 +26,16 @@ public sealed record FormationPositionDto
     public int SlotNumber { get; init; }
 
     /// <summary>
+    /// How far across the pitch the slot sits, from 0 (the team's left touchline) to 100 (its right), or <see langword="null"/> for a reserve slot and for a starter slot that has not been placed yet.
+    /// </summary>
+    public byte? PitchX { get; init; }
+
+    /// <summary>
+    /// How far up the pitch the slot sits, from 0 (the team's own goal line) to 100 (the opponent's), or <see langword="null"/> for a reserve slot and for a starter slot that has not been placed yet.
+    /// </summary>
+    public byte? PitchY { get; init; }
+
+    /// <summary>
     /// The UTC date and time the slot was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }

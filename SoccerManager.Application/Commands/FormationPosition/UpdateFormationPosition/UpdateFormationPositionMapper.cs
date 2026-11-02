@@ -17,6 +17,19 @@ public static class UpdateFormationPositionMapper
         formationPosition.FormationId = request.FormationId;
         formationPosition.PositionId = request.PositionId;
         formationPosition.SlotNumber = request.SlotNumber;
+
+        // A reserve slot has no place on the pitch; a starter slot keeps its stored place unless the request sends a new one.
+        if (request.SlotNumber > 11)
+        {
+            formationPosition.PitchX = null;
+            formationPosition.PitchY = null;
+        }
+        else if (request.PitchX.HasValue)
+        {
+            formationPosition.PitchX = request.PitchX;
+            formationPosition.PitchY = request.PitchY;
+        }
+
         formationPosition.ModifiedAt = now;
         formationPosition.ModifiedBy = userId;
     }

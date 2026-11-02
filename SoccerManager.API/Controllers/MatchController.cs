@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using SoccerManager.API.RateLimiting;
 using SoccerManager.API.Security;
+using SoccerManager.Application.Commands.Match.AutoPickMatchLineup;
 using SoccerManager.Application.Commands.Match.CreateMatch;
 using SoccerManager.Application.Commands.Match.DeleteMatch;
+using SoccerManager.Application.Commands.Match.SaveMatchLineup;
 using SoccerManager.Application.Commands.Match.UpdateMatch;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
+using SoccerManager.Application.Dtos;
 using SoccerManager.Application.Queries.Match.GetMatchById;
 using SoccerManager.Application.Queries.Match.GetMatches;
 
@@ -93,6 +96,42 @@ public class MatchController : ControllerBase
         var result = await _commandDispatcher.SendAsync<bool, UpdateMatchRequest>(command, cancellationToken);
 
         return Ok(new { success = result });
+    }
+
+    /// <summary>
+    /// Changes a club's lineup for the match with the given identifier: its formation, one slot, or both. Allowed for an
+    /// operator, or the club's current manager while the club plays the match and it has not started.
+    /// </summary>
+    /// <param name="id">The identifier of the match whose lineup to change.</param>
+    /// <param name="request">The club, and the formation change, the slot change, or both to apply.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The club's lineup after the change.</returns>
+    [HttpPut("{id}/lineup")]
+    public async Task<IActionResult> SaveMatchLineup(int id, [FromBody] SaveMatchLineupRequest request, CancellationToken cancellationToken)
+    {
+        var command = request with { MatchId = id };
+        var lineup = await _commandDispatcher.SendAsync<MatchLineupDto, SaveMatchLineupRequest>(command, cancellationToken);
+
+        // Returns the lineup rather than { success }, because a client redraws its pitch from it.
+        return Ok(lineup);
+    }
+
+    /// <summary>
+    /// Replaces a club's lineup for the match with the given identifier with one picked from its squad. Allowed for an
+    /// operator, or the club's current manager while the club plays the match and it has not started.
+    /// </summary>
+    /// <param name="id">The identifier of the match whose lineup to pick.</param>
+    /// <param name="request">The club, and optionally the formation to pick for.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The club's picked lineup.</returns>
+    [HttpPost("{id}/lineup/auto-pick")]
+    public async Task<IActionResult> AutoPickMatchLineup(int id, [FromBody] AutoPickMatchLineupRequest request, CancellationToken cancellationToken)
+    {
+        var command = request with { MatchId = id };
+        var lineup = await _commandDispatcher.SendAsync<MatchLineupDto, AutoPickMatchLineupRequest>(command, cancellationToken);
+
+        // A 200 rather than a 201: the pick replaces the lineup instead of creating a resource, and the body is the new lineup.
+        return Ok(lineup);
     }
 
     /// <summary>

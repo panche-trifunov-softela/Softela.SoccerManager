@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using SoccerManager.Application.Models;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Entities;
 using SoccerManager.Infrastructure.Database.Dapper;
@@ -117,5 +118,43 @@ public class FormationPositionRepository : IFormationPositionRepository
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
 
         return formationPositions.ToList();
+    }
+
+    /// <summary>
+    /// Writes the pitch position of a formation position onto its row; two <see langword="null"/> coordinates clear it. Only the
+    /// two pitch columns change.
+    /// </summary>
+    /// <param name="formationPosition">The formation position whose identifier and <see cref="FormationPosition.PitchX"/> and <see cref="FormationPosition.PitchY"/> to write.</param>
+    public async Task SetPitchAsync(FormationPosition formationPosition)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@Id", formationPosition.Id, DbType.Int32);
+        parameters.Add("@PitchX", formationPosition.PitchX, DbType.Byte);
+        parameters.Add("@PitchY", formationPosition.PitchY, DbType.Byte);
+
+        await _dapperDataContext.Connection.ExecuteAsync(
+            "dbo.UpdateFormationPositionPitch",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Retrieves every slot of the given formation with its position and its place on the pitch, in slot order.
+    /// </summary>
+    /// <param name="formationId">The identifier of the formation whose slots to retrieve.</param>
+    /// <returns>A list of the formation's slots, empty when the formation is unknown or has no slots.</returns>
+    public async Task<List<GetFormationSlotsResult>> GetSlotsAsync(int formationId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@FormationId", formationId, DbType.Int32);
+
+        var rows = await _dapperDataContext.Connection.QueryAsync<GetFormationSlotsResult>(
+            "dbo.GetFormationSlots",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        return rows.ToList();
     }
 }

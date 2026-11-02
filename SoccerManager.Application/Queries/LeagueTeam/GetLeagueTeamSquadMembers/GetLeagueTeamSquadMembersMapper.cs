@@ -34,6 +34,7 @@ public static class GetLeagueTeamSquadMembersMapper
             Wage = row.Wage,
             Morale = row.Morale,
             Condition = row.Condition,
+            IsSuspended = row.IsSuspended,
         };
     }
 }
