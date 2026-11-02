@@ -127,4 +127,22 @@ public class FormationRepository : IFormationRepository
             transaction: _dapperDataContext.Transaction,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Retrieves the formation a lineup defaults to: the one with the given name when it has all eleven starter slots,
+    /// otherwise the first formation by name that does.
+    /// </summary>
+    /// <param name="preferredName">The name of the formation to prefer.</param>
+    /// <returns>The chosen formation, or <see langword="null"/> when no formation has all eleven starter slots.</returns>
+    public async Task<Formation?> GetDefaultForLineupAsync(string preferredName)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@PreferredName", preferredName, DbType.String, size: 100);
+
+        return await _dapperDataContext.Connection.QueryFirstOrDefaultAsync<Formation>(
+            "dbo.GetDefaultLineupFormation",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
 }

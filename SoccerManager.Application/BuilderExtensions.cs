@@ -32,11 +32,14 @@ public static class BuilderExtensions
         // The application services beyond the dispatchers: each reads several aggregates for a rule more than one
         // handler needs, so it lives outside any single handler. The resolver snapshots a lineup slot, the rules
         // guard it for every caller, club access decides whether the caller may change a club at all, and league
-        // access whether they may manage a league.
+        // access whether they may manage a league. The auto picker chooses a lineup from a squad, and the lineup service
+        // reads and writes a club's lineup for a match, so the save, the auto pick and the read share one definition.
         services.AddScoped<IMatchFormationPlayerPositionSnapshotResolver, MatchFormationPlayerPositionSnapshotResolver>();
         services.AddScoped<IMatchFormationPlayerPositionRules, MatchFormationPlayerPositionRules>();
         services.AddScoped<IClubAccess, ClubAccess>();
         services.AddScoped<ILeagueAccess, LeagueAccess>();
+        services.AddScoped<ILineupAutoPicker, LineupAutoPicker>();
+        services.AddScoped<IMatchLineupService, MatchLineupService>();
 
         // Registered after the validators so the behaviour resolves the ones scanned above.
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

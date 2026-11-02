@@ -4,7 +4,7 @@ namespace SoccerManager.Application.Dtos;
 
 /// <summary>
 /// Represents an entry on a league team's squad: the player with their date of birth, current rating, main position and
-/// national team, and the entry's squad number, value, weekly wage, morale and condition.
+/// national team, and the entry's squad number, value, weekly wage, morale, condition and suspension.
 /// </summary>
 public sealed record LeagueTeamSquadMemberDto
 {
@@ -92,4 +92,9 @@ public sealed record LeagueTeamSquadMemberDto
     /// The player's physical condition, from 1 to 100 inclusive.
     /// </summary>
     public int Condition { get; init; }
+
+    /// <summary>
+    /// Whether the player is suspended in the domestic competition, and so can't be picked for a lineup.
+    /// </summary>
+    public bool IsSuspended { get; init; }
 }

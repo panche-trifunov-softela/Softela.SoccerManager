@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using SoccerManager.Application.Models;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Entities;
 using SoccerManager.Infrastructure.Database.Dapper;
@@ -144,5 +145,45 @@ public class MatchFormationPlayerPositionRepository : IMatchFormationPlayerPosit
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
 
         return matchFormationPlayerPositions.ToList();
+    }
+
+    /// <summary>
+    /// Retrieves a club's lineup rows for a match, each joined to its formation slot and to the player behind its position
+    /// rating, in slot order. The rows can span several formations.
+    /// </summary>
+    /// <param name="matchId">The identifier of the match.</param>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) whose lineup to retrieve.</param>
+    /// <returns>A list of the club's lineup rows, empty when it has none.</returns>
+    public async Task<List<GetMatchLineupRowsResult>> GetLineupRowsAsync(int matchId, int leagueTeamId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@MatchId", matchId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+
+        var rows = await _dapperDataContext.Connection.QueryAsync<GetMatchLineupRowsResult>(
+            "dbo.GetMatchLineupRows",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        return rows.ToList();
+    }
+
+    /// <summary>
+    /// Removes a club's whole lineup for a match.
+    /// </summary>
+    /// <param name="matchId">The identifier of the match.</param>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) whose lineup to remove.</param>
+    public async Task DeleteByMatchAndLeagueTeamAsync(int matchId, int leagueTeamId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@MatchId", matchId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+
+        await _dapperDataContext.Connection.ExecuteAsync(
+            "dbo.DeleteMatchFormationPlayerPositionsByMatchAndLeagueTeam",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
     }
 }

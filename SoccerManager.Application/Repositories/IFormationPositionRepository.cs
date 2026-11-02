@@ -1,3 +1,4 @@
+using SoccerManager.Application.Models;
 using SoccerManager.Domain.Entities;
 
 namespace SoccerManager.Application.Repositories;
@@ -40,4 +41,18 @@ public interface IFormationPositionRepository
     /// <param name="formationId">The identifier of the formation whose position slots to retrieve.</param>
     /// <returns>A list of every position slot belonging to the formation.</returns>
     Task<List<FormationPosition>> GetByFormationIdAsync(int formationId);
+
+    /// <summary>
+    /// Writes the pitch position of a formation position onto its row; two <see langword="null"/> coordinates clear it. Only the
+    /// two pitch columns change.
+    /// </summary>
+    /// <param name="formationPosition">The formation position whose identifier and <see cref="FormationPosition.PitchX"/> and <see cref="FormationPosition.PitchY"/> to write.</param>
+    Task SetPitchAsync(FormationPosition formationPosition);
+
+    /// <summary>
+    /// Retrieves every slot of the given formation with its position and its place on the pitch, in slot order.
+    /// </summary>
+    /// <param name="formationId">The identifier of the formation whose slots to retrieve.</param>
+    /// <returns>A list of the formation's slots, empty when the formation is unknown or has no slots.</returns>
+    Task<List<GetFormationSlotsResult>> GetSlotsAsync(int formationId);
 }

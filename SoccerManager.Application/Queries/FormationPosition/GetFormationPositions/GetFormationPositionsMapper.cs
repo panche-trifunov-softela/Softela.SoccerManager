@@ -20,6 +20,8 @@ public static class GetFormationPositionsMapper
             FormationId = formationPosition.FormationId,
             PositionId = formationPosition.PositionId,
             SlotNumber = formationPosition.SlotNumber,
+            PitchX = formationPosition.PitchX,
+            PitchY = formationPosition.PitchY,
             CreatedAt = formationPosition.CreatedAt,
             ModifiedAt = formationPosition.ModifiedAt,
         };

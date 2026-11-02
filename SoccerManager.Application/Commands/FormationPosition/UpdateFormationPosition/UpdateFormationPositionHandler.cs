@@ -27,7 +27,8 @@ public class UpdateFormationPositionHandler : IRequestHandler<UpdateFormationPos
     }
 
     /// <summary>
-    /// Updates an existing formation position slot with the values from the given request.
+    /// Updates an existing formation position slot with the values from the given request. A slot that becomes a reserve slot
+    /// loses its pitch position; a starter slot takes a new one when the request sends it and keeps its stored one otherwise.
     /// </summary>
     /// <param name="request">The update request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -46,7 +47,22 @@ public class UpdateFormationPositionHandler : IRequestHandler<UpdateFormationPos
 
             UpdateFormationPositionMapper.ApplyTo(request, formationPosition, now, _currentUser.UserId);
 
-            await _formationPositionRepository.UpdateAsync(formationPosition);
+            // A slot moving to a reserve number must lose its pitch BEFORE the update (CK_FormationPositions_PitchOnlyOnStarters would fail on
+            // the moved row); a starter slot gets a pitch sent with it AFTER the update (the same CHECK would fail on an old reserve number).
+            if (formationPosition.SlotNumber > 11)
+            {
+                await _formationPositionRepository.SetPitchAsync(formationPosition);
+                await _formationPositionRepository.UpdateAsync(formationPosition);
+            }
+            else
+            {
+                await _formationPositionRepository.UpdateAsync(formationPosition);
+
+                if (request.PitchX.HasValue)
+                {
+                    await _formationPositionRepository.SetPitchAsync(formationPosition);
+                }
+            }
 
             await _unitOfWork.CommitAsync(cancellationToken);
 

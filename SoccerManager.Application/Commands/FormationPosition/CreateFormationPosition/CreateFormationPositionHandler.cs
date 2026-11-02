@@ -27,7 +27,7 @@ public class CreateFormationPositionHandler : IRequestHandler<CreateFormationPos
     }
 
     /// <summary>
-    /// Creates a new formation position slot from the given request.
+    /// Creates a new formation position slot from the given request, placing it on the pitch when the request sends a pitch position.
     /// </summary>
     /// <param name="request">The create request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -43,6 +43,14 @@ public class CreateFormationPositionHandler : IRequestHandler<CreateFormationPos
         try
         {
             var id = await _formationPositionRepository.CreateAsync(formationPosition);
+
+            // The insert procedure doesn't know the pitch and leaves both NULL, which is right for a reserve slot; a placed slot gets it here.
+            if (formationPosition.PitchX.HasValue || formationPosition.PitchY.HasValue)
+            {
+                formationPosition.Id = id;
+
+                await _formationPositionRepository.SetPitchAsync(formationPosition);
+            }
 
             await _unitOfWork.CommitAsync(cancellationToken);
 

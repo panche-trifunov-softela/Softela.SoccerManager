@@ -73,4 +73,12 @@ public interface ILeagueTeamRepository
     /// <param name="teamId">The identifier of the team to look for.</param>
     /// <returns>The matching league team, or <see langword="null"/> when the team is not on the league's roster.</returns>
     Task<LeagueTeam?> GetByLeagueAndTeamAsync(int leagueId, int teamId);
+
+    /// <summary>
+    /// Retrieves the squad of the given league team as the lineup logic reads it: one row per registered player and position
+    /// rating, for the caller to group by player. A player registered twice is read through the oldest registration.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose squad to retrieve.</param>
+    /// <returns>A list of flat candidate rows, empty when the league team is unknown or has no players.</returns>
+    Task<List<GetLeagueTeamLineupCandidatesResult>> GetLineupCandidatesAsync(int leagueTeamId);
 }

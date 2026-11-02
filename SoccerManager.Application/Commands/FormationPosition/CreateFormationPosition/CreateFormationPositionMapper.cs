@@ -19,6 +19,8 @@ public static class CreateFormationPositionMapper
             FormationId = request.FormationId,
             PositionId = request.PositionId,
             SlotNumber = request.SlotNumber,
+            PitchX = request.PitchX,
+            PitchY = request.PitchY,
             CreatedAt = now,
             CreatedBy = userId,
             ModifiedAt = now,

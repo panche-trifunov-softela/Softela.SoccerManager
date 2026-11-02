@@ -7,6 +7,7 @@ using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.LeagueTeam.GetAvailableLeagueTeams;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamById;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamNextMatch;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquad;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquadMembers;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeams;
@@ -97,6 +98,23 @@ public class LeagueTeamController : ControllerBase
         var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamSquadMembersRequest { LeagueTeamId = id }, cancellationToken);
 
         return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the earliest match of the given league team that has not started, with its opponent and the club's lineup
+    /// for it. Allowed for an operator or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose next match to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The next match, or no content when the club has none to come.</returns>
+    [HttpGet("{id}/next-match")]
+    public async Task<IActionResult> GetLeagueTeamNextMatch(int id, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamNextMatchRequest { LeagueTeamId = id }, cancellationToken);
+
+        // 204 rather than 200 with a null body: the club having no match to come is not an error.
+        return result.Data is null ? NoContent() : Ok(result.Data);
     }
 
     /// <summary>

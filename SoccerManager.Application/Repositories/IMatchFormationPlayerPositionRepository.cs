@@ -1,3 +1,4 @@
+using SoccerManager.Application.Models;
 using SoccerManager.Domain.Entities;
 
 namespace SoccerManager.Application.Repositories;
@@ -48,4 +49,20 @@ public interface IMatchFormationPlayerPositionRepository
     /// <param name="matchId">The identifier of the match whose lineup slots to retrieve.</param>
     /// <returns>A list of every lineup slot recorded for the match.</returns>
     Task<List<MatchFormationPlayerPosition>> GetByMatchIdAsync(int matchId);
+
+    /// <summary>
+    /// Retrieves a club's lineup rows for a match, each joined to its formation slot and to the player behind its position
+    /// rating, in slot order. The rows can span several formations.
+    /// </summary>
+    /// <param name="matchId">The identifier of the match.</param>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) whose lineup to retrieve.</param>
+    /// <returns>A list of the club's lineup rows, empty when it has none.</returns>
+    Task<List<GetMatchLineupRowsResult>> GetLineupRowsAsync(int matchId, int leagueTeamId);
+
+    /// <summary>
+    /// Removes a club's whole lineup for a match.
+    /// </summary>
+    /// <param name="matchId">The identifier of the match.</param>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) whose lineup to remove.</param>
+    Task DeleteByMatchAndLeagueTeamAsync(int matchId, int leagueTeamId);
 }
