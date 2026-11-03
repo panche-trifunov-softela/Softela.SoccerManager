@@ -12,6 +12,7 @@ public class GetLeagueTeamNextMatchHandler : IRequestHandler<GetLeagueTeamNextMa
 {
     private readonly IMatchRepository _matchRepository;
     private readonly IMatchLineupService _lineupService;
+    private readonly IMatchTeamTacticRepository _matchTeamTacticRepository;
     private readonly IClubAccess _clubAccess;
 
     /// <summary>
@@ -19,16 +20,18 @@ public class GetLeagueTeamNextMatchHandler : IRequestHandler<GetLeagueTeamNextMa
     /// </summary>
     /// <param name="matchRepository">The repository used to find the club's next match.</param>
     /// <param name="lineupService">The service used to build the club's lineup for the match.</param>
+    /// <param name="matchTeamTacticRepository">The repository used to read the club's instructions for the match.</param>
     /// <param name="clubAccess">The check that the caller may manage the club.</param>
-    public GetLeagueTeamNextMatchHandler(IMatchRepository matchRepository, IMatchLineupService lineupService, IClubAccess clubAccess)
+    public GetLeagueTeamNextMatchHandler(IMatchRepository matchRepository, IMatchLineupService lineupService, IMatchTeamTacticRepository matchTeamTacticRepository, IClubAccess clubAccess)
     {
         _matchRepository = matchRepository;
         _lineupService = lineupService;
+        _matchTeamTacticRepository = matchTeamTacticRepository;
         _clubAccess = clubAccess;
     }
 
     /// <summary>
-    /// Retrieves the club's earliest match that has not started, with its opponent and the club's lineup for it.
+    /// Retrieves the club's earliest match that has not started, with its opponent and the club's lineup and instructions for it.
     /// </summary>
     /// <param name="request">The query request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -49,6 +52,8 @@ public class GetLeagueTeamNextMatchHandler : IRequestHandler<GetLeagueTeamNextMa
 
         var lineup = await _lineupService.GetLineupAsync(row.MatchId, request.LeagueTeamId, formationIdWhenEmpty: null);
 
-        return new GetLeagueTeamNextMatchResponse { Data = GetLeagueTeamNextMatchMapper.ToDto(row, lineup) };
+        var instructions = await _matchTeamTacticRepository.GetInstructionsAsync(row.MatchId, request.LeagueTeamId);
+
+        return new GetLeagueTeamNextMatchResponse { Data = GetLeagueTeamNextMatchMapper.ToDto(row, lineup, instructions) };
     }
 }

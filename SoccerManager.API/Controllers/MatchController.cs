@@ -6,6 +6,7 @@ using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.Match.AutoPickMatchLineup;
 using SoccerManager.Application.Commands.Match.CreateMatch;
 using SoccerManager.Application.Commands.Match.DeleteMatch;
+using SoccerManager.Application.Commands.Match.SaveMatchInstructions;
 using SoccerManager.Application.Commands.Match.SaveMatchLineup;
 using SoccerManager.Application.Commands.Match.UpdateMatch;
 using SoccerManager.Application.Core.Command;
@@ -132,6 +133,24 @@ public class MatchController : ControllerBase
 
         // A 200 rather than a 201: the pick replaces the lineup instead of creating a resource, and the body is the new lineup.
         return Ok(lineup);
+    }
+
+    /// <summary>
+    /// Changes one or more of a club's instructions for the match with the given identifier; the others keep their value.
+    /// Allowed for an operator, or the club's current manager while the club plays the match and it has not started.
+    /// </summary>
+    /// <param name="id">The identifier of the match whose instructions to change.</param>
+    /// <param name="request">The club, and the instructions to change.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The club's instructions after the change.</returns>
+    [HttpPut("{id}/instructions")]
+    public async Task<IActionResult> SaveMatchInstructions(int id, [FromBody] SaveMatchInstructionsRequest request, CancellationToken cancellationToken)
+    {
+        var command = request with { MatchId = id };
+        var instructions = await _commandDispatcher.SendAsync<MatchInstructionsDto, SaveMatchInstructionsRequest>(command, cancellationToken);
+
+        // Returns the instructions rather than { success }, because a client redraws its controls from them.
+        return Ok(instructions);
     }
 
     /// <summary>
