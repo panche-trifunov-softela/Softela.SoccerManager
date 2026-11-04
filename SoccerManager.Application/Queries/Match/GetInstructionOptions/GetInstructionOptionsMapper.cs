@@ -1,4 +1,5 @@
 using System.Text.Json;
+using SoccerManager.Application.Core.Extensions;
 using SoccerManager.Application.Dtos;
 
 namespace SoccerManager.Application.Queries.Match.GetInstructionOptions;
@@ -23,19 +24,10 @@ public static class GetInstructionOptionsMapper
         {
             // The policy the API writes its JSON with, so the field is the name a client finds in MatchInstructionsDto.
             Field = JsonNamingPolicy.CamelCase.ConvertName(name),
-            Label = ToWords(name),
+            Label = name.ToWords(),
             Options = Enum.GetValues<TInstruction>()
-                .Select(member => new InstructionOptionDto { Value = Convert.ToInt32(member), Label = ToWords(member.ToString()) })
+                .Select(member => new InstructionOptionDto { Value = Convert.ToInt32(member), Label = member.ToString().ToWords() })
                 .ToList(),
         };
-    }
-
-    private static string ToWords(string name)
-    {
-        // Each capital after the first starts a new lower-case word: HighPress reads as "High press".
-        var words = name.Select((letter, index) =>
-            index > 0 && char.IsUpper(letter) ? $" {char.ToLowerInvariant(letter)}" : letter.ToString());
-
-        return string.Concat(words);
     }
 }
