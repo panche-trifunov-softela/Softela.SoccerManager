@@ -45,8 +45,8 @@ public class SaveMatchLineupHandler : IRequestHandler<SaveMatchLineupRequest, Ma
 
     /// <summary>
     /// Applies the request's formation change, slot change, or both to the club's lineup for the match in one transaction,
-    /// snapshotting each player written. Rows of another formation than the lineup's, which the per-slot endpoints can leave,
-    /// are ignored, and are deleted only when the formation changes.
+    /// snapshotting each player written. Rows of another formation than the lineup's, which the removed per-slot endpoints may
+    /// have left, are ignored, and are deleted only when the formation changes.
     /// </summary>
     /// <param name="request">The save request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>

@@ -14,8 +14,8 @@ public static class SaveMatchLineupPlanner
     /// <summary>
     /// Plans a save: re-seats the stored lineup when the formation changes, puts the request's player in the request's slot
     /// on top, and checks every player the save writes. The lineup is the rows of the stored formation; rows of another
-    /// formation, which only the per-slot endpoints can leave, are ignored and left alone unless the formation changes, which
-    /// deletes every row.
+    /// formation, which only the removed per-slot endpoints may have left, are ignored and left alone unless the formation
+    /// changes, which deletes every row.
     /// </summary>
     /// <param name="request">The save request.</param>
     /// <param name="rows">Every stored row of the club for the match, in slot order.</param>

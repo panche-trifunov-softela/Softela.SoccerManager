@@ -1,6 +1,6 @@
 -- One club's lineup rows for a match, each joined to its formation slot and to the player behind its position rating, in slot
 -- order. SlotPositionId is the position the slot asks for (NULL on a reserve slot); PlayedPositionId is the position of the
--- rating the row uses. The rows can span several formations (the per-slot endpoints allow it); the caller picks the lineup's.
+-- rating the row uses. The rows can span several formations (the removed per-slot endpoints allowed it); the caller picks the lineup's.
 CREATE OR ALTER PROCEDURE dbo.GetMatchLineupRows
     @MatchId      INT,
     @LeagueTeamId INT

@@ -1,8 +1,7 @@
 -- Changes only the sent instructions of one club's tactic row for one match, behind PUT /api/matches/{id}/instructions: a NULL
--- parameter keeps its column. It is one statement, so two saves of different instructions both persist, unlike
--- dbo.UpdateMatchTeamTactic, which overwrites the whole row. It never touches the four roles, the match, the club or the
--- creation columns. It returns the row's seven instructions after the change, in the order of
--- dbo.GetMatchTeamTacticInstructions; no row for the club and match = nothing updated and nothing returned.
+-- parameter keeps its column. It is one statement, so two saves of different instructions both persist. It never touches the
+-- four roles, the match, the club or the creation columns. It returns the row's seven instructions after the change, in the
+-- order of dbo.GetMatchTeamTacticInstructions; no row for the club and match = nothing updated and nothing returned.
 CREATE OR ALTER PROCEDURE dbo.UpdateMatchTeamTacticInstructions
     @MatchId       INT,
     @LeagueTeamId  INT,
