@@ -12,6 +12,7 @@ using SoccerManager.Application.Commands.Match.UpdateMatch;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Dtos;
+using SoccerManager.Application.Queries.Match.GetInstructionOptions;
 using SoccerManager.Application.Queries.Match.GetMatchById;
 using SoccerManager.Application.Queries.Match.GetMatches;
 
@@ -49,6 +50,19 @@ public class MatchController : ControllerBase
     public async Task<IActionResult> GetMatches(CancellationToken cancellationToken)
     {
         var result = await _queryDispatcher.QueryAsync(new GetMatchesRequest(), cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the instructions a club gives for a match, each with its choices, for a client to offer.
+    /// </summary>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The instructions, in the order a client lays them out.</returns>
+    [HttpGet("instruction-options")]
+    public async Task<IActionResult> GetInstructionOptions(CancellationToken cancellationToken)
+    {
+        var result = await _queryDispatcher.QueryAsync(new GetInstructionOptionsRequest(), cancellationToken);
 
         return Ok(result.Data);
     }
