@@ -1,4 +1,4 @@
--- Backs the snapshot the MatchFormationPlayerPosition handlers take of a player's registration and the one-club-per-league check in the squad validators.
+-- Backs the one-club-per-league check in the squad validators.
 -- No database constraint guarantees at most one row any more (a race between two squad writes can let a duplicate through), so the rows come back ordered by Id and the repository's QueryFirstOrDefault returns the oldest registration (the lowest Id) when a race has left duplicates.
 CREATE OR ALTER PROCEDURE dbo.GetLeagueTeamPlayerByLeagueAndPlayer
     @LeagueId INT,

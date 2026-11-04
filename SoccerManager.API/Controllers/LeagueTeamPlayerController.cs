@@ -6,14 +6,12 @@ using SoccerManager.Application.Commands.LeagueTeamPlayer.DeleteLeagueTeamPlayer
 using SoccerManager.Application.Commands.LeagueTeamPlayer.UpdateLeagueTeamPlayer;
 using SoccerManager.Application.Commands.LeagueTeamPlayer.UpdateLeagueTeamPlayerSquadNumber;
 using SoccerManager.Application.Core.Command;
-using SoccerManager.Application.Core.Query;
-using SoccerManager.Application.Queries.LeagueTeamPlayer.GetLeagueTeamPlayerById;
-using SoccerManager.Application.Queries.LeagueTeamPlayer.GetLeagueTeamPlayers;
 
 namespace SoccerManager.API.Controllers;
 
 /// <summary>
-/// Exposes CRUD operations for league team players.
+/// Creates, changes and releases league team players. They are read through GET api/league-teams/{id}/squad, which only
+/// the club's current manager or an operator may call, because a registration holds the player's wage, morale and condition.
 /// </summary>
 [ApiController]
 [Authorize]
@@ -21,46 +19,14 @@ namespace SoccerManager.API.Controllers;
 public class LeagueTeamPlayerController : ControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
-    private readonly IQueryDispatcher _queryDispatcher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LeagueTeamPlayerController"/> class.
     /// </summary>
     /// <param name="commandDispatcher">The dispatcher used to send commands to their handlers.</param>
-    /// <param name="queryDispatcher">The dispatcher used to send queries to their handlers.</param>
-    public LeagueTeamPlayerController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
+    public LeagueTeamPlayerController(ICommandDispatcher commandDispatcher)
     {
         _commandDispatcher = commandDispatcher;
-        _queryDispatcher = queryDispatcher;
-    }
-
-    /// <summary>
-    /// Returns every player registration belonging to the given league team (a club's roster entry in a league).
-    /// </summary>
-    /// <param name="leagueTeamId">The identifier of the league team to filter by.</param>
-    /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The list of player registrations belonging to the league team.</returns>
-    [HttpGet]
-    public async Task<IActionResult> GetLeagueTeamPlayers([FromQuery] int leagueTeamId, CancellationToken cancellationToken)
-    {
-        // leagueTeamId is required; a missing or zero value is rejected as a 400 by the Application layer's validation pipeline.
-        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamPlayersRequest { LeagueTeamId = leagueTeamId }, cancellationToken);
-
-        return Ok(result.Data);
-    }
-
-    /// <summary>
-    /// Returns the league team player with the given identifier.
-    /// </summary>
-    /// <param name="id">The identifier of the league team player to retrieve.</param>
-    /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The matching league team player.</returns>
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetLeagueTeamPlayerById(int id, CancellationToken cancellationToken)
-    {
-        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamPlayerByIdRequest { Id = id }, cancellationToken);
-
-        return Ok(result.Data);
     }
 
     /// <summary>
@@ -75,7 +41,8 @@ public class LeagueTeamPlayerController : ControllerBase
     {
         var id = await _commandDispatcher.SendAsync<int, CreateLeagueTeamPlayerRequest>(request, cancellationToken);
 
-        return CreatedAtAction(nameof(GetLeagueTeamPlayerById), new { id }, new { id });
+        // No Location header: no route reads a single league team player.
+        return StatusCode(StatusCodes.Status201Created, new { id });
     }
 
     /// <summary>

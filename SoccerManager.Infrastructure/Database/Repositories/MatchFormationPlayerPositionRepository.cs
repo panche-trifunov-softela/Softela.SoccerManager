@@ -51,32 +51,6 @@ public class MatchFormationPlayerPositionRepository : IMatchFormationPlayerPosit
     }
 
     /// <summary>
-    /// Persists changes to an existing match formation player position.
-    /// </summary>
-    /// <param name="matchFormationPlayerPosition">The match formation player position with updated values.</param>
-    /// <returns>The identifier of the updated match formation player position.</returns>
-    public async Task<int> UpdateAsync(MatchFormationPlayerPosition matchFormationPlayerPosition)
-    {
-        var parameters = new DynamicParameters();
-        parameters.Add("@Id", matchFormationPlayerPosition.Id, DbType.Int32);
-        parameters.Add("@MatchId", matchFormationPlayerPosition.MatchId, DbType.Int32);
-        parameters.Add("@LeagueTeamId", matchFormationPlayerPosition.LeagueTeamId, DbType.Int32);
-        parameters.Add("@FormationPositionId", matchFormationPlayerPosition.FormationPositionId, DbType.Int32);
-        parameters.Add("@PlayerPositionId", matchFormationPlayerPosition.PlayerPositionId, DbType.Int32);
-        parameters.Add("@ConditionOnMatch", matchFormationPlayerPosition.ConditionOnMatch, DbType.Int32);
-        parameters.Add("@QualityAtPositionOnMatch", matchFormationPlayerPosition.QualityAtPositionOnMatch, DbType.Int32);
-        parameters.Add("@IsSuspended", matchFormationPlayerPosition.IsSuspended, DbType.Boolean);
-        parameters.Add("@ModifiedAt", matchFormationPlayerPosition.ModifiedAt, DbType.DateTime2);
-        parameters.Add("@ModifiedBy", matchFormationPlayerPosition.ModifiedBy, DbType.Guid);
-
-        return await _dapperDataContext.Connection.QuerySingleAsync<int>(
-            "dbo.UpdateMatchFormationPlayerPosition",
-            parameters,
-            transaction: _dapperDataContext.Transaction,
-            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Removes a match formation player position by its identifier.
     /// </summary>
     /// <param name="id">The identifier of the match formation player position to delete.</param>
@@ -109,42 +83,6 @@ public class MatchFormationPlayerPositionRepository : IMatchFormationPlayerPosit
             parameters,
             transaction: _dapperDataContext.Transaction,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Retrieves a match formation player position by its identifier.
-    /// </summary>
-    /// <param name="id">The identifier of the match formation player position to retrieve.</param>
-    /// <returns>The matching match formation player position, or <see langword="null"/> when none exists.</returns>
-    public async Task<MatchFormationPlayerPosition?> GetByIdAsync(int id)
-    {
-        var parameters = new DynamicParameters();
-        parameters.Add("@Id", id, DbType.Int32);
-
-        return await _dapperDataContext.Connection.QueryFirstOrDefaultAsync<MatchFormationPlayerPosition>(
-            "dbo.GetMatchFormationPlayerPositionById",
-            parameters,
-            transaction: _dapperDataContext.Transaction,
-            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Retrieves every lineup slot recorded for the given match.
-    /// </summary>
-    /// <param name="matchId">The identifier of the match whose lineup slots to retrieve.</param>
-    /// <returns>A list of every lineup slot recorded for the match.</returns>
-    public async Task<List<MatchFormationPlayerPosition>> GetByMatchIdAsync(int matchId)
-    {
-        var parameters = new DynamicParameters();
-        parameters.Add("@MatchId", matchId, DbType.Int32);
-
-        var matchFormationPlayerPositions = await _dapperDataContext.Connection.QueryAsync<MatchFormationPlayerPosition>(
-            "dbo.GetMatchFormationPlayerPositions",
-            parameters,
-            transaction: _dapperDataContext.Transaction,
-            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
-
-        return matchFormationPlayerPositions.ToList();
     }
 
     /// <summary>
