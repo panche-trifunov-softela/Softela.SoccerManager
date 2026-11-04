@@ -1,3 +1,4 @@
+using SoccerManager.Application.Core.Extensions;
 using SoccerManager.Application.Dtos;
 using SoccerManager.Application.Models;
 
@@ -33,6 +34,7 @@ public static class GetLeagueTeamSquadMembersMapper
             Value = row.Value,
             Wage = row.Wage,
             Morale = row.Morale,
+            MoraleLabel = row.Morale.ToString().ToWords(),
             Condition = row.Condition,
             IsSuspended = row.IsSuspended,
         };

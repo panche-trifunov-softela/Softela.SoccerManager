@@ -1,3 +1,4 @@
+using SoccerManager.Application.Core.Extensions;
 using SoccerManager.Application.Dtos;
 using SoccerManager.Application.Models;
 
@@ -21,6 +22,7 @@ public static class GetAvailableLeagueTeamsMapper
             TeamName = row.TeamName,
             TeamLogoUrl = row.TeamLogoUrl,
             TeamFinancialState = row.TeamFinancialState,
+            TeamFinancialStateLabel = row.TeamFinancialState.ToString().ToWords(),
             IsManaged = row.IsManaged,
             HasPendingApplication = row.HasPendingApplication,
         };

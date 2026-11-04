@@ -89,6 +89,11 @@ public sealed record LeagueTeamSquadMemberDto
     public Morale Morale { get; init; }
 
     /// <summary>
+    /// The player's morale in words, for example Very satisfied.
+    /// </summary>
+    public required string MoraleLabel { get; init; }
+
+    /// <summary>
     /// The player's physical condition, from 1 to 100 inclusive.
     /// </summary>
     public int Condition { get; init; }

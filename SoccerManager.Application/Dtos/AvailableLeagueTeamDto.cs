@@ -29,6 +29,11 @@ public sealed record AvailableLeagueTeamDto
     public FinancialState TeamFinancialState { get; init; }
 
     /// <summary>
+    /// The financial state of the team in words, for example Very rich.
+    /// </summary>
+    public required string TeamFinancialStateLabel { get; init; }
+
+    /// <summary>
     /// Whether the club has a current manager in the league; a managed club cannot be applied for.
     /// </summary>
     public bool IsManaged { get; init; }
