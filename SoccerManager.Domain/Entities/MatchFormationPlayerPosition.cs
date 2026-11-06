@@ -23,7 +23,8 @@ public class MatchFormationPlayerPosition : BaseEntity
     public int FormationPositionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the player position rating filling the slot.
+    /// Gets or sets the identifier of the player position rating filling the slot: the one for the slot's position when the
+    /// player has one, otherwise their main one.
     /// </summary>
     public int PlayerPositionId { get; set; }
 
@@ -34,8 +35,8 @@ public class MatchFormationPlayerPosition : BaseEntity
     public int ConditionOnMatch { get; set; }
 
     /// <summary>
-    /// Gets or sets the player's quality in the position at the time of the match, from 1 to 100,
-    /// copied from the position rating.
+    /// Gets or sets the player's quality for the slot at the time of the match, from 1 to 100. It is copied from the position
+    /// rating, except on a starter slot whose position the player has no rating for, where it is worked out from the two areas.
     /// </summary>
     public int QualityAtPositionOnMatch { get; set; }
 

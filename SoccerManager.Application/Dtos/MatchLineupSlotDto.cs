@@ -1,3 +1,5 @@
+using SoccerManager.Domain.Enums;
+
 namespace SoccerManager.Application.Dtos;
 
 /// <summary>
@@ -59,9 +61,16 @@ public sealed record MatchLineupSlotDto
     public int? ConditionOnMatch { get; init; }
 
     /// <summary>
-    /// The quality of the used rating when the row was written, or <see langword="null"/> when the slot is empty.
+    /// The player's quality in the slot's position when the row was written, or <see langword="null"/> when the slot is empty. A
+    /// reserve slot asks for no position, so it holds the quality of the player's main rating.
     /// </summary>
     public int? QualityAtPositionOnMatch { get; init; }
+
+    /// <summary>
+    /// How well the player suits the slot's position, worked out from the quality, or <see langword="null"/> for an empty slot
+    /// and for a reserve slot, which asks for no position.
+    /// </summary>
+    public PositionFit? Fit { get; init; }
 
     /// <summary>
     /// Whether the player was suspended when the row was written, or <see langword="null"/> when the slot is empty.

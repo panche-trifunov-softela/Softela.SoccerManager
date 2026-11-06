@@ -53,7 +53,7 @@ public class GetMatchLineupRowsResult
     public int ConditionOnMatch { get; set; }
 
     /// <summary>
-    /// The quality of the used rating when the row was written.
+    /// The player's quality for the slot when the row was written.
     /// </summary>
     public int QualityAtPositionOnMatch { get; set; }
 

@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
+using SoccerManager.Application.Core.Extensions;
 using SoccerManager.Application.Dtos;
 using SoccerManager.Application.Models;
 using SoccerManager.Application.Repositories;
@@ -92,8 +93,8 @@ public class MatchLineupService : IMatchLineupService
     }
 
     /// <summary>
-    /// Writes lineup rows for the given assignments, snapshotting each player's condition, the quality of the rating used and
-    /// suspension from the squad. Every assigned player must be in the squad with position data.
+    /// Writes lineup rows for the given assignments, snapshotting each player's condition, quality for the slot and suspension
+    /// from the squad. Every assigned player must be in the squad with position data.
     /// </summary>
     /// <param name="matchId">The identifier of the match.</param>
     /// <param name="leagueTeamId">The identifier of the league team (the club in its league) the rows are for.</param>
@@ -109,17 +110,20 @@ public class MatchLineupService : IMatchLineupService
             var slot = slots.First(formationSlot => formationSlot.SlotNumber == slotNumber);
             var candidate = squad[playerId];
 
-            // A starter slot uses the player's rating for its position when he has one; otherwise, and on the bench, his main rating.
-            var rating = candidate.RowFor(slot.PositionId) ?? candidate.Main!;
+            // The row always points at a rating the player has: the one for the slot's position, else their main one. Only a
+            // starter slot they have no rating for gets a quality worked out from the two areas rather than copied.
+            var rating = candidate.RowFor(slot.PositionId);
+            var main = candidate.Main!;
+            var quality = rating?.Quality ?? slot.PositionArea?.ToUnratedQuality(main.Area) ?? main.Quality;
 
             var lineupRow = new MatchFormationPlayerPosition
             {
                 MatchId = matchId,
                 LeagueTeamId = leagueTeamId,
                 FormationPositionId = slot.FormationPositionId,
-                PlayerPositionId = rating.PlayerPositionId,
+                PlayerPositionId = (rating ?? main).PlayerPositionId,
                 ConditionOnMatch = candidate.Condition,
-                QualityAtPositionOnMatch = rating.Quality,
+                QualityAtPositionOnMatch = quality,
                 IsSuspended = candidate.IsSuspended,
                 CreatedAt = now,
                 ModifiedAt = now,
@@ -197,7 +201,7 @@ public class MatchLineupService : IMatchLineupService
     private static LineupCandidatePosition? ToPosition(GetLeagueTeamLineupCandidatesResult row)
     {
         // A player with no position rating is one row with these columns null.
-        if (row.PlayerPositionId is not int playerPositionId || row.PositionId is not int positionId || row.Quality is not int quality)
+        if (row.PlayerPositionId is not int playerPositionId || row.PositionId is not int positionId || row.Quality is not int quality || row.PositionArea is not PositionArea area)
         {
             return null;
         }
@@ -207,7 +211,7 @@ public class MatchLineupService : IMatchLineupService
             PlayerPositionId = playerPositionId,
             PositionId = positionId,
             Quality = quality,
-            IsGoalkeeper = row.PositionArea == PositionArea.Goalkeeper,
+            Area = area,
         };
     }
 
@@ -226,6 +230,7 @@ public class MatchLineupService : IMatchLineupService
             PlayedPositionId = row?.PlayedPositionId,
             ConditionOnMatch = row?.ConditionOnMatch,
             QualityAtPositionOnMatch = row?.QualityAtPositionOnMatch,
+            Fit = slot.PositionId is null ? null : row?.QualityAtPositionOnMatch.ToPositionFit(),
             IsSuspended = row?.IsSuspended,
         };
     }
