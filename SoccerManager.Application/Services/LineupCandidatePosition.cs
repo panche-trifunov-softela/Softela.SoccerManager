@@ -1,3 +1,5 @@
+using SoccerManager.Domain.Enums;
+
 namespace SoccerManager.Application.Services;
 
 /// <summary>
@@ -21,7 +23,12 @@ public sealed record LineupCandidatePosition
     public int Quality { get; init; }
 
     /// <summary>
+    /// The area of the pitch the position occupies.
+    /// </summary>
+    public PositionArea Area { get; init; }
+
+    /// <summary>
     /// Whether the position is in the goalkeeper area.
     /// </summary>
-    public bool IsGoalkeeper { get; init; }
+    public bool IsGoalkeeper => Area == PositionArea.Goalkeeper;
 }

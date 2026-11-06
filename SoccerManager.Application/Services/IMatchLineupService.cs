@@ -35,8 +35,8 @@ public interface IMatchLineupService
     Task<IReadOnlyDictionary<int, LineupCandidate>> GetSquadAsync(int leagueTeamId);
 
     /// <summary>
-    /// Writes lineup rows for the given assignments, snapshotting each player's condition, the quality of the rating used and
-    /// suspension from the squad. Every assigned player must be in the squad with position data.
+    /// Writes lineup rows for the given assignments, snapshotting each player's condition, quality for the slot and suspension
+    /// from the squad. Every assigned player must be in the squad with position data.
     /// </summary>
     /// <param name="matchId">The identifier of the match.</param>
     /// <param name="leagueTeamId">The identifier of the league team (the club in its league) the rows are for.</param>
