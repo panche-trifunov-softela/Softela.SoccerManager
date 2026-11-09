@@ -108,28 +108,8 @@ public class MatchLineupService : IMatchLineupService
         foreach (var (slotNumber, playerId) in assignments.OrderBy(assignment => assignment.Key))
         {
             var slot = slots.First(formationSlot => formationSlot.SlotNumber == slotNumber);
-            var candidate = squad[playerId];
 
-            // The row always points at a rating the player has: the one for the slot's position, else their main one. Only a
-            // starter slot they have no rating for gets a quality worked out from the two areas rather than copied.
-            var rating = candidate.RowFor(slot.PositionId);
-            var main = candidate.Main!;
-            var quality = rating?.Quality ?? slot.PositionArea?.ToUnratedQuality(main.Area) ?? main.Quality;
-
-            var lineupRow = new MatchFormationPlayerPosition
-            {
-                MatchId = matchId,
-                LeagueTeamId = leagueTeamId,
-                FormationPositionId = slot.FormationPositionId,
-                PlayerPositionId = (rating ?? main).PlayerPositionId,
-                ConditionOnMatch = candidate.Condition,
-                QualityAtPositionOnMatch = quality,
-                IsSuspended = candidate.IsSuspended,
-                CreatedAt = now,
-                ModifiedAt = now,
-                CreatedBy = userId,
-                ModifiedBy = userId,
-            };
+            var lineupRow = MatchLineupSnapshot.ToRow<MatchFormationPlayerPosition>(matchId, leagueTeamId, slot, squad[playerId], now, userId);
 
             await _matchFormationPlayerPositionRepository.CreateAsync(lineupRow);
         }
@@ -147,6 +127,20 @@ public class MatchLineupService : IMatchLineupService
     {
         var rows = await _matchFormationPlayerPositionRepository.GetLineupRowsAsync(matchId, leagueTeamId);
 
+        return await BuildLineupAsync(matchId, leagueTeamId, rows, formationIdWhenEmpty);
+    }
+
+    /// <summary>
+    /// Builds a lineup from the given rows: every slot of their formation, filled or empty. The formation is the one of the first
+    /// row; rows of any other formation are ignored, and the first of two rows in one slot wins.
+    /// </summary>
+    /// <param name="matchId">The identifier of the match.</param>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) the lineup belongs to.</param>
+    /// <param name="rows">The lineup's rows in slot order, a main lineup's or a substitution's.</param>
+    /// <param name="formationIdWhenEmpty">The formation to show when there are no rows, or <see langword="null"/> for the default one.</param>
+    /// <returns>The lineup, with no formation name and no slots when the formation has no slots, and no formation at all when none is given and no default exists.</returns>
+    public async Task<MatchLineupDto> BuildLineupAsync(int matchId, int leagueTeamId, IReadOnlyList<GetMatchLineupRowsResult> rows, int? formationIdWhenEmpty)
+    {
         // The rows come in slot order, so the first one names the lineup's formation. The default formation is read only for an
         // empty lineup that names none.
         var formationId = rows.Count > 0 ? rows[0].FormationId : formationIdWhenEmpty ?? await GetDefaultFormationIdAsync();

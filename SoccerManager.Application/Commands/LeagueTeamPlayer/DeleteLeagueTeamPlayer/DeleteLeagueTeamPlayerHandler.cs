@@ -7,13 +7,14 @@ namespace SoccerManager.Application.Commands.LeagueTeamPlayer.DeleteLeagueTeamPl
 
 /// <summary>
 /// Handles <see cref="DeleteLeagueTeamPlayerRequest"/> commands. This performs a hard delete, as the
-/// entity carries no soft-delete flag. Releasing a player also removes them from the club's lineups for
-/// matches that have not started.
+/// entity carries no soft-delete flag. Releasing a player also removes them from the club's lineups and
+/// substitution lineups for matches that have not started.
 /// </summary>
 public class DeleteLeagueTeamPlayerHandler : IRequestHandler<DeleteLeagueTeamPlayerRequest, bool>
 {
     private readonly ILeagueTeamPlayerRepository _leagueTeamPlayerRepository;
     private readonly IMatchFormationPlayerPositionRepository _matchFormationPlayerPositionRepository;
+    private readonly IMatchFormationPlayerPositionSubstitutionRepository _matchFormationPlayerPositionSubstitutionRepository;
     private readonly IClubAccess _clubAccess;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -22,12 +23,14 @@ public class DeleteLeagueTeamPlayerHandler : IRequestHandler<DeleteLeagueTeamPla
     /// </summary>
     /// <param name="leagueTeamPlayerRepository">The repository used to load and delete league team players.</param>
     /// <param name="matchFormationPlayerPositionRepository">The repository used to remove the released player from upcoming lineups.</param>
+    /// <param name="matchFormationPlayerPositionSubstitutionRepository">The repository used to remove the released player from upcoming substitution lineups.</param>
     /// <param name="clubAccess">The check that the caller may change the player's club.</param>
     /// <param name="unitOfWork">The unit of work used to group the write into one transaction.</param>
-    public DeleteLeagueTeamPlayerHandler(ILeagueTeamPlayerRepository leagueTeamPlayerRepository, IMatchFormationPlayerPositionRepository matchFormationPlayerPositionRepository, IClubAccess clubAccess, IUnitOfWork unitOfWork)
+    public DeleteLeagueTeamPlayerHandler(ILeagueTeamPlayerRepository leagueTeamPlayerRepository, IMatchFormationPlayerPositionRepository matchFormationPlayerPositionRepository, IMatchFormationPlayerPositionSubstitutionRepository matchFormationPlayerPositionSubstitutionRepository, IClubAccess clubAccess, IUnitOfWork unitOfWork)
     {
         _leagueTeamPlayerRepository = leagueTeamPlayerRepository;
         _matchFormationPlayerPositionRepository = matchFormationPlayerPositionRepository;
+        _matchFormationPlayerPositionSubstitutionRepository = matchFormationPlayerPositionSubstitutionRepository;
         _clubAccess = clubAccess;
         _unitOfWork = unitOfWork;
     }
@@ -53,6 +56,8 @@ public class DeleteLeagueTeamPlayerHandler : IRequestHandler<DeleteLeagueTeamPla
 
             // Done for every caller, operators included: a released player must not stay in a lineup for a match still to come.
             await _matchFormationPlayerPositionRepository.DeleteUnstartedByLeagueTeamAndPlayerAsync(leagueTeamPlayer.LeagueTeamId, leagueTeamPlayer.PlayerId);
+
+            await _matchFormationPlayerPositionSubstitutionRepository.DeleteUnstartedByLeagueTeamAndPlayerAsync(leagueTeamPlayer.LeagueTeamId, leagueTeamPlayer.PlayerId);
 
             await _leagueTeamPlayerRepository.DeleteAsync(request.Id);
 

@@ -58,6 +58,8 @@ public static class BuilderExtensions
         services.AddScoped<IFormationRepository, FormationRepository>();
         services.AddScoped<IFormationPositionRepository, FormationPositionRepository>();
         services.AddScoped<IMatchFormationPlayerPositionRepository, MatchFormationPlayerPositionRepository>();
+        services.AddScoped<IMatchTeamTacticSubstitutionRepository, MatchTeamTacticSubstitutionRepository>();
+        services.AddScoped<IMatchFormationPlayerPositionSubstitutionRepository, MatchFormationPlayerPositionSubstitutionRepository>();
         services.AddScoped<ICompetitionRepository, CompetitionRepository>();
         services.AddScoped<INationalTeamRepository, NationalTeamRepository>();
         services.AddScoped<IRefereeRepository, RefereeRepository>();

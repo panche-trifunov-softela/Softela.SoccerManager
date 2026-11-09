@@ -38,6 +38,7 @@ public static class BuilderExtensions
         services.AddScoped<ILeagueAccess, LeagueAccess>();
         services.AddScoped<ILineupAutoPicker, LineupAutoPicker>();
         services.AddScoped<IMatchLineupService, MatchLineupService>();
+        services.AddScoped<IMatchSubstitutionService, MatchSubstitutionService>();
 
         // Registered after the validators so the behaviour resolves the ones scanned above.
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

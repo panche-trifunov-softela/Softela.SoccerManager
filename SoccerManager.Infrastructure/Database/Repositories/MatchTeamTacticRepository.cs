@@ -114,4 +114,23 @@ public class MatchTeamTacticRepository : IMatchTeamTacticRepository
             transaction: _dapperDataContext.Transaction,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Retrieves the four roles of a club's main tactic for a match. It never writes.
+    /// </summary>
+    /// <param name="matchId">The identifier of the match.</param>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league).</param>
+    /// <returns>The club's roles for the match, or <see langword="null"/> when the club has no tactic for the match.</returns>
+    public async Task<GetMatchTeamTacticRolesResult?> GetRolesAsync(int matchId, int leagueTeamId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@MatchId", matchId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+
+        return await _dapperDataContext.Connection.QuerySingleOrDefaultAsync<GetMatchTeamTacticRolesResult>(
+            "dbo.GetMatchTeamTacticRoles",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
 }
