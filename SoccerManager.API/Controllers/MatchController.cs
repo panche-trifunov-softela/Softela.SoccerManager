@@ -6,8 +6,11 @@ using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.Match.AutoPickMatchLineup;
 using SoccerManager.Application.Commands.Match.CreateMatch;
 using SoccerManager.Application.Commands.Match.DeleteMatch;
+using SoccerManager.Application.Commands.Match.DeleteMatchSubstitution;
 using SoccerManager.Application.Commands.Match.SaveMatchInstructions;
+using SoccerManager.Application.Commands.Match.SaveMatchInstructionsSubstitution;
 using SoccerManager.Application.Commands.Match.SaveMatchLineup;
+using SoccerManager.Application.Commands.Match.SaveMatchLineupSubstitution;
 using SoccerManager.Application.Commands.Match.UpdateMatch;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
@@ -15,6 +18,9 @@ using SoccerManager.Application.Dtos;
 using SoccerManager.Application.Queries.Match.GetInstructionOptions;
 using SoccerManager.Application.Queries.Match.GetMatchById;
 using SoccerManager.Application.Queries.Match.GetMatches;
+using SoccerManager.Application.Queries.Match.GetMatchSubstitutions;
+using SoccerManager.Application.Queries.Match.GetSubstitutionOptions;
+using SoccerManager.Domain.Enums;
 
 namespace SoccerManager.API.Controllers;
 
@@ -63,6 +69,19 @@ public class MatchController : ControllerBase
     public async Task<IActionResult> GetInstructionOptions(CancellationToken cancellationToken)
     {
         var result = await _queryDispatcher.QueryAsync(new GetInstructionOptionsRequest(), cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the choices a club picks a substitution's minute and situation from, for a client to offer.
+    /// </summary>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The minute, then the situation, each with its choices.</returns>
+    [HttpGet("substitution-options")]
+    public async Task<IActionResult> GetSubstitutionOptions(CancellationToken cancellationToken)
+    {
+        var result = await _queryDispatcher.QueryAsync(new GetSubstitutionOptionsRequest(), cancellationToken);
 
         return Ok(result.Data);
     }
@@ -165,6 +184,80 @@ public class MatchController : ControllerBase
 
         // Returns the instructions rather than { success }, because a client redraws its controls from them.
         return Ok(instructions);
+    }
+
+    /// <summary>
+    /// Returns a club's substitutions for the match with the given identifier: for each minute and situation it saved, the
+    /// lineup and instructions the club switches to. Allowed for an operator, or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the match whose substitutions to return.</param>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) whose substitutions to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The club's substitutions, ordered by minute, then situation.</returns>
+    [HttpGet("{id}/substitutions")]
+    public async Task<IActionResult> GetMatchSubstitutions(int id, [FromQuery] int leagueTeamId, CancellationToken cancellationToken)
+    {
+        var result = await _queryDispatcher.QueryAsync(new GetMatchSubstitutionsRequest { MatchId = id, LeagueTeamId = leagueTeamId }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Changes a club's substitution lineup for the match with the given identifier at a minute and situation: its formation,
+    /// one slot, or both, creating the substitution from the main lineup first. A club's substitutions for a match share one
+    /// minute. Allowed for an operator, or the club's current manager while the club plays the match and it has not started.
+    /// </summary>
+    /// <param name="id">The identifier of the match whose substitution to change.</param>
+    /// <param name="request">The club, the minute and situation, and the formation change, the slot change, or both to apply.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The club's substitutions after the change.</returns>
+    [HttpPut("{id}/substitutions/lineup")]
+    public async Task<IActionResult> SaveMatchLineupSubstitution(int id, [FromBody] SaveMatchLineupSubstitutionRequest request, CancellationToken cancellationToken)
+    {
+        var command = request with { MatchId = id };
+        var substitutions = await _commandDispatcher.SendAsync<IReadOnlyList<MatchSubstitutionDto>, SaveMatchLineupSubstitutionRequest>(command, cancellationToken);
+
+        // Returns every substitution rather than { success }, because a client redraws its pitch and its saved list from them.
+        return Ok(substitutions);
+    }
+
+    /// <summary>
+    /// Changes one or more of a club's instructions in its substitution for the match with the given identifier at a minute
+    /// and situation, creating the substitution from the main lineup first; the others keep their value. Same access as the
+    /// lineup change.
+    /// </summary>
+    /// <param name="id">The identifier of the match whose substitution to change.</param>
+    /// <param name="request">The club, the minute and situation, and the instructions to change.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The club's substitutions after the change.</returns>
+    [HttpPut("{id}/substitutions/instructions")]
+    public async Task<IActionResult> SaveMatchInstructionsSubstitution(int id, [FromBody] SaveMatchInstructionsSubstitutionRequest request, CancellationToken cancellationToken)
+    {
+        var command = request with { MatchId = id };
+        var substitutions = await _commandDispatcher.SendAsync<IReadOnlyList<MatchSubstitutionDto>, SaveMatchInstructionsSubstitutionRequest>(command, cancellationToken);
+
+        // Returns every substitution rather than { success }, because a client redraws its controls and its saved list from them.
+        return Ok(substitutions);
+    }
+
+    /// <summary>
+    /// Deletes a club's substitution for the match with the given identifier at a minute and situation. Allowed for an
+    /// operator, or the club's current manager while the club plays the match and it has not started.
+    /// </summary>
+    /// <param name="id">The identifier of the match whose substitution to delete.</param>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) whose substitution to delete.</param>
+    /// <param name="minuteAt">The minute of the substitution to delete: 45, 60 or 75.</param>
+    /// <param name="situation">The situation of the substitution to delete.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The club's substitutions that are left.</returns>
+    [HttpDelete("{id}/substitutions")]
+    public async Task<IActionResult> DeleteMatchSubstitution(int id, [FromQuery] int leagueTeamId, [FromQuery] int minuteAt, [FromQuery] Situation situation, CancellationToken cancellationToken)
+    {
+        var command = new DeleteMatchSubstitutionRequest { MatchId = id, LeagueTeamId = leagueTeamId, MinuteAt = minuteAt, Situation = situation };
+        var substitutions = await _commandDispatcher.SendAsync<IReadOnlyList<MatchSubstitutionDto>, DeleteMatchSubstitutionRequest>(command, cancellationToken);
+
+        // Returns the substitutions left rather than { success }, because a client redraws its saved list from them.
+        return Ok(substitutions);
     }
 
     /// <summary>

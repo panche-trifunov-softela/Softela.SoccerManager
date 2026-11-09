@@ -56,4 +56,15 @@ public interface IMatchLineupService
     /// <param name="formationIdWhenEmpty">The formation to show when the club has no rows, or <see langword="null"/> for the default one.</param>
     /// <returns>The lineup, with no formation name and no slots when the formation has no slots, and no formation at all when none is stored and no default exists.</returns>
     Task<MatchLineupDto> GetLineupAsync(int matchId, int leagueTeamId, int? formationIdWhenEmpty);
+
+    /// <summary>
+    /// Builds a lineup from the given rows: every slot of their formation, filled or empty. The formation is the one of the first
+    /// row; rows of any other formation are ignored, and the first of two rows in one slot wins.
+    /// </summary>
+    /// <param name="matchId">The identifier of the match.</param>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) the lineup belongs to.</param>
+    /// <param name="rows">The lineup's rows in slot order, a main lineup's or a substitution's.</param>
+    /// <param name="formationIdWhenEmpty">The formation to show when there are no rows, or <see langword="null"/> for the default one.</param>
+    /// <returns>The lineup, with no formation name and no slots when the formation has no slots, and no formation at all when none is given and no default exists.</returns>
+    Task<MatchLineupDto> BuildLineupAsync(int matchId, int leagueTeamId, IReadOnlyList<GetMatchLineupRowsResult> rows, int? formationIdWhenEmpty);
 }

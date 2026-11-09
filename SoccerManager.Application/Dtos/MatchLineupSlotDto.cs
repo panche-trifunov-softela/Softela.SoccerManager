@@ -76,4 +76,11 @@ public sealed record MatchLineupSlotDto
     /// Whether the player was suspended when the row was written, or <see langword="null"/> when the slot is empty.
     /// </summary>
     public bool? IsSuspended { get; init; }
+
+    /// <summary>
+    /// How a substitution moves the slot's player compared with the club's main lineup: <see cref="SubstitutionDirection.ComingOn"/>
+    /// for a starter who is not a main starter, <see cref="SubstitutionDirection.GoingOff"/> for a reserve who is one, otherwise
+    /// <see langword="null"/>. Always <see langword="null"/> on a main lineup.
+    /// </summary>
+    public SubstitutionDirection? Substitution { get; init; }
 }

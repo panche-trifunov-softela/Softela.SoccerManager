@@ -42,4 +42,12 @@ public interface IMatchTeamTacticRepository
     /// <param name="modifiedBy">The identifier of the user making the change.</param>
     /// <returns>The club's instructions after the change, or <see langword="null"/> when the club has no tactic for the match.</returns>
     Task<GetMatchTeamTacticInstructionsResult?> UpdateInstructionsAsync(int matchId, int leagueTeamId, Mentality? mentality, Tempo? tempo, Passing? passing, Width? width, Pressing? pressing, Tackling? tackling, AttackingSide? attackingSide, DateTime modifiedAt, Guid modifiedBy);
+
+    /// <summary>
+    /// Retrieves the four roles of a club's main tactic for a match. It never writes.
+    /// </summary>
+    /// <param name="matchId">The identifier of the match.</param>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league).</param>
+    /// <returns>The club's roles for the match, or <see langword="null"/> when the club has no tactic for the match.</returns>
+    Task<GetMatchTeamTacticRolesResult?> GetRolesAsync(int matchId, int leagueTeamId);
 }
