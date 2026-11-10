@@ -16,6 +16,11 @@ public class MatchPlayerStatistic : BaseEntity
     public int MatchId { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the league team (the club in its league) the player played for in the match.
+    /// </summary>
+    public int LeagueTeamId { get; set; }
+
+    /// <summary>
     /// Gets or sets the player's rating for the match, from 5.0 to 10.0 inclusive.
     /// </summary>
     public decimal Rating { get; set; }
@@ -31,9 +36,15 @@ public class MatchPlayerStatistic : BaseEntity
     public int MinutesPlayed { get; set; }
 
     /// <summary>
-    /// Gets or sets the total number of goals scored, including penalties scored.
+    /// Gets or sets the number of goals the player scored in the match, in-play penalties and extra time included. Own goals
+    /// and shootout kicks are not counted here.
     /// </summary>
     public int Goals { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of goals the player put into their own net, which count for the opponent.
+    /// </summary>
+    public int OwnGoals { get; set; }
 
     /// <summary>
     /// Gets or sets the number of assists made.

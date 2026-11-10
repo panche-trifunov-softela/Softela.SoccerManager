@@ -31,7 +31,11 @@ BEGIN
         OR EXISTS (
         SELECT 1 FROM dbo.MatchTeamTacticSubstitutions WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id)
         OR EXISTS (
-        SELECT 1 FROM dbo.MatchFormationPlayerPositionSubstitutions WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id) THEN 1 ELSE 0 END;
+        SELECT 1 FROM dbo.MatchFormationPlayerPositionSubstitutions WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id)
+        OR EXISTS (
+        SELECT 1 FROM dbo.MatchPlayerStatistics WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id)
+        OR EXISTS (
+        SELECT 1 FROM dbo.PenaltiesAfterExtraTime WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id) THEN 1 ELSE 0 END;
 
     DECLARE @Deleted BIT = 0;
 

@@ -35,7 +35,8 @@ public class DeleteLeagueTeamResult
     public bool HasStandings { get; set; }
 
     /// <summary>
-    /// Whether the club still has match rows (statistics, tactics or formation positions) in the league.
+    /// Whether the club still has match rows in the league: team statistics, tactics, formation positions, substitutions,
+    /// player statistics or shootout kicks.
     /// </summary>
     public bool HasMatches { get; set; }
 }
