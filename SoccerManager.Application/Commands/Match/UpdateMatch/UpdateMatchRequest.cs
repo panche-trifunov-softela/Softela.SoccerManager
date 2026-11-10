@@ -46,4 +46,10 @@ public sealed record UpdateMatchRequest : IRequest<bool>
     /// Whether the match has started.
     /// </summary>
     public bool IsStarted { get; init; }
+
+    /// <summary>
+    /// Whether the match has finished. It requires <see cref="IsStarted"/>, and a request that leaves it out sets it
+    /// to <see langword="false"/>.
+    /// </summary>
+    public bool IsFinished { get; init; }
 }

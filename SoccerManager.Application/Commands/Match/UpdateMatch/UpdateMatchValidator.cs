@@ -20,5 +20,11 @@ public sealed class UpdateMatchValidator : AbstractValidator<UpdateMatchRequest>
         RuleFor(x => x.RefereeId).GreaterThan(0).When(x => x.RefereeId.HasValue);
 
         RuleFor(x => x.Attendance).GreaterThanOrEqualTo(0);
+
+        // Mirrors CK_Matches_FinishedHasStarted, so a breach is a 400 rather than a database error.
+        RuleFor(x => x.IsStarted)
+            .Equal(true)
+            .WithMessage("A finished match must have started.")
+            .When(x => x.IsFinished);
     }
 }
