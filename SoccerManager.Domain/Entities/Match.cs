@@ -39,4 +39,9 @@ public class Match : BaseEntity
     /// Gets or sets whether the match has started.
     /// </summary>
     public bool IsStarted { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the match has finished. A finished match has always started.
+    /// </summary>
+    public bool IsFinished { get; set; }
 }

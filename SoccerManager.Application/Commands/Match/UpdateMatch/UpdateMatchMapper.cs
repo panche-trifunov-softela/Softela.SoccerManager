@@ -21,6 +21,7 @@ public static class UpdateMatchMapper
         match.Commentary = request.Commentary;
         match.Attendance = request.Attendance;
         match.IsStarted = request.IsStarted;
+        match.IsFinished = request.IsFinished;
         match.ModifiedAt = now;
         match.ModifiedBy = userId;
     }

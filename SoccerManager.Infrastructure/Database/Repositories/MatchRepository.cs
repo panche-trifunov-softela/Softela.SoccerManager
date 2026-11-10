@@ -66,6 +66,7 @@ public class MatchRepository : IMatchRepository
         parameters.Add("@Commentary", match.Commentary, DbType.String);
         parameters.Add("@Attendance", match.Attendance, DbType.Int32);
         parameters.Add("@IsStarted", match.IsStarted, DbType.Boolean);
+        parameters.Add("@IsFinished", match.IsFinished, DbType.Boolean);
         parameters.Add("@ModifiedAt", match.ModifiedAt, DbType.DateTime2);
         parameters.Add("@ModifiedBy", match.ModifiedBy, DbType.Guid);
 

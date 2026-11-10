@@ -24,6 +24,7 @@ public static class GetMatchByIdMapper
             Commentary = match.Commentary,
             Attendance = match.Attendance,
             IsStarted = match.IsStarted,
+            IsFinished = match.IsFinished,
             CreatedAt = match.CreatedAt,
             ModifiedAt = match.ModifiedAt,
         };
