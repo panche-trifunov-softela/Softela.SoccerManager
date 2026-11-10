@@ -15,6 +15,7 @@ public sealed class UpdateMatchPlayerStatisticValidator : AbstractValidator<Upda
         RuleFor(x => x.Id).GreaterThan(0);
         RuleFor(x => x.PlayerId).GreaterThan(0);
         RuleFor(x => x.MatchId).GreaterThan(0);
+        RuleFor(x => x.LeagueTeamId).GreaterThan(0);
 
         // PrecisionScale matches the DECIMAL(3,1) column, so an over-precise value is a 400
         // rather than a silent rounding at the database.
@@ -27,6 +28,9 @@ public sealed class UpdateMatchPlayerStatisticValidator : AbstractValidator<Upda
         RuleFor(x => x.PenaltiesMissed).GreaterThanOrEqualTo(0);
         RuleFor(x => x.YellowCards).GreaterThanOrEqualTo(0);
         RuleFor(x => x.RedCards).GreaterThanOrEqualTo(0);
+
+        // Mirrors CK_MatchPlayerStatistics_CountersNonNegative, so a breach is a 400 rather than a database error.
+        RuleFor(x => x.OwnGoals).GreaterThanOrEqualTo(0);
 
         // A scored penalty is a goal, so the total can never be lower than the penalties in it.
         RuleFor(x => x.Goals).GreaterThanOrEqualTo(x => x.PenaltiesScored);

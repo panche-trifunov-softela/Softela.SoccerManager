@@ -32,10 +32,12 @@ public class MatchPlayerStatisticRepository : IMatchPlayerStatisticRepository
         var parameters = new DynamicParameters();
         parameters.Add("@PlayerId", matchPlayerStatistic.PlayerId, DbType.Int32);
         parameters.Add("@MatchId", matchPlayerStatistic.MatchId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", matchPlayerStatistic.LeagueTeamId, DbType.Int32);
         parameters.Add("@Rating", matchPlayerStatistic.Rating, DbType.Decimal, precision: 3, scale: 1);
         parameters.Add("@IsStarter", matchPlayerStatistic.IsStarter, DbType.Boolean);
         parameters.Add("@MinutesPlayed", matchPlayerStatistic.MinutesPlayed, DbType.Int32);
         parameters.Add("@Goals", matchPlayerStatistic.Goals, DbType.Int32);
+        parameters.Add("@OwnGoals", matchPlayerStatistic.OwnGoals, DbType.Int32);
         parameters.Add("@Assists", matchPlayerStatistic.Assists, DbType.Int32);
         parameters.Add("@PenaltiesScored", matchPlayerStatistic.PenaltiesScored, DbType.Int32);
         parameters.Add("@PenaltiesMissed", matchPlayerStatistic.PenaltiesMissed, DbType.Int32);
@@ -64,10 +66,12 @@ public class MatchPlayerStatisticRepository : IMatchPlayerStatisticRepository
         parameters.Add("@Id", matchPlayerStatistic.Id, DbType.Int32);
         parameters.Add("@PlayerId", matchPlayerStatistic.PlayerId, DbType.Int32);
         parameters.Add("@MatchId", matchPlayerStatistic.MatchId, DbType.Int32);
+        parameters.Add("@LeagueTeamId", matchPlayerStatistic.LeagueTeamId, DbType.Int32);
         parameters.Add("@Rating", matchPlayerStatistic.Rating, DbType.Decimal, precision: 3, scale: 1);
         parameters.Add("@IsStarter", matchPlayerStatistic.IsStarter, DbType.Boolean);
         parameters.Add("@MinutesPlayed", matchPlayerStatistic.MinutesPlayed, DbType.Int32);
         parameters.Add("@Goals", matchPlayerStatistic.Goals, DbType.Int32);
+        parameters.Add("@OwnGoals", matchPlayerStatistic.OwnGoals, DbType.Int32);
         parameters.Add("@Assists", matchPlayerStatistic.Assists, DbType.Int32);
         parameters.Add("@PenaltiesScored", matchPlayerStatistic.PenaltiesScored, DbType.Int32);
         parameters.Add("@PenaltiesMissed", matchPlayerStatistic.PenaltiesMissed, DbType.Int32);

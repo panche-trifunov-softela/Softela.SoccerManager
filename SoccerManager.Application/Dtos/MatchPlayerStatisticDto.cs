@@ -21,6 +21,11 @@ public sealed record MatchPlayerStatisticDto
     public int MatchId { get; init; }
 
     /// <summary>
+    /// The identifier of the league team (the club in its league) the player played for in the match.
+    /// </summary>
+    public int LeagueTeamId { get; init; }
+
+    /// <summary>
     /// The player's rating for the match, from 5.0 to 10.0 inclusive.
     /// </summary>
     public decimal Rating { get; init; }
@@ -36,9 +41,14 @@ public sealed record MatchPlayerStatisticDto
     public int MinutesPlayed { get; init; }
 
     /// <summary>
-    /// The total number of goals scored, including penalties scored.
+    /// The number of goals the player scored in the match, in-play penalties and extra time included. Own goals and shootout kicks are not counted here.
     /// </summary>
     public int Goals { get; init; }
+
+    /// <summary>
+    /// The number of goals the player put into their own net, which count for the opponent.
+    /// </summary>
+    public int OwnGoals { get; init; }
 
     /// <summary>
     /// The number of assists made.

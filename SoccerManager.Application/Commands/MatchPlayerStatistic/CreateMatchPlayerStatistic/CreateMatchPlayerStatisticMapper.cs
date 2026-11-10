@@ -18,10 +18,12 @@ public static class CreateMatchPlayerStatisticMapper
         {
             PlayerId = request.PlayerId,
             MatchId = request.MatchId,
+            LeagueTeamId = request.LeagueTeamId,
             Rating = request.Rating,
             IsStarter = request.IsStarter,
             MinutesPlayed = request.MinutesPlayed,
             Goals = request.Goals,
+            OwnGoals = request.OwnGoals,
             Assists = request.Assists,
             PenaltiesScored = request.PenaltiesScored,
             PenaltiesMissed = request.PenaltiesMissed,

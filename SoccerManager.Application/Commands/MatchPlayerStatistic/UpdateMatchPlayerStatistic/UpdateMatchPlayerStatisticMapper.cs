@@ -16,10 +16,12 @@ public static class UpdateMatchPlayerStatisticMapper
     {
         matchPlayerStatistic.PlayerId = request.PlayerId;
         matchPlayerStatistic.MatchId = request.MatchId;
+        matchPlayerStatistic.LeagueTeamId = request.LeagueTeamId;
         matchPlayerStatistic.Rating = request.Rating;
         matchPlayerStatistic.IsStarter = request.IsStarter;
         matchPlayerStatistic.MinutesPlayed = request.MinutesPlayed;
         matchPlayerStatistic.Goals = request.Goals;
+        matchPlayerStatistic.OwnGoals = request.OwnGoals;
         matchPlayerStatistic.Assists = request.Assists;
         matchPlayerStatistic.PenaltiesScored = request.PenaltiesScored;
         matchPlayerStatistic.PenaltiesMissed = request.PenaltiesMissed;
