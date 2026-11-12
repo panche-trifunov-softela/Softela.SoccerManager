@@ -67,6 +67,16 @@ public interface ILeagueTeamRepository
     Task<List<GetLeagueTeamSquadMembersResult>> GetSquadMembersAsync(int leagueTeamId);
 
     /// <summary>
+    /// Retrieves a player's profile in the game world of the given league team's league: the player's registration at the
+    /// league team itself or, failing that, at another club of the same league (the lowest Id first), with the player's
+    /// details and every position the player can play.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the game world to look in.</param>
+    /// <param name="playerId">The identifier of the player whose profile to retrieve.</param>
+    /// <returns>The registration's header row, or <see langword="null"/> when the player is not registered at any club of the league, and the player's positions, the main position first.</returns>
+    Task<(GetGameWorldPlayerProfileResult? Header, List<GetPlayerProfilePositionsResult> Positions)> GetGameWorldPlayerProfileAsync(int leagueTeamId, int playerId);
+
+    /// <summary>
     /// Retrieves the roster entry of the given team in the given league.
     /// </summary>
     /// <param name="leagueId">The identifier of the league to look in.</param>

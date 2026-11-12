@@ -1,3 +1,4 @@
+using SoccerManager.Application.Models;
 using SoccerManager.Application.Models.SearchPlayers;
 using SoccerManager.Domain.Entities;
 
@@ -49,4 +50,12 @@ public interface IPlayerRepository
     /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose votes are returned.</param>
     /// <returns>The requested page of players, empty past the last page, and the total match count.</returns>
     Task<SearchPlayersPage> SearchAsync(SearchPlayersCriteria criteria, Guid userId);
+
+    /// <summary>
+    /// Retrieves a player's profile from the player catalogue: the player with the real-life club, national team, main
+    /// position, current rating, value and wage, and every position the player can play.
+    /// </summary>
+    /// <param name="playerId">The identifier of the player whose profile to retrieve.</param>
+    /// <returns>The player's header row, or <see langword="null"/> when no player has that identifier, and the player's positions, the main position first.</returns>
+    Task<(GetPlayerProfileResult? Header, List<GetPlayerProfilePositionsResult> Positions)> GetProfileAsync(int playerId);
 }

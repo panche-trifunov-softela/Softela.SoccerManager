@@ -9,6 +9,7 @@ using SoccerManager.Application.Commands.Player.UpdatePlayer;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.Player.GetPlayerById;
+using SoccerManager.Application.Queries.Player.GetPlayerProfile;
 using SoccerManager.Application.Queries.Player.GetPlayers;
 using SoccerManager.Application.Queries.Player.SearchPlayers;
 
@@ -109,6 +110,22 @@ public class PlayerController : ControllerBase
     public async Task<IActionResult> GetPlayerById(int id, CancellationToken cancellationToken)
     {
         var result = await _queryDispatcher.QueryAsync(new GetPlayerByIdRequest { Id = id }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the profile of the player with the given identifier: the player with the real-life club, national team, main
+    /// position, current rating, value and wage, and every position the player can play. A player with no current rating
+    /// still has a profile.
+    /// </summary>
+    /// <param name="id">The identifier of the player whose profile to retrieve.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The player's profile; a 400 when the identifier is not positive, or a 404 when no such player exists.</returns>
+    [HttpGet("{id}/profile")]
+    public async Task<IActionResult> GetPlayerProfile(int id, CancellationToken cancellationToken)
+    {
+        var result = await _queryDispatcher.QueryAsync(new GetPlayerProfileRequest { Id = id }, cancellationToken);
 
         return Ok(result.Data);
     }

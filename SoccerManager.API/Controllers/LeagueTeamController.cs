@@ -6,6 +6,7 @@ using SoccerManager.Application.Commands.LeagueTeam.DeleteLeagueTeam;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.LeagueTeam.GetAvailableLeagueTeams;
+using SoccerManager.Application.Queries.LeagueTeam.GetGameWorldPlayerProfile;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamById;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamNextMatch;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquad;
@@ -96,6 +97,25 @@ public class LeagueTeamController : ControllerBase
     {
         // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
         var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamSquadMembersRequest { LeagueTeamId = id }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns a player's profile in the game world of the given league team's league: the player's registration with its
+    /// squad number, value, weekly wage, contract, morale, condition and suspension, and every position the player can
+    /// play. The player may be registered at any club of that league, rival clubs included, and the league team's own
+    /// registration is preferred. Allowed for an operator or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose league is the game world to look in.</param>
+    /// <param name="playerId">The identifier of the player whose profile to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The player's profile; a 400 when an identifier is not positive, a 403 when the caller may not manage the club, or a 404 when the player is not registered at any club of the league.</returns>
+    [HttpGet("{id}/game-world/players/{playerId}")]
+    public async Task<IActionResult> GetGameWorldPlayerProfile(int id, int playerId, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var result = await _queryDispatcher.QueryAsync(new GetGameWorldPlayerProfileRequest { LeagueTeamId = id, PlayerId = playerId }, cancellationToken);
 
         return Ok(result.Data);
     }

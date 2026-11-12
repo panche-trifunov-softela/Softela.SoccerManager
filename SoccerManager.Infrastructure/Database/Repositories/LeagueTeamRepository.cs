@@ -166,6 +166,33 @@ public class LeagueTeamRepository : ILeagueTeamRepository
     }
 
     /// <summary>
+    /// Retrieves a player's profile in the game world of the given league team's league: the player's registration at the
+    /// league team itself or, failing that, at another club of the same league (the lowest Id first), with the player's
+    /// details and every position the player can play.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the game world to look in.</param>
+    /// <param name="playerId">The identifier of the player whose profile to retrieve.</param>
+    /// <returns>The registration's header row, or <see langword="null"/> when the player is not registered at any club of the league, and the player's positions, the main position first.</returns>
+    public async Task<(GetGameWorldPlayerProfileResult? Header, List<GetPlayerProfilePositionsResult> Positions)> GetGameWorldPlayerProfileAsync(int leagueTeamId, int playerId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+        parameters.Add("@PlayerId", playerId, DbType.Int32);
+
+        // The procedure returns the header row first and the positions second.
+        using var results = await _dapperDataContext.Connection.QueryMultipleAsync(
+            "dbo.GetGameWorldPlayerProfile",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        var header = await results.ReadFirstOrDefaultAsync<GetGameWorldPlayerProfileResult>().ConfigureAwait(false);
+        var positions = await results.ReadAsync<GetPlayerProfilePositionsResult>().ConfigureAwait(false);
+
+        return (header, positions.ToList());
+    }
+
+    /// <summary>
     /// Retrieves the roster entry of the given team in the given league.
     /// </summary>
     /// <param name="leagueId">The identifier of the league to look in.</param>
