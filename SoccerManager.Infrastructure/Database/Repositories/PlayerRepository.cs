@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using SoccerManager.Application.Models;
 using SoccerManager.Application.Models.SearchPlayers;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Entities;
@@ -161,5 +162,29 @@ public class PlayerRepository : IPlayerRepository
         var rows = await results.ReadAsync<SearchPlayersResult>().ConfigureAwait(false);
 
         return new SearchPlayersPage { Rows = rows.ToList(), TotalCount = totalCount };
+    }
+
+    /// <summary>
+    /// Retrieves a player's profile from the player catalogue: the player with the real-life club, national team, main
+    /// position, current rating, value and wage, and every position the player can play.
+    /// </summary>
+    /// <param name="playerId">The identifier of the player whose profile to retrieve.</param>
+    /// <returns>The player's header row, or <see langword="null"/> when no player has that identifier, and the player's positions, the main position first.</returns>
+    public async Task<(GetPlayerProfileResult? Header, List<GetPlayerProfilePositionsResult> Positions)> GetProfileAsync(int playerId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@PlayerId", playerId, DbType.Int32);
+
+        // The procedure returns the header row first and the positions second.
+        using var results = await _dapperDataContext.Connection.QueryMultipleAsync(
+            "dbo.GetPlayerProfile",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        var header = await results.ReadFirstOrDefaultAsync<GetPlayerProfileResult>().ConfigureAwait(false);
+        var positions = await results.ReadAsync<GetPlayerProfilePositionsResult>().ConfigureAwait(false);
+
+        return (header, positions.ToList());
     }
 }
