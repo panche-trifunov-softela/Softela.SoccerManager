@@ -50,4 +50,11 @@ public interface ILeagueTeamPlayerRepository
     /// <param name="playerId">The identifier of the player.</param>
     /// <returns>The matching registration, or <see langword="null"/> when the player is not registered in the league.</returns>
     Task<LeagueTeamPlayer?> GetByLeagueAndPlayerAsync(int leagueId, int playerId);
+
+    /// <summary>
+    /// Checks whether a squad row has any transfer, loan, swap or injury row attached, which is history of its own league.
+    /// </summary>
+    /// <param name="id">The identifier of the league team player to check.</param>
+    /// <returns><see langword="true"/> when the squad row has a transfer, a loan, a swap or an injury row, whether or not the row exists.</returns>
+    Task<bool> HasLeagueHistoryAsync(int id);
 }

@@ -95,11 +95,11 @@ public class SeasonController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes the season with the given identifier.
+    /// Deletes the season with the given identifier. Refused with a 400 while a transfer or loan still uses the season.
     /// </summary>
     /// <param name="id">The identifier of the season to delete.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>Whether the deletion succeeded.</returns>
+    /// <returns>Whether the deletion succeeded; a 400 when a transfer or loan still uses the season, or a 404 when no such season exists.</returns>
     [HttpDelete("{id}")]
     [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteSeason(int id, CancellationToken cancellationToken)

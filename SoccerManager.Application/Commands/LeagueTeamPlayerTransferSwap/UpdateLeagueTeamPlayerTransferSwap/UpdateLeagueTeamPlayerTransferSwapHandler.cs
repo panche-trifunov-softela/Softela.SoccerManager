@@ -1,0 +1,69 @@
+using FluentValidation;
+using MediatR;
+using SoccerManager.Application.Core.User;
+using SoccerManager.Application.Repositories;
+using SoccerManager.Application.Services;
+
+namespace SoccerManager.Application.Commands.LeagueTeamPlayerTransferSwap.UpdateLeagueTeamPlayerTransferSwap;
+
+/// <summary>
+/// Handles <see cref="UpdateLeagueTeamPlayerTransferSwapRequest"/> commands.
+/// </summary>
+public class UpdateLeagueTeamPlayerTransferSwapHandler : IRequestHandler<UpdateLeagueTeamPlayerTransferSwapRequest, bool>
+{
+    private readonly ILeagueTeamPlayerTransferSwapRepository _leagueTeamPlayerTransferSwapRepository;
+    private readonly IPlayerDealService _playerDealService;
+    private readonly ICurrentUser _currentUser;
+    private readonly IUnitOfWork _unitOfWork;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateLeagueTeamPlayerTransferSwapHandler"/> class.
+    /// </summary>
+    /// <param name="leagueTeamPlayerTransferSwapRepository">The repository used to load and persist swaps.</param>
+    /// <param name="playerDealService">The service that checks the swapped player against the transfer.</param>
+    /// <param name="currentUser">The currently authenticated user.</param>
+    /// <param name="unitOfWork">The unit of work used to group the write into one transaction.</param>
+    public UpdateLeagueTeamPlayerTransferSwapHandler(ILeagueTeamPlayerTransferSwapRepository leagueTeamPlayerTransferSwapRepository, IPlayerDealService playerDealService, ICurrentUser currentUser, IUnitOfWork unitOfWork)
+    {
+        _leagueTeamPlayerTransferSwapRepository = leagueTeamPlayerTransferSwapRepository;
+        _playerDealService = playerDealService;
+        _currentUser = currentUser;
+        _unitOfWork = unitOfWork;
+    }
+
+    /// <summary>
+    /// Updates an existing swap with the values from the given request.
+    /// </summary>
+    /// <param name="request">The update request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><see langword="true"/> when the update succeeds.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when no swap with the given identifier exists, or the transfer or the swapped player's squad row does not exist.</exception>
+    /// <exception cref="ValidationException">Thrown when the swapped player is the sold player, or is not in the buying club's squad.</exception>
+    public async Task<bool> Handle(UpdateLeagueTeamPlayerTransferSwapRequest request, CancellationToken cancellationToken)
+    {
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            var leagueTeamPlayerTransferSwap = await _leagueTeamPlayerTransferSwapRepository.GetByIdAsync(request.Id)
+                ?? throw new KeyNotFoundException($"League team player transfer swap {request.Id} not found.");
+
+            await _playerDealService.EnsureSwapIsValidAsync(request.LeagueTeamPlayerTransferId, request.LeagueTeamPlayerId);
+
+            var now = DateTime.UtcNow;
+
+            UpdateLeagueTeamPlayerTransferSwapMapper.ApplyTo(request, leagueTeamPlayerTransferSwap, now, _currentUser.UserId);
+
+            await _leagueTeamPlayerTransferSwapRepository.UpdateAsync(leagueTeamPlayerTransferSwap);
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return true;
+        }
+        catch
+        {
+            await _unitOfWork.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+}

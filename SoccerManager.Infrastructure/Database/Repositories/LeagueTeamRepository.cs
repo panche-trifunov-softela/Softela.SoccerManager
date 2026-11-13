@@ -166,14 +166,14 @@ public class LeagueTeamRepository : ILeagueTeamRepository
     }
 
     /// <summary>
-    /// Retrieves a player's profile in the game world of the given league team's league: the player's registration at the
+    /// Retrieves a player's profile in the league of the given league team: the player's registration at the
     /// league team itself or, failing that, at another club of the same league (the lowest Id first), with the player's
     /// details and every position the player can play.
     /// </summary>
-    /// <param name="leagueTeamId">The identifier of the league team whose league is the game world to look in.</param>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
     /// <param name="playerId">The identifier of the player whose profile to retrieve.</param>
     /// <returns>The registration's header row, or <see langword="null"/> when the player is not registered at any club of the league, and the player's positions, the main position first.</returns>
-    public async Task<(GetGameWorldPlayerProfileResult? Header, List<GetPlayerProfilePositionsResult> Positions)> GetGameWorldPlayerProfileAsync(int leagueTeamId, int playerId)
+    public async Task<(GetLeaguePlayerProfileResult? Header, List<GetPlayerProfilePositionsResult> Positions)> GetLeaguePlayerProfileAsync(int leagueTeamId, int playerId)
     {
         var parameters = new DynamicParameters();
         parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
@@ -181,15 +181,69 @@ public class LeagueTeamRepository : ILeagueTeamRepository
 
         // The procedure returns the header row first and the positions second.
         using var results = await _dapperDataContext.Connection.QueryMultipleAsync(
-            "dbo.GetGameWorldPlayerProfile",
+            "dbo.GetLeaguePlayerProfile",
             parameters,
             transaction: _dapperDataContext.Transaction,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
 
-        var header = await results.ReadFirstOrDefaultAsync<GetGameWorldPlayerProfileResult>().ConfigureAwait(false);
+        var header = await results.ReadFirstOrDefaultAsync<GetLeaguePlayerProfileResult>().ConfigureAwait(false);
         var positions = await results.ReadAsync<GetPlayerProfilePositionsResult>().ConfigureAwait(false);
 
         return (header, positions.ToList());
+    }
+
+    /// <summary>
+    /// Retrieves a player's accepted transfers and loans in the league of the given league team, including the transfers
+    /// he was swapped in, newest season first, the players swapped in those transfers, and whether the player is registered
+    /// at any club of that league.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="playerId">The identifier of the player whose transfers and loans to retrieve.</param>
+    /// <returns>Whether the player is registered at any club of the league, and the player's deals and the swapped players of the transfers among them, returned whatever that says.</returns>
+    public async Task<(bool IsRegistered, List<GetLeaguePlayerTransfersResult> Transfers, List<GetLeaguePlayerTransferSwapPlayersResult> SwapPlayers)> GetLeaguePlayerTransfersAsync(int leagueTeamId, int playerId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+        parameters.Add("@PlayerId", playerId, DbType.Int32);
+
+        // The procedure returns the registration flag first, the deals second and the swapped players third.
+        using var results = await _dapperDataContext.Connection.QueryMultipleAsync(
+            "dbo.GetLeaguePlayerTransfers",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        var isRegistered = await results.ReadFirstAsync<bool>().ConfigureAwait(false);
+        var transfers = await results.ReadAsync<GetLeaguePlayerTransfersResult>().ConfigureAwait(false);
+        var swapPlayers = await results.ReadAsync<GetLeaguePlayerTransferSwapPlayersResult>().ConfigureAwait(false);
+
+        return (isRegistered, transfers.ToList(), swapPlayers.ToList());
+    }
+
+    /// <summary>
+    /// Retrieves a player's injuries recorded on the player's registration at a club of the league of the given league
+    /// team, newest first, and whether the player is registered at any club of that league.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="playerId">The identifier of the player whose injuries to retrieve.</param>
+    /// <returns>Whether the player is registered at any club of the league, and the player's injuries, returned whatever that says.</returns>
+    public async Task<(bool IsRegistered, List<GetLeaguePlayerInjuriesResult> Injuries)> GetLeaguePlayerInjuriesAsync(int leagueTeamId, int playerId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+        parameters.Add("@PlayerId", playerId, DbType.Int32);
+
+        // The procedure returns the registration flag first and the injuries second.
+        using var results = await _dapperDataContext.Connection.QueryMultipleAsync(
+            "dbo.GetLeaguePlayerInjuries",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        var isRegistered = await results.ReadFirstAsync<bool>().ConfigureAwait(false);
+        var injuries = await results.ReadAsync<GetLeaguePlayerInjuriesResult>().ConfigureAwait(false);
+
+        return (isRegistered, injuries.ToList());
     }
 
     /// <summary>

@@ -39,7 +39,7 @@ public static class GetPlayerProfileMapper
     }
 
     /// <summary>
-    /// Converts a position row into its DTO representation. The game world profile maps its positions through this too.
+    /// Converts a position row into its DTO representation. The league profile maps its positions through this too.
     /// </summary>
     /// <param name="row">The position row returned by the stored procedure.</param>
     /// <returns>The corresponding <see cref="PlayerProfilePositionDto"/>.</returns>

@@ -159,4 +159,21 @@ public class LeagueTeamPlayerRepository : ILeagueTeamPlayerRepository
             transaction: _dapperDataContext.Transaction,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Checks whether a squad row has any transfer, loan, swap or injury row attached, which is history of its own league.
+    /// </summary>
+    /// <param name="id">The identifier of the league team player to check.</param>
+    /// <returns><see langword="true"/> when the squad row has a transfer, a loan, a swap or an injury row, whether or not the row exists.</returns>
+    public async Task<bool> HasLeagueHistoryAsync(int id)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@Id", id, DbType.Int32);
+
+        return await _dapperDataContext.Connection.QuerySingleAsync<bool>(
+            "dbo.GetLeagueTeamPlayerHasLeagueHistory",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
 }

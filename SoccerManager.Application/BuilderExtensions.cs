@@ -33,12 +33,14 @@ public static class BuilderExtensions
         // handler needs, so it lives outside any single handler. Club access decides whether the caller may change a
         // club at all, and league access whether they may manage a league. The auto picker chooses a lineup from a
         // squad, and the lineup service reads and writes a club's lineup for a match, so the save, the auto pick and
-        // the read share one definition.
+        // the read share one definition. The player deal service holds the rules a transfer and a loan share, so both
+        // are checked the same way.
         services.AddScoped<IClubAccess, ClubAccess>();
         services.AddScoped<ILeagueAccess, LeagueAccess>();
         services.AddScoped<ILineupAutoPicker, LineupAutoPicker>();
         services.AddScoped<IMatchLineupService, MatchLineupService>();
         services.AddScoped<IMatchSubstitutionService, MatchSubstitutionService>();
+        services.AddScoped<IPlayerDealService, PlayerDealService>();
 
         // Registered after the validators so the behaviour resolves the ones scanned above.
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

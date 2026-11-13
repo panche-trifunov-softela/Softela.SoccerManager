@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using SoccerManager.Application.Repositories;
 
@@ -5,7 +7,7 @@ namespace SoccerManager.Application.Commands.Season.DeleteSeason;
 
 /// <summary>
 /// Handles <see cref="DeleteSeasonRequest"/> commands. This performs a hard delete, as the
-/// entity carries no soft-delete flag.
+/// entity carries no soft-delete flag. The season is removed only when no transfer or loan uses it.
 /// </summary>
 public class DeleteSeasonHandler : IRequestHandler<DeleteSeasonRequest, bool>
 {
@@ -30,6 +32,7 @@ public class DeleteSeasonHandler : IRequestHandler<DeleteSeasonRequest, bool>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns><see langword="true"/> when the deletion succeeds.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when no season with the given identifier exists.</exception>
+    /// <exception cref="ValidationException">Thrown when a transfer or loan still uses the season.</exception>
     public async Task<bool> Handle(DeleteSeasonRequest request, CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -39,7 +42,21 @@ public class DeleteSeasonHandler : IRequestHandler<DeleteSeasonRequest, bool>
             _ = await _seasonRepository.GetByIdAsync(request.Id)
                 ?? throw new KeyNotFoundException($"Season {request.Id} not found.");
 
-            await _seasonRepository.DeleteAsync(request.Id);
+            var result = await _seasonRepository.DeleteAsync(request.Id);
+
+            if (!result.Deleted)
+            {
+                if (result.HasTransfers)
+                {
+                    throw new ValidationException(new[]
+                    {
+                        new ValidationFailure("Id", "The season cannot be deleted while it still has transfers or loans."),
+                    });
+                }
+
+                // Nothing flagged means the row vanished between the load above and the delete.
+                throw new KeyNotFoundException($"Season {request.Id} not found.");
+            }
 
             await _unitOfWork.CommitAsync(cancellationToken);
 

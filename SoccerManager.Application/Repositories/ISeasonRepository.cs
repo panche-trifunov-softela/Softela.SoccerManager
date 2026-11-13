@@ -1,3 +1,4 @@
+using SoccerManager.Application.Models;
 using SoccerManager.Domain.Entities;
 
 namespace SoccerManager.Application.Repositories;
@@ -22,10 +23,15 @@ public interface ISeasonRepository
     Task<int> UpdateAsync(Season season);
 
     /// <summary>
-    /// Removes a season by its identifier.
+    /// Removes a season by its identifier, but only when no transfer or loan uses it. The check and the
+    /// delete are atomic inside the stored procedure.
     /// </summary>
     /// <param name="id">The identifier of the season to delete.</param>
-    Task DeleteAsync(int id);
+    /// <returns>
+    /// Whether the season was removed and, when it was not, whether transfers or loans block it.
+    /// When nothing is flagged as blocking, the season did not exist.
+    /// </returns>
+    Task<DeleteSeasonResult> DeleteAsync(int id);
 
     /// <summary>
     /// Retrieves a season by its identifier.

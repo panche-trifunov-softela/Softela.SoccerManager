@@ -163,7 +163,8 @@ public class PlayerController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes the player with the given identifier.
+    /// Deletes the player with the given identifier, together with the player's squad rows,
+    /// transfers, loans, injuries and swap rows.
     /// </summary>
     /// <param name="id">The identifier of the player to delete.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>

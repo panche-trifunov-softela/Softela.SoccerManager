@@ -2,7 +2,7 @@ namespace SoccerManager.Application.Models;
 
 /// <summary>
 /// One row of the positions result set returned by the <c>dbo.GetPlayerProfile</c> and
-/// <c>dbo.GetGameWorldPlayerProfile</c> stored procedures: a position the player can play, with the spot it is drawn at on a
+/// <c>dbo.GetLeaguePlayerProfile</c> stored procedures: a position the player can play, with the spot it is drawn at on a
 /// pitch. Kept separate from <see cref="Dtos.PlayerProfilePositionDto"/> because Dapper populates a result by setting
 /// properties, and the Dto is an init-only record that cannot be a Dapper target.
 /// </summary>

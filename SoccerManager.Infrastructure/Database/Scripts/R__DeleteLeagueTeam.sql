@@ -37,10 +37,17 @@ BEGIN
         OR EXISTS (
         SELECT 1 FROM dbo.PenaltiesAfterExtraTime WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id) THEN 1 ELSE 0 END;
 
+    -- A transfer blocks both clubs it names: the selling club and the buying club. A loan names only the loan club.
+    DECLARE @HasTransfers BIT = CASE WHEN EXISTS (
+        SELECT 1 FROM dbo.LeagueTeamPlayerTransfers WITH (UPDLOCK, HOLDLOCK) WHERE FromLeagueTeamId = @Id OR ToLeagueTeamId = @Id)
+        OR EXISTS (
+        SELECT 1 FROM dbo.LeagueTeamPlayerLoans WITH (UPDLOCK, HOLDLOCK) WHERE ToLeagueTeamId = @Id) THEN 1 ELSE 0 END;
+
     DECLARE @Deleted BIT = 0;
 
     IF @Exists = 1
         AND @HasSquad = 0 AND @HasAppointments = 0 AND @HasApplications = 0 AND @HasStandings = 0 AND @HasMatches = 0
+        AND @HasTransfers = 0
     BEGIN
         DELETE FROM dbo.LeagueTeams WHERE Id = @Id;
 
@@ -48,5 +55,6 @@ BEGIN
     END
 
     SELECT @Deleted AS Deleted, @HasSquad AS HasSquad, @HasAppointments AS HasAppointments,
-        @HasApplications AS HasApplications, @HasStandings AS HasStandings, @HasMatches AS HasMatches;
+        @HasApplications AS HasApplications, @HasStandings AS HasStandings, @HasMatches AS HasMatches,
+        @HasTransfers AS HasTransfers;
 END

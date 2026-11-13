@@ -15,7 +15,7 @@ public sealed class UpdateLeagueTeamPlayerValidator : AbstractValidator<UpdateLe
     /// Initializes a new instance of the <see cref="UpdateLeagueTeamPlayerValidator"/> class.
     /// </summary>
     /// <param name="leagueTeamRepository">The repository used to find the league the league team belongs to.</param>
-    /// <param name="leagueTeamPlayerRepository">The repository used to check the player has no other club in that league.</param>
+    /// <param name="leagueTeamPlayerRepository">The repository used to check the player has no other club in that league and no transfers, loans, swaps or injuries that pin the row to it.</param>
     public UpdateLeagueTeamPlayerValidator(ILeagueTeamRepository leagueTeamRepository, ILeagueTeamPlayerRepository leagueTeamPlayerRepository)
     {
         _leagueTeamRepository = leagueTeamRepository;
@@ -33,6 +33,13 @@ public sealed class UpdateLeagueTeamPlayerValidator : AbstractValidator<UpdateLe
             RuleFor(x => x.PlayerId)
                 .MustAsync((request, _, _) => PlayerHasNoOtherClubInLeagueAsync(request))
                 .WithMessage("The player is already in a club in this league.");
+
+            // Transfers, loans and swaps name clubs and seasons of the player's own league, and injuries are
+            // recorded on the squad row there, so a squad row that has any cannot be moved to a club of another
+            // league. Moving within the league stays allowed.
+            RuleFor(x => x.LeagueTeamId)
+                .MustAsync((request, _, _) => HasNoLeagueHistoryOrStaysInLeagueAsync(request))
+                .WithMessage("A player with transfers, loans, swaps or injuries cannot move to another league.");
         });
 
         // Both ranges match the CHECK constraints on dbo.LeagueTeamPlayers, so the two agree.
@@ -72,5 +79,35 @@ public sealed class UpdateLeagueTeamPlayerValidator : AbstractValidator<UpdateLe
         // The row itself does not count: updating it may keep the player where they are or move them to
         // another club of the same league.
         return registration is null || registration.Id == request.Id;
+    }
+
+    /// <summary>
+    /// Checks that the row being updated does not move to another league while it has transfers, loans, swaps or injuries.
+    /// </summary>
+    /// <param name="request">The request being validated.</param>
+    /// <returns><see langword="true"/> when the row or a club is missing, the destination club is in the row's current league, or the row has no transfers, loans, swaps or injuries.</returns>
+    private async Task<bool> HasNoLeagueHistoryOrStaysInLeagueAsync(UpdateLeagueTeamPlayerRequest request)
+    {
+        var current = await _leagueTeamPlayerRepository.GetByIdAsync(request.Id);
+
+        if (current is null)
+        {
+            return true;
+        }
+
+        var currentClub = await _leagueTeamRepository.GetByIdAsync(current.LeagueTeamId);
+        var destinationClub = await _leagueTeamRepository.GetByIdAsync(request.LeagueTeamId);
+
+        if (currentClub is null || destinationClub is null)
+        {
+            return true;
+        }
+
+        if (destinationClub.LeagueId == currentClub.LeagueId)
+        {
+            return true;
+        }
+
+        return !await _leagueTeamPlayerRepository.HasLeagueHistoryAsync(request.Id);
     }
 }

@@ -39,4 +39,9 @@ public class DeleteLeagueTeamResult
     /// player statistics or shootout kicks.
     /// </summary>
     public bool HasMatches { get; set; }
+
+    /// <summary>
+    /// Whether the club still has transfers from or to it, or loans to it, in the league.
+    /// </summary>
+    public bool HasTransfers { get; set; }
 }

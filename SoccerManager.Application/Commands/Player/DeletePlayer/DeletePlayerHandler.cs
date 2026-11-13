@@ -5,7 +5,8 @@ namespace SoccerManager.Application.Commands.Player.DeletePlayer;
 
 /// <summary>
 /// Handles <see cref="DeletePlayerRequest"/> commands. This performs a hard delete, as the
-/// entity carries no soft-delete flag.
+/// entity carries no soft-delete flag. The player's squad rows go with it, taking their transfers,
+/// loans and injuries along, and any swap row that names the player as a swapped player is deleted first.
 /// </summary>
 public class DeletePlayerHandler : IRequestHandler<DeletePlayerRequest, bool>
 {

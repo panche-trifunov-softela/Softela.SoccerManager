@@ -81,7 +81,8 @@ public class LeagueTeamPlayerController : ControllerBase
 
     /// <summary>
     /// Releases the league team player with the given identifier, which also removes the player from the
-    /// club's lineups for matches that have not started. Allowed for an operator or the club's current manager.
+    /// club's lineups for matches that have not started and removes the player's transfers, loans, injuries and
+    /// swap rows. Allowed for an operator or the club's current manager.
     /// </summary>
     /// <param name="id">The identifier of the league team player to delete.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
