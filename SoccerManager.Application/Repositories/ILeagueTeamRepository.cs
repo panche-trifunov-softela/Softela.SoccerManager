@@ -67,14 +67,33 @@ public interface ILeagueTeamRepository
     Task<List<GetLeagueTeamSquadMembersResult>> GetSquadMembersAsync(int leagueTeamId);
 
     /// <summary>
-    /// Retrieves a player's profile in the game world of the given league team's league: the player's registration at the
+    /// Retrieves a player's profile in the league of the given league team: the player's registration at the
     /// league team itself or, failing that, at another club of the same league (the lowest Id first), with the player's
     /// details and every position the player can play.
     /// </summary>
-    /// <param name="leagueTeamId">The identifier of the league team whose league is the game world to look in.</param>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
     /// <param name="playerId">The identifier of the player whose profile to retrieve.</param>
     /// <returns>The registration's header row, or <see langword="null"/> when the player is not registered at any club of the league, and the player's positions, the main position first.</returns>
-    Task<(GetGameWorldPlayerProfileResult? Header, List<GetPlayerProfilePositionsResult> Positions)> GetGameWorldPlayerProfileAsync(int leagueTeamId, int playerId);
+    Task<(GetLeaguePlayerProfileResult? Header, List<GetPlayerProfilePositionsResult> Positions)> GetLeaguePlayerProfileAsync(int leagueTeamId, int playerId);
+
+    /// <summary>
+    /// Retrieves a player's accepted transfers and loans in the league of the given league team, including the transfers
+    /// he was swapped in, newest season first, the players swapped in those transfers, and whether the player is registered
+    /// at any club of that league.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="playerId">The identifier of the player whose transfers and loans to retrieve.</param>
+    /// <returns>Whether the player is registered at any club of the league, and the player's deals and the swapped players of the transfers among them, returned whatever that says.</returns>
+    Task<(bool IsRegistered, List<GetLeaguePlayerTransfersResult> Transfers, List<GetLeaguePlayerTransferSwapPlayersResult> SwapPlayers)> GetLeaguePlayerTransfersAsync(int leagueTeamId, int playerId);
+
+    /// <summary>
+    /// Retrieves a player's injuries recorded on the player's registration at a club of the league of the given league
+    /// team, newest first, and whether the player is registered at any club of that league.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="playerId">The identifier of the player whose injuries to retrieve.</param>
+    /// <returns>Whether the player is registered at any club of the league, and the player's injuries, returned whatever that says.</returns>
+    Task<(bool IsRegistered, List<GetLeaguePlayerInjuriesResult> Injuries)> GetLeaguePlayerInjuriesAsync(int leagueTeamId, int playerId);
 
     /// <summary>
     /// Retrieves the roster entry of the given team in the given league.

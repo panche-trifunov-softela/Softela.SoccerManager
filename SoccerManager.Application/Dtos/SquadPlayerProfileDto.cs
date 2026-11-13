@@ -3,7 +3,7 @@ using SoccerManager.Domain.Enums;
 namespace SoccerManager.Application.Dtos;
 
 /// <summary>
-/// Represents a player's profile in a game world: the player's registration at a club of the league, with the player's
+/// Represents a player's profile in a league: the player's registration at a club of the league, with the player's
 /// date of birth, current rating, main position and national team, and the registration's squad number, value, weekly wage,
 /// contract, morale, condition and suspension, and every position the player can play.
 /// </summary>

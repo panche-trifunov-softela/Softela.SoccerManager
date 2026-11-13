@@ -6,7 +6,9 @@ using SoccerManager.Application.Commands.LeagueTeam.DeleteLeagueTeam;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.LeagueTeam.GetAvailableLeagueTeams;
-using SoccerManager.Application.Queries.LeagueTeam.GetGameWorldPlayerProfile;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerInjuries;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerProfile;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerTransfers;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamById;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamNextMatch;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquad;
@@ -102,20 +104,56 @@ public class LeagueTeamController : ControllerBase
     }
 
     /// <summary>
-    /// Returns a player's profile in the game world of the given league team's league: the player's registration with its
+    /// Returns a player's profile in the league of the given league team: the player's registration with its
     /// squad number, value, weekly wage, contract, morale, condition and suspension, and every position the player can
     /// play. The player may be registered at any club of that league, rival clubs included, and the league team's own
     /// registration is preferred. Allowed for an operator or the club's current manager.
     /// </summary>
-    /// <param name="id">The identifier of the league team whose league is the game world to look in.</param>
+    /// <param name="id">The identifier of the league team whose league is the one to look in.</param>
     /// <param name="playerId">The identifier of the player whose profile to return.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The player's profile; a 400 when an identifier is not positive, a 403 when the caller may not manage the club, or a 404 when the player is not registered at any club of the league.</returns>
-    [HttpGet("{id}/game-world/players/{playerId}")]
-    public async Task<IActionResult> GetGameWorldPlayerProfile(int id, int playerId, CancellationToken cancellationToken)
+    [HttpGet("{id}/league-players/{playerId}")]
+    public async Task<IActionResult> GetLeaguePlayerProfile(int id, int playerId, CancellationToken cancellationToken)
     {
         // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
-        var result = await _queryDispatcher.QueryAsync(new GetGameWorldPlayerProfileRequest { LeagueTeamId = id, PlayerId = playerId }, cancellationToken);
+        var result = await _queryDispatcher.QueryAsync(new GetLeaguePlayerProfileRequest { LeagueTeamId = id, PlayerId = playerId }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns a player's accepted transfers and loans in the league of the given league team, including the transfers he
+    /// was swapped in, newest season first. The player may be registered at any club of that league, rival clubs included,
+    /// and only deals into clubs of that league are listed. Allowed for an operator or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="playerId">The identifier of the player whose transfers and loans to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The player's transfers and loans, empty when there are none; a 400 when an identifier is not positive, a 403 when the caller may not manage the club, or a 404 when the player is not registered at any club of the league.</returns>
+    [HttpGet("{id}/league-players/{playerId}/transfers")]
+    public async Task<IActionResult> GetLeaguePlayerTransfers(int id, int playerId, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var result = await _queryDispatcher.QueryAsync(new GetLeaguePlayerTransfersRequest { LeagueTeamId = id, PlayerId = playerId }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns a player's injuries in the league of the given league team, newest first: the injuries recorded on the
+    /// player's registration at a club of that league. The player may be registered at any club of that league, rival clubs
+    /// included. Allowed for an operator or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="playerId">The identifier of the player whose injuries to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The player's injuries, empty when there are none; a 400 when an identifier is not positive, a 403 when the caller may not manage the club, or a 404 when the player is not registered at any club of the league.</returns>
+    [HttpGet("{id}/league-players/{playerId}/injuries")]
+    public async Task<IActionResult> GetLeaguePlayerInjuries(int id, int playerId, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var result = await _queryDispatcher.QueryAsync(new GetLeaguePlayerInjuriesRequest { LeagueTeamId = id, PlayerId = playerId }, cancellationToken);
 
         return Ok(result.Data);
     }
@@ -168,8 +206,8 @@ public class LeagueTeamController : ControllerBase
 
     /// <summary>
     /// Removes the league team with the given identifier from the roster, but only while nothing is
-    /// attached to the club in that league. A club that still has a squad, manager appointments,
-    /// applications, standings or matches there is refused with a 400 naming what blocks it.
+    /// attached to the club in that league. A club that still has a squad, manager appointments, applications,
+    /// standings, matches, transfers or loans there is refused with a 400 naming what blocks it.
     /// </summary>
     /// <param name="id">The identifier of the league team to delete.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>

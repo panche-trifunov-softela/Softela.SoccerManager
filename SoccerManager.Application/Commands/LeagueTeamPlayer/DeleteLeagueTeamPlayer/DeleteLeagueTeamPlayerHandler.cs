@@ -8,7 +8,8 @@ namespace SoccerManager.Application.Commands.LeagueTeamPlayer.DeleteLeagueTeamPl
 /// <summary>
 /// Handles <see cref="DeleteLeagueTeamPlayerRequest"/> commands. This performs a hard delete, as the
 /// entity carries no soft-delete flag. Releasing a player also removes them from the club's lineups and
-/// substitution lineups for matches that have not started.
+/// substitution lineups for matches that have not started. The player's own transfers, loans and injuries
+/// go with the squad row, and any swap row that names the player as a swapped player is deleted first.
 /// </summary>
 public class DeleteLeagueTeamPlayerHandler : IRequestHandler<DeleteLeagueTeamPlayerRequest, bool>
 {

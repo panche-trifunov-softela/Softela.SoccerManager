@@ -9,8 +9,8 @@ namespace SoccerManager.Application.Commands.LeagueTeam.DeleteLeagueTeam;
 /// <summary>
 /// Handles <see cref="DeleteLeagueTeamRequest"/> commands. This performs a hard delete, as the
 /// entity carries no soft-delete flag. The roster entry is removed only when nothing is attached to
-/// the club in that league: while it still has a squad, manager appointments, applications, standings
-/// or matches the removal is refused, and the refusal names what blocks it.
+/// the club in that league: while it still has a squad, manager appointments, applications, standings,
+/// matches, transfers or loans the removal is refused, and the refusal names what blocks it.
 /// </summary>
 public class DeleteLeagueTeamHandler : IRequestHandler<DeleteLeagueTeamRequest, bool>
 {
@@ -35,7 +35,7 @@ public class DeleteLeagueTeamHandler : IRequestHandler<DeleteLeagueTeamRequest, 
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns><see langword="true"/> when the deletion succeeds.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when no league team with the given identifier exists.</exception>
-    /// <exception cref="ValidationException">Thrown when the club still has a squad, appointments, applications, standings or matches in the league.</exception>
+    /// <exception cref="ValidationException">Thrown when the club still has a squad, appointments, applications, standings, matches, transfers or loans in the league.</exception>
     public async Task<bool> Handle(DeleteLeagueTeamRequest request, CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -106,6 +106,11 @@ public class DeleteLeagueTeamHandler : IRequestHandler<DeleteLeagueTeamRequest, 
         if (result.HasMatches)
         {
             blockers.Add("matches");
+        }
+
+        if (result.HasTransfers)
+        {
+            blockers.Add("transfers or loans");
         }
 
         return blockers;

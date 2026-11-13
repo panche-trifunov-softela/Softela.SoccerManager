@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using SoccerManager.Application.Models;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Entities;
 using SoccerManager.Infrastructure.Database.Dapper;
@@ -65,15 +66,20 @@ public class SeasonRepository : ISeasonRepository
     }
 
     /// <summary>
-    /// Removes a season by its identifier.
+    /// Removes a season by its identifier, but only when no transfer or loan uses it. The check and the
+    /// delete are atomic inside the stored procedure.
     /// </summary>
     /// <param name="id">The identifier of the season to delete.</param>
-    public async Task DeleteAsync(int id)
+    /// <returns>
+    /// Whether the season was removed and, when it was not, whether transfers or loans block it.
+    /// When nothing is flagged as blocking, the season did not exist.
+    /// </returns>
+    public async Task<DeleteSeasonResult> DeleteAsync(int id)
     {
         var parameters = new DynamicParameters();
         parameters.Add("@Id", id, DbType.Int32);
 
-        await _dapperDataContext.Connection.ExecuteAsync(
+        return await _dapperDataContext.Connection.QuerySingleAsync<DeleteSeasonResult>(
             "dbo.DeleteSeason",
             parameters,
             transaction: _dapperDataContext.Transaction,
