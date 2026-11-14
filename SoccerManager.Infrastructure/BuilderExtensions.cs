@@ -52,6 +52,7 @@ public static class BuilderExtensions
         services.AddScoped<IStadiumRepository, StadiumRepository>();
         services.AddScoped<IMatchRepository, MatchRepository>();
         services.AddScoped<IMatchPlayerStatisticRepository, MatchPlayerStatisticRepository>();
+        services.AddScoped<IMatchPlayerAbsenceRepository, MatchPlayerAbsenceRepository>();
         services.AddScoped<IMatchTeamStatisticRepository, MatchTeamStatisticRepository>();
         services.AddScoped<IPenaltyAfterExtraTimeRepository, PenaltyAfterExtraTimeRepository>();
         services.AddScoped<ILeagueTeamPlayerRepository, LeagueTeamPlayerRepository>();
