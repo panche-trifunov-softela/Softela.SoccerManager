@@ -39,6 +39,7 @@ public static class BuilderExtensions
         services.AddScoped<ILeagueAccess, LeagueAccess>();
         services.AddScoped<ILineupAutoPicker, LineupAutoPicker>();
         services.AddScoped<IMatchLineupService, MatchLineupService>();
+        services.AddScoped<IMatchPlayerAbsenceService, MatchPlayerAbsenceService>();
         services.AddScoped<IMatchSubstitutionService, MatchSubstitutionService>();
         services.AddScoped<IPlayerDealService, PlayerDealService>();
 

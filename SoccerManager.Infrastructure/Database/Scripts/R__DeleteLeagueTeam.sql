@@ -35,7 +35,9 @@ BEGIN
         OR EXISTS (
         SELECT 1 FROM dbo.MatchPlayerStatistics WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id)
         OR EXISTS (
-        SELECT 1 FROM dbo.PenaltiesAfterExtraTime WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id) THEN 1 ELSE 0 END;
+        SELECT 1 FROM dbo.PenaltiesAfterExtraTime WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id)
+        OR EXISTS (
+        SELECT 1 FROM dbo.MatchPlayerAbsences WITH (UPDLOCK, HOLDLOCK) WHERE LeagueTeamId = @Id) THEN 1 ELSE 0 END;
 
     -- A transfer blocks both clubs it names: the selling club and the buying club. A loan names only the loan club.
     DECLARE @HasTransfers BIT = CASE WHEN EXISTS (

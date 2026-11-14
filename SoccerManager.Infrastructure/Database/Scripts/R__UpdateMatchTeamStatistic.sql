@@ -21,16 +21,18 @@ BEGIN
         WHERE lt.Id = @LeagueTeamId AND m.Id = @MatchId)
         THROW 50000, 'The club and the match must belong to the same league.', 1;
 
-    -- A club's player statistics and shootout kicks count for it only through this row, so moving the row to another
-    -- match or club would drop them out of the match's score.
+    -- This row is the only record that the club plays the match. Moving it to another match or club would drop the
+    -- club's player statistics and shootout kicks out of the match's score, and leave its absences on a club that no
+    -- longer plays the match.
     IF EXISTS (
         SELECT 1
         FROM dbo.MatchTeamStatistics mts
         WHERE mts.Id = @Id
           AND (mts.MatchId <> @MatchId OR mts.LeagueTeamId <> @LeagueTeamId)
           AND (EXISTS (SELECT 1 FROM dbo.MatchPlayerStatistics p WITH (UPDLOCK, HOLDLOCK) WHERE p.MatchId = mts.MatchId AND p.LeagueTeamId = mts.LeagueTeamId)
-               OR EXISTS (SELECT 1 FROM dbo.PenaltiesAfterExtraTime k WITH (UPDLOCK, HOLDLOCK) WHERE k.MatchId = mts.MatchId AND k.LeagueTeamId = mts.LeagueTeamId)))
-        THROW 50000, 'The club has player statistics or shootout kicks in this match.', 1;
+               OR EXISTS (SELECT 1 FROM dbo.PenaltiesAfterExtraTime k WITH (UPDLOCK, HOLDLOCK) WHERE k.MatchId = mts.MatchId AND k.LeagueTeamId = mts.LeagueTeamId)
+               OR EXISTS (SELECT 1 FROM dbo.MatchPlayerAbsences a WITH (UPDLOCK, HOLDLOCK) WHERE a.MatchId = mts.MatchId AND a.LeagueTeamId = mts.LeagueTeamId)))
+        THROW 50000, 'The club has player statistics, shootout kicks or absences in this match.', 1;
 
     UPDATE dbo.MatchTeamStatistics
     SET LeagueTeamId  = @LeagueTeamId,
