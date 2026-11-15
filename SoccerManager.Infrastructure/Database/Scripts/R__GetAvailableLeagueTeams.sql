@@ -1,4 +1,4 @@
--- Every club on a league's roster, by team name (the roster Id breaks ties), with IsManaged set when the club has a current manager there.
+-- Every non-guest club on a league's roster (guests can never be managed), by team name (the roster Id breaks ties), with IsManaged set when the club has a current manager there.
 -- A club whose appointments have all ended is not managed, and pending applications do not count: answering one re-checks the club.
 -- HasPendingApplication is set when the caller (@UserId, through their manager profile) has a pending application (Status 1) for the
 -- club; another manager's does not count. The NULL default keeps a caller that passes no @UserId (an older API build on the shared
@@ -33,5 +33,6 @@ BEGIN
     FROM dbo.LeagueTeams lt
         INNER JOIN dbo.Teams t ON t.Id = lt.TeamId
     WHERE lt.LeagueId = @LeagueId
+      AND lt.IsGuest = 0
     ORDER BY t.Name, lt.Id;
 END

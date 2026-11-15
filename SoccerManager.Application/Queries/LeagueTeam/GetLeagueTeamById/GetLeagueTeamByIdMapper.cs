@@ -19,6 +19,7 @@ public static class GetLeagueTeamByIdMapper
             Id = leagueTeam.Id,
             LeagueId = leagueTeam.LeagueId,
             TeamId = leagueTeam.TeamId,
+            IsGuest = leagueTeam.IsGuest,
             CreatedAt = leagueTeam.CreatedAt,
             ModifiedAt = leagueTeam.ModifiedAt,
         };

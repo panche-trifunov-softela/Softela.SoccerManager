@@ -15,6 +15,16 @@ public interface ILeagueTeamPlayerRepository
     Task<int> CreateAsync(LeagueTeamPlayer leagueTeamPlayer);
 
     /// <summary>
+    /// Gives the given league's clubs that have no squad yet the real players of their teams who are on no squad of
+    /// the league. Guests always get them; division clubs only when asked, so they otherwise start empty.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league whose squads to fill.</param>
+    /// <param name="includeDivisionClubs"><see langword="true"/> to fill the division clubs too, <see langword="false"/> to fill only the guests.</param>
+    /// <param name="createdAt">The UTC timestamp to stamp on the created and modified fields.</param>
+    /// <param name="createdBy">The identifier of the user to stamp on the created and modified fields.</param>
+    Task CreateDefaultSquadsAsync(int leagueId, bool includeDivisionClubs, DateTime createdAt, Guid createdBy);
+
+    /// <summary>
     /// Persists changes to an existing league team player.
     /// </summary>
     /// <param name="leagueTeamPlayer">The league team player with updated values.</param>

@@ -46,6 +46,27 @@ public class LeagueTeamRepository : ILeagueTeamRepository
     }
 
     /// <summary>
+    /// Adds every team that is not yet on the given league's roster to it as a guest, stamping created and modified
+    /// with the given time and user.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league whose roster to complete.</param>
+    /// <param name="createdAt">The UTC timestamp to stamp on the created and modified fields.</param>
+    /// <param name="createdBy">The identifier of the user to stamp on the created and modified fields.</param>
+    public async Task CreateGuestsAsync(int leagueId, DateTime createdAt, Guid createdBy)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueId", leagueId, DbType.Int32);
+        parameters.Add("@CreatedAt", createdAt, DbType.DateTime2);
+        parameters.Add("@CreatedBy", createdBy, DbType.Guid);
+
+        await _dapperDataContext.Connection.ExecuteAsync(
+            "dbo.InsertGuestLeagueTeams",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Removes a league team by its identifier, but only when nothing is still attached to the club in
     /// that league. The check and the delete are atomic inside the stored procedure.
     /// </summary>
@@ -103,12 +124,12 @@ public class LeagueTeamRepository : ILeagueTeamRepository
     }
 
     /// <summary>
-    /// Retrieves every club on the given league's roster, ordered by team name, with whether each one has a current manager there
-    /// and whether the given user has a pending application for it.
+    /// Retrieves the given league's non-guest clubs, ordered by team name, with whether each one has a current manager there
+    /// and whether the given user has a pending application for it. Guests are left out, because they can never be managed.
     /// </summary>
-    /// <param name="leagueId">The identifier of the league whose roster to look through.</param>
+    /// <param name="leagueId">The identifier of the league whose clubs to look through.</param>
     /// <param name="userId">The Keycloak user identifier (the 'sub' claim) whose pending applications are flagged.</param>
-    /// <returns>A list of the league's clubs, empty when the league is unknown.</returns>
+    /// <returns>A list of the league's non-guest clubs, empty when the league is unknown.</returns>
     public async Task<List<GetAvailableLeagueTeamsResult>> GetAvailableByLeagueIdAsync(int leagueId, Guid userId)
     {
         var parameters = new DynamicParameters();

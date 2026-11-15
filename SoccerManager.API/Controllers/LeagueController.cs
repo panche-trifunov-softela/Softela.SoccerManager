@@ -63,9 +63,11 @@ public class LeagueController : ControllerBase
     }
 
     /// <summary>
-    /// Creates a new league owned by the authenticated caller's manager profile.
+    /// Creates a new league owned by the authenticated caller's manager profile. The request also names the division
+    /// clubs and whether they start with the real players of their teams or with empty squads. The league is created
+    /// with its whole roster (every other team as a guest) and its default squads in one transaction.
     /// </summary>
-    /// <param name="request">The league to create.</param>
+    /// <param name="request">The league to create, its division clubs and its division-squad option.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <returns>The identifier of the created league.</returns>
     [HttpPost]

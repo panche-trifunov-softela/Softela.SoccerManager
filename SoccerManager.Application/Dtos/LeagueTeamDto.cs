@@ -21,6 +21,12 @@ public sealed record LeagueTeamDto
     public int TeamId { get; init; }
 
     /// <summary>
+    /// Whether the team is a guest of the league: on its roster so its players can be bought, but never managed and
+    /// never in a division.
+    /// </summary>
+    public bool IsGuest { get; init; }
+
+    /// <summary>
     /// The UTC date and time the league team was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }

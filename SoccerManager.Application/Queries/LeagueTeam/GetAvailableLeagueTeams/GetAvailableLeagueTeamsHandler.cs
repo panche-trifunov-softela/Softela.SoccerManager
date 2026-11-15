@@ -24,12 +24,12 @@ public class GetAvailableLeagueTeamsHandler : IRequestHandler<GetAvailableLeague
     }
 
     /// <summary>
-    /// Retrieves every club on the requested league's roster, with whether each one has a current manager and whether the caller
-    /// has a pending application for it.
+    /// Retrieves the requested league's non-guest clubs, with whether each one has a current manager and whether the caller
+    /// has a pending application for it. Guests are left out.
     /// </summary>
     /// <param name="request">The query request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The response carrying the league's clubs, by team name.</returns>
+    /// <returns>The response carrying the league's non-guest clubs, by team name.</returns>
     public async Task<GetAvailableLeagueTeamsResponse> Handle(GetAvailableLeagueTeamsRequest request, CancellationToken cancellationToken)
     {
         // An unknown league is an empty list, not an error: the league's 404 comes from GET /api/leagues/{id}.

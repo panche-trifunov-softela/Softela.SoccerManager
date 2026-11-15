@@ -3,8 +3,8 @@ using SoccerManager.Domain.Enums;
 namespace SoccerManager.Application.Models;
 
 /// <summary>
-/// One row returned by the <c>dbo.GetAvailableLeagueTeams</c> stored procedure: a club on a league's
-/// roster, denormalised with the team details the procedure joins in, whether it has a current manager and
+/// One row returned by the <c>dbo.GetAvailableLeagueTeams</c> stored procedure: a non-guest club of a
+/// league, denormalised with the team details the procedure joins in, whether it has a current manager and
 /// whether the caller has a pending application for it. Kept separate from <see cref="Dtos.AvailableLeagueTeamDto"/>
 /// because Dapper populates a result by setting properties, and the Dto is an init-only record that cannot be a
 /// Dapper target.

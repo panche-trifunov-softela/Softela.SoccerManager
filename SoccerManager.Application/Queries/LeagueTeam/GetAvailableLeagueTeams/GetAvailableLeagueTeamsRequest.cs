@@ -3,7 +3,7 @@ using MediatR;
 namespace SoccerManager.Application.Queries.LeagueTeam.GetAvailableLeagueTeams;
 
 /// <summary>
-/// Represents a request to retrieve every club on a league's roster, with whether each one currently has a manager.
+/// Represents a request to retrieve a league's non-guest clubs, guests left out, with whether each one currently has a manager.
 /// </summary>
 public sealed record GetAvailableLeagueTeamsRequest : IRequest<GetAvailableLeagueTeamsResponse>
 {
