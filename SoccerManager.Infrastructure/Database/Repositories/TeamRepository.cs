@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using SoccerManager.Application.Models;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Entities;
 using SoccerManager.Infrastructure.Database.Dapper;
@@ -74,15 +75,20 @@ public class TeamRepository : ITeamRepository
     }
 
     /// <summary>
-    /// Removes a team by its identifier.
+    /// Removes a team by its identifier, but only when no league still has standings, match rows or deals for it.
+    /// The check and the delete are atomic inside the stored procedure.
     /// </summary>
     /// <param name="id">The identifier of the team to delete.</param>
-    public async Task DeleteAsync(int id)
+    /// <returns>
+    /// Whether the team was removed and, when it was not, which kinds of record still block it.
+    /// When nothing is flagged as blocking, the team did not exist.
+    /// </returns>
+    public async Task<DeleteTeamResult> DeleteAsync(int id)
     {
         var parameters = new DynamicParameters();
         parameters.Add("@Id", id, DbType.Int32);
 
-        await _dapperDataContext.Connection.ExecuteAsync(
+        return await _dapperDataContext.Connection.QuerySingleAsync<DeleteTeamResult>(
             "dbo.DeleteTeam",
             parameters,
             transaction: _dapperDataContext.Transaction,

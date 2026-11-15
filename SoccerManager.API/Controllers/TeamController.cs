@@ -93,11 +93,12 @@ public class TeamController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes the team with the given identifier.
+    /// Deletes the team with the given identifier, with its roster rows in every league. The team is refused (400) while a
+    /// league still has standings, matches or deals for it.
     /// </summary>
     /// <param name="id">The identifier of the team to delete.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>Whether the deletion succeeded.</returns>
+    /// <returns>Whether the deletion succeeded; a 400 when a league still has standings, matches or deals for the team, or a 404 when no such team exists.</returns>
     [HttpDelete("{id}")]
     [Authorize(Policy = AuthorizationPolicies.Operator)]
     public async Task<IActionResult> DeleteTeam(int id, CancellationToken cancellationToken)

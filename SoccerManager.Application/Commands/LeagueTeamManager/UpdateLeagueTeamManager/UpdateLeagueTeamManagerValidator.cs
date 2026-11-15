@@ -1,4 +1,6 @@
 using FluentValidation;
+using SoccerManager.Application.Core.Extensions;
+using SoccerManager.Application.Repositories;
 
 namespace SoccerManager.Application.Commands.LeagueTeamManager.UpdateLeagueTeamManager;
 
@@ -10,10 +12,18 @@ public sealed class UpdateLeagueTeamManagerValidator : AbstractValidator<UpdateL
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateLeagueTeamManagerValidator"/> class.
     /// </summary>
-    public UpdateLeagueTeamManagerValidator()
+    /// <param name="leagueTeamRepository">The repository used to check the club is not a guest of its league.</param>
+    public UpdateLeagueTeamManagerValidator(ILeagueTeamRepository leagueTeamRepository)
     {
         RuleFor(x => x.Id).GreaterThan(0);
         RuleFor(x => x.LeagueTeamId).GreaterThan(0);
+
+        // The lookup runs outside the handler's transaction; the guest lock on the table is the real guarantee.
+        When(x => x.LeagueTeamId > 0, () =>
+        {
+            RuleFor(x => x.LeagueTeamId).MustNotBeGuest(leagueTeamRepository);
+        });
+
         RuleFor(x => x.ManagerId).GreaterThan(0);
 
         // A missing startDate binds to DateOnly's default of 0001-01-01, so the lower bound
