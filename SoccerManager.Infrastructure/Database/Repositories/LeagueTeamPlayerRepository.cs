@@ -11,6 +11,13 @@ namespace SoccerManager.Infrastructure.Database.Repositories;
 /// </summary>
 public class LeagueTeamPlayerRepository : ILeagueTeamPlayerRepository
 {
+    /// <summary>
+    /// The command timeout, in seconds, for writing a whole league's default squads. It stays below the hosting's
+    /// request limit of about 240 seconds, so a slow run fails and rolls back instead of committing after the caller
+    /// has already been sent an error.
+    /// </summary>
+    private const int CreateDefaultSquadsTimeoutSeconds = 120;
+
     private readonly IDapperDataContext _dapperDataContext;
 
     /// <summary>
@@ -52,6 +59,30 @@ public class LeagueTeamPlayerRepository : ILeagueTeamPlayerRepository
             "dbo.InsertLeagueTeamPlayer",
             parameters,
             transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gives the given league's clubs that have no squad yet the real players of their teams who are on no squad of
+    /// the league. Guests always get them; division clubs only when asked, so they otherwise start empty.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league whose squads to fill.</param>
+    /// <param name="includeDivisionClubs"><see langword="true"/> to fill the division clubs too, <see langword="false"/> to fill only the guests.</param>
+    /// <param name="createdAt">The UTC timestamp to stamp on the created and modified fields.</param>
+    /// <param name="createdBy">The identifier of the user to stamp on the created and modified fields.</param>
+    public async Task CreateDefaultSquadsAsync(int leagueId, bool includeDivisionClubs, DateTime createdAt, Guid createdBy)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueId", leagueId, DbType.Int32);
+        parameters.Add("@IncludeDivisionClubs", includeDivisionClubs, DbType.Boolean);
+        parameters.Add("@CreatedAt", createdAt, DbType.DateTime2);
+        parameters.Add("@CreatedBy", createdBy, DbType.Guid);
+
+        await _dapperDataContext.Connection.ExecuteAsync(
+            "dbo.InsertDefaultLeagueTeamPlayers",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandTimeout: CreateDefaultSquadsTimeoutSeconds,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
     }
 

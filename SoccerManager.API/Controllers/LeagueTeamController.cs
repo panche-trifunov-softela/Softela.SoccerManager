@@ -55,12 +55,13 @@ public class LeagueTeamController : ControllerBase
     }
 
     /// <summary>
-    /// Returns every club on the given league's roster, by team name, with whether each one has a current manager there
+    /// Returns the given league's non-guest clubs, by team name, with whether each one has a current manager there
     /// and whether the caller has a pending application for it. A pending application does not count as a manager.
+    /// Guests are left out.
     /// </summary>
     /// <param name="leagueId">The identifier of the league whose available clubs to return.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The league's clubs, empty for an unknown league.</returns>
+    /// <returns>The league's non-guest clubs, empty for an unknown league.</returns>
     [HttpGet("available")]
     public async Task<IActionResult> GetAvailableLeagueTeams([FromQuery] int leagueId, CancellationToken cancellationToken)
     {
@@ -190,7 +191,8 @@ public class LeagueTeamController : ControllerBase
     }
 
     /// <summary>
-    /// Adds a team to the roster of a league.
+    /// Adds a team to the roster of a league. A league created through POST /api/leagues already holds every team, so
+    /// this adds a team created after its league, as a non-guest club without a squad.
     /// </summary>
     /// <param name="request">The league and team to add to the roster.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>

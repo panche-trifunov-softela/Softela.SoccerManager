@@ -3,7 +3,7 @@ using SoccerManager.Domain.Enums;
 namespace SoccerManager.Application.Dtos;
 
 /// <summary>
-/// Represents a club on one league's roster, as the available-clubs list shows it, with whether it
+/// Represents a non-guest club of one league, as the available-clubs list shows it, with whether it
 /// currently has a manager and whether the caller has a pending application for it.
 /// </summary>
 public sealed record AvailableLeagueTeamDto

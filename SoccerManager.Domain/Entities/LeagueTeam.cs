@@ -14,4 +14,10 @@ public class LeagueTeam : BaseEntity
     /// Gets or sets the identifier of the team taking part in the league.
     /// </summary>
     public int TeamId { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the team is a guest of the league: on its roster so its players can be
+    /// bought, but never managed and never in a division.
+    /// </summary>
+    public bool IsGuest { get; set; }
 }
