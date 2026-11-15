@@ -24,6 +24,14 @@ BEGIN
         WHERE lt.Id = @LeagueTeamId AND se.Id = @SeasonId AND c.Id = @CompetitionId)
         THROW 50000, 'The club, the season and the competition must belong to the same league.', 1;
 
+    -- A guest may play cups (Order 0) but never a division.
+    IF EXISTS (
+        SELECT 1
+        FROM dbo.LeagueTeams lt
+            INNER JOIN dbo.Competitions c ON c.Id = @CompetitionId
+        WHERE lt.Id = @LeagueTeamId AND lt.IsGuest = 1 AND c.[Order] > 0)
+        THROW 50000, 'A guest club cannot have a standing in a division.', 1;
+
     UPDATE dbo.Standings
     SET CompetitionId = @CompetitionId,
         SeasonId      = @SeasonId,

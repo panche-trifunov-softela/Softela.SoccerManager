@@ -1,4 +1,5 @@
 using FluentValidation;
+using SoccerManager.Application.Core.Extensions;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Enums;
 
@@ -93,6 +94,14 @@ public sealed class UpdateLeagueTeamManagerApplicationValidator : AbstractValida
 
         if (leagueTeam is null)
         {
+            return;
+        }
+
+        // The guest lock means no application can exist at a guest, so this only turns a 500 into a 400 should one ever appear.
+        if (leagueTeam.IsGuest)
+        {
+            context.AddFailure(GuestClubRuleExtensions.GuestClubMessage);
+
             return;
         }
 

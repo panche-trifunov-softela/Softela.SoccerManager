@@ -65,6 +65,13 @@ public sealed class CreateLeagueTeamManagerApplicationValidator : AbstractValida
             return;
         }
 
+        if (leagueTeam.IsGuest)
+        {
+            context.AddFailure(GuestClubRuleExtensions.GuestClubMessage);
+
+            return;
+        }
+
         var teamAppointments = await _leagueTeamManagerRepository.GetByLeagueTeamIdAsync(leagueTeamId);
 
         if (teamAppointments.Any(appointment => appointment.IsCurrent))

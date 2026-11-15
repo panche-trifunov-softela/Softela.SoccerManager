@@ -10,7 +10,8 @@ public interface IPlayerDealService
 {
     /// <summary>
     /// Ensures a deal (a transfer or a loan) moves a player to another club of the player's own league, in a season of that
-    /// league. It runs for every caller, operators included, because nothing else keeps a deal inside one league.
+    /// league. Either club may be a guest. It runs for every caller, operators included, because nothing else keeps a deal
+    /// inside one league.
     /// </summary>
     /// <param name="ownLeagueTeamId">The identifier of the league team (the club in its league) the player is registered at.</param>
     /// <param name="toLeagueTeamId">The identifier of the league team (the club in its league) the player goes to.</param>
@@ -21,7 +22,8 @@ public interface IPlayerDealService
 
     /// <summary>
     /// Ensures a swapped player can go with a transfer: he is not the player the transfer sells, and he is in the squad of
-    /// the buying club. It runs for every caller, operators included, because nothing else checks a swap.
+    /// the buying club. Either club may be a guest. It runs for every caller, operators included, because nothing else checks
+    /// a swap.
     /// </summary>
     /// <param name="leagueTeamPlayerTransferId">The identifier of the transfer the player is swapped in.</param>
     /// <param name="leagueTeamPlayerId">The identifier of the squad row (the player at a club of the league) that is swapped.</param>
