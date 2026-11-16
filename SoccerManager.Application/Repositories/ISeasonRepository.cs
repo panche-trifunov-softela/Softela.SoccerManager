@@ -46,4 +46,11 @@ public interface ISeasonRepository
     /// <param name="leagueId">The identifier of the league whose seasons to retrieve.</param>
     /// <returns>A list of every season belonging to the league.</returns>
     Task<List<Season>> GetByLeagueIdAsync(int leagueId);
+
+    /// <summary>
+    /// Retrieves the latest season of the given league, which is the one with the highest season number.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league whose latest season to retrieve.</param>
+    /// <returns>The league's latest season, or <see langword="null"/> when the league has no season.</returns>
+    Task<Season?> GetLatestByLeagueIdAsync(int leagueId);
 }

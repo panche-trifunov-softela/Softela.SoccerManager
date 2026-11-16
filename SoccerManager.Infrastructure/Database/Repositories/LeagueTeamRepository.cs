@@ -305,4 +305,25 @@ public class LeagueTeamRepository : ILeagueTeamRepository
 
         return rows.ToList();
     }
+
+    /// <summary>
+    /// Checks whether the given league team has a pending transfer or loan bid for the given player, whichever club the
+    /// player is registered at. It locks the league team's row inside the caller's transaction, so two bids from one club
+    /// cannot both pass the check.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) that bids.</param>
+    /// <param name="playerId">The identifier of the player the bid is for.</param>
+    /// <returns><see langword="true"/> when the club has a pending transfer or loan for the player.</returns>
+    public async Task<bool> HasPendingBidAsync(int leagueTeamId, int playerId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+        parameters.Add("@PlayerId", playerId, DbType.Int32);
+
+        return await _dapperDataContext.Connection.QuerySingleAsync<bool>(
+            "dbo.GetLeagueTeamHasPendingBid",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
 }

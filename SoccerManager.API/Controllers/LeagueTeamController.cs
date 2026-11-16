@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.LeagueTeam.CreateLeagueTeam;
 using SoccerManager.Application.Commands.LeagueTeam.DeleteLeagueTeam;
+using SoccerManager.Application.Commands.LeagueTeamPlayerLoan.PlaceLeagueTeamPlayerLoanBid;
+using SoccerManager.Application.Commands.LeagueTeamPlayerTransfer.PlaceLeagueTeamPlayerTransferBid;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.LeagueTeam.GetAvailableLeagueTeams;
@@ -157,6 +159,52 @@ public class LeagueTeamController : ControllerBase
         var result = await _queryDispatcher.QueryAsync(new GetLeaguePlayerInjuriesRequest { LeagueTeamId = id, PlayerId = playerId }, cancellationToken);
 
         return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Places a pending transfer bid by the given league team for a player of another club of its league, optionally with a
+    /// buyback and with up to 2 of the bidding club's own players offered in a swap. The selling club is the club the player
+    /// is registered at, and the bid is placed in the league's latest season. A club has one pending bid per player, whether
+    /// a transfer or a loan. Allowed for an operator or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team that bids.</param>
+    /// <param name="playerId">The identifier of the player to bid for.</param>
+    /// <param name="request">The bid: the fee, the optional buyback value and seasons, and the swapped squad players.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The identifier of the created transfer, with its location; a 400 when a value is invalid, the player is already in the club's squad or at no club of the league, the league has no season yet, the club already has a pending bid for the player, or a swapped player is not in the club's squad; a 403 when the caller may not manage the club; or a 404 when the league team does not exist, which only an operator can reach.</returns>
+    [HttpPost("{id}/league-players/{playerId}/transfer-bids")]
+    public async Task<IActionResult> PlaceLeagueTeamPlayerTransferBid(int id, int playerId, [FromBody] PlaceLeagueTeamPlayerTransferBidRequest request, CancellationToken cancellationToken)
+    {
+        // The route values replace anything the body carries for them. An invalid body or a zero or negative id is
+        // rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var command = request with { LeagueTeamId = id, PlayerId = playerId };
+        var newId = await _commandDispatcher.SendAsync<int, PlaceLeagueTeamPlayerTransferBidRequest>(command, cancellationToken);
+
+        // The overload that names the controller is needed: the transfer is read in another controller, which the three-argument form cannot reach.
+        return CreatedAtAction(nameof(LeagueTeamPlayerTransferController.GetLeagueTeamPlayerTransferById), "LeagueTeamPlayerTransfer", new { id = newId }, new { id = newId });
+    }
+
+    /// <summary>
+    /// Places a pending loan bid by the given league team for a player of another club of its league, for 1 or 2 seasons and
+    /// optionally with an option to buy. The lending club is the club the player is registered at, the bid is placed in the
+    /// league's latest season, and the loan club pays all of the player's wage. A club has one pending bid per player, whether
+    /// a transfer or a loan. Allowed for an operator or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team that bids.</param>
+    /// <param name="playerId">The identifier of the player to bid for.</param>
+    /// <param name="request">The bid: the fee, the number of seasons and the optional buy option value.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The identifier of the created loan, with its location; a 400 when a value is invalid, the player is already in the club's squad or at no club of the league, the league has no season yet, or the club already has a pending bid for the player; a 403 when the caller may not manage the club; or a 404 when the league team does not exist, which only an operator can reach.</returns>
+    [HttpPost("{id}/league-players/{playerId}/loan-bids")]
+    public async Task<IActionResult> PlaceLeagueTeamPlayerLoanBid(int id, int playerId, [FromBody] PlaceLeagueTeamPlayerLoanBidRequest request, CancellationToken cancellationToken)
+    {
+        // The route values replace anything the body carries for them. An invalid body or a zero or negative id is
+        // rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var command = request with { LeagueTeamId = id, PlayerId = playerId };
+        var newId = await _commandDispatcher.SendAsync<int, PlaceLeagueTeamPlayerLoanBidRequest>(command, cancellationToken);
+
+        // The overload that names the controller is needed: the loan is read in another controller, which the three-argument form cannot reach.
+        return CreatedAtAction(nameof(LeagueTeamPlayerLoanController.GetLeagueTeamPlayerLoanById), "LeagueTeamPlayerLoan", new { id = newId }, new { id = newId });
     }
 
     /// <summary>

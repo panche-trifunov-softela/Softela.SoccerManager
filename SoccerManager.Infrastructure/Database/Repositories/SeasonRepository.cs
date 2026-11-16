@@ -121,4 +121,21 @@ public class SeasonRepository : ISeasonRepository
 
         return seasons.ToList();
     }
+
+    /// <summary>
+    /// Retrieves the latest season of the given league, which is the one with the highest season number.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league whose latest season to retrieve.</param>
+    /// <returns>The league's latest season, or <see langword="null"/> when the league has no season.</returns>
+    public async Task<Season?> GetLatestByLeagueIdAsync(int leagueId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueId", leagueId, DbType.Int32);
+
+        return await _dapperDataContext.Connection.QueryFirstOrDefaultAsync<Season>(
+            "dbo.GetLatestSeason",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
 }

@@ -7,7 +7,9 @@ namespace SoccerManager.Application.Services;
 
 /// <summary>
 /// Holds the rules a transfer, a loan and a swap share, so each is checked by one definition: the clubs and the season
-/// of a deal must exist and belong to the player's league, and a swapped player must be one the buying club can give away.
+/// of a deal must exist and belong to the player's league, a swapped player must be one the buying club can give away,
+/// and a club's bid must be for a player of another club of its league, in the league's latest season, while the club
+/// has no other pending bid for that player.
 /// </summary>
 public class PlayerDealService : IPlayerDealService
 {
@@ -107,5 +109,71 @@ public class PlayerDealService : IPlayerDealService
                 new ValidationFailure(nameof(LeagueTeamPlayerTransferSwap.LeagueTeamPlayerId), "The swapped player must be in the buying club's squad."),
             });
         }
+    }
+
+    /// <summary>
+    /// Resolves what a club's bid for a player is aimed at, and ensures the bid can be placed: the player is not in the
+    /// bidding club's squad, is registered at another club of the league, the league has a season to bid in, and the club has
+    /// no pending bid for the player yet. The bid is placed in the league's latest season. Either club may be a guest. It runs
+    /// for every caller, operators included, and takes a lock on the bidding club's row, so it belongs inside the caller's
+    /// transaction.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) that bids.</param>
+    /// <param name="playerId">The identifier of the player the club bids for.</param>
+    /// <returns>The resolved target of the bid.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the bidding club does not exist.</exception>
+    /// <exception cref="ValidationException">Thrown when the player is already in the bidding club's squad, is registered at no club of the league, the league has no season yet, or the club already has a pending bid for the player.</exception>
+    public async Task<BidTarget> GetBidTargetAsync(int leagueTeamId, int playerId)
+    {
+        var leagueTeam = await _leagueTeamRepository.GetByIdAsync(leagueTeamId)
+            ?? throw new KeyNotFoundException($"League team {leagueTeamId} not found.");
+
+        // Every registration counts, so a player the club holds twice is still its own.
+        var squad = await _leagueTeamPlayerRepository.GetByLeagueTeamIdAsync(leagueTeamId);
+
+        if (squad.Any(member => member.PlayerId == playerId))
+        {
+            throw new ValidationException(new[]
+            {
+                new ValidationFailure(nameof(LeagueTeamPlayer.PlayerId), "The player is already in the club's squad."),
+            });
+        }
+
+        var sellerRow = await _leagueTeamPlayerRepository.GetByLeagueAndPlayerAsync(leagueTeam.LeagueId, playerId);
+
+        if (sellerRow is null)
+        {
+            throw new ValidationException(new[]
+            {
+                new ValidationFailure(nameof(LeagueTeamPlayer.PlayerId), "The player is not registered at any club of this league."),
+            });
+        }
+
+        var season = await _seasonRepository.GetLatestByLeagueIdAsync(leagueTeam.LeagueId);
+
+        if (season is null)
+        {
+            throw new ValidationException(new[]
+            {
+                new ValidationFailure(nameof(LeagueTeamPlayer.LeagueTeamId), "The league has no season yet."),
+            });
+        }
+
+        // The check takes the lock on the bidding club's row, so a second bid from the club waits for this transaction.
+        if (await _leagueTeamRepository.HasPendingBidAsync(leagueTeamId, playerId))
+        {
+            throw new ValidationException(new[]
+            {
+                new ValidationFailure(nameof(LeagueTeamPlayer.PlayerId), "The club already has a pending bid for this player."),
+            });
+        }
+
+        return new BidTarget
+        {
+            LeagueTeamPlayerId = sellerRow.Id,
+            FromLeagueTeamId = sellerRow.LeagueTeamId,
+            SeasonId = season.Id,
+            SquadLeagueTeamPlayerIds = squad.Select(member => member.Id).ToList(),
+        };
     }
 }
