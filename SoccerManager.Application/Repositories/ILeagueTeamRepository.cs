@@ -76,6 +76,18 @@ public interface ILeagueTeamRepository
     Task<List<GetLeagueTeamSquadMembersResult>> GetSquadMembersAsync(int leagueTeamId);
 
     /// <summary>
+    /// Searches the players and the clubs of the league of the given league team for the given text, ignoring case and
+    /// accents. Players are every player whose name contains it, registered at a club of the league or not: the club shown
+    /// is the one registered at in that league (the league team's own first, else the lowest registration), none for a free
+    /// agent. Both groups put names where the text starts a word first.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="searchTerm">The text a name must contain, already trimmed.</param>
+    /// <param name="take">The most players, and the most clubs, to return.</param>
+    /// <returns>The number of matching players and the best of them, then the number of matching clubs and the best of them; all empty or zero when the league team is unknown.</returns>
+    Task<(int PlayerTotalCount, List<SearchLeaguePlayersResult> Players, int TeamTotalCount, List<SearchLeagueTeamsResult> Teams)> SearchLeaguePlayersAndTeamsAsync(int leagueTeamId, string searchTerm, int take);
+
+    /// <summary>
     /// Retrieves a player's profile in the league of the given league team: the player's registration at the
     /// league team itself or, failing that, at another club of the same league (the lowest Id first), with the player's
     /// details and every position the player can play.

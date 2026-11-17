@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using SoccerManager.API.RateLimiting;
 using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.LeagueTeam.CreateLeagueTeam;
 using SoccerManager.Application.Commands.LeagueTeam.DeleteLeagueTeam;
@@ -16,6 +18,7 @@ using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamNextMatch;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquad;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquadMembers;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeams;
+using SoccerManager.Application.Queries.LeagueTeam.SearchLeaguePlayersAndTeams;
 
 namespace SoccerManager.API.Controllers;
 
@@ -102,6 +105,27 @@ public class LeagueTeamController : ControllerBase
     {
         // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
         var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamSquadMembersRequest { LeagueTeamId = id }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Searches the players and the clubs of the league of the given league team, returning the best 5 of each with how many
+    /// match in all. A name matches when it contains the text, ignoring case and accents, and names where the text starts a
+    /// word come first. Players are every player in the game, not only those at a club of the league: a player registered
+    /// at no club of the league is a free agent, with no club. Clubs are every club of the league, guests included. Allowed
+    /// for an operator or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose league is the one to search.</param>
+    /// <param name="searchTerm">Text a name must contain, ignoring case and accents; at least 2 characters once trimmed and at most 100 as sent.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The best matching players and clubs, each group with its total match count; a 400 when the id is not positive or the term is missing, shorter than 2 characters once trimmed or longer than 100 characters as sent, a 403 when the caller may not manage the club, or two empty groups for an operator's unknown league team.</returns>
+    [HttpGet("{id}/search")]
+    [EnableRateLimiting(RateLimitPolicies.Search)]
+    public async Task<IActionResult> SearchLeaguePlayersAndTeams(int id, [FromQuery] string? searchTerm, CancellationToken cancellationToken)
+    {
+        // A zero or negative id and a missing, too short or too long term are rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var result = await _queryDispatcher.QueryAsync(new SearchLeaguePlayersAndTeamsRequest { LeagueTeamId = id, SearchTerm = searchTerm }, cancellationToken);
 
         return Ok(result.Data);
     }
