@@ -19,6 +19,7 @@ public static class GetMyLeagueTeamManagersMapper
         {
             Id = row.Id,
             LeagueTeamId = row.LeagueTeamId,
+            LeagueId = row.LeagueId,
             LeagueName = row.LeagueName,
             TeamName = row.TeamName,
             TeamLogoUrl = row.TeamLogoUrl,

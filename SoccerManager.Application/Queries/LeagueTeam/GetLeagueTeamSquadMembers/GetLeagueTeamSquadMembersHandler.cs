@@ -17,7 +17,7 @@ public class GetLeagueTeamSquadMembersHandler : IRequestHandler<GetLeagueTeamSqu
     /// Initializes a new instance of the <see cref="GetLeagueTeamSquadMembersHandler"/> class.
     /// </summary>
     /// <param name="leagueTeamRepository">The repository used to load the league team's squad.</param>
-    /// <param name="clubAccess">The check that the caller may manage the club.</param>
+    /// <param name="clubAccess">The check that the caller may view the club.</param>
     public GetLeagueTeamSquadMembersHandler(ILeagueTeamRepository leagueTeamRepository, IClubAccess clubAccess)
     {
         _leagueTeamRepository = leagueTeamRepository;
@@ -31,12 +31,12 @@ public class GetLeagueTeamSquadMembersHandler : IRequestHandler<GetLeagueTeamSqu
     /// <param name="request">The query request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The response carrying the squad entries, ordered by line and position.</returns>
-    /// <exception cref="ForbiddenAccessException">Thrown when the caller is neither an operator nor the club's current manager.</exception>
+    /// <exception cref="ForbiddenAccessException">Thrown when the caller is neither an operator nor a current manager of a club in the league team's league.</exception>
     public async Task<GetLeagueTeamSquadMembersResponse> Handle(GetLeagueTeamSquadMembersRequest request, CancellationToken cancellationToken)
     {
-        // There is no existence check: an unknown league team has no current manager, so it is a 403 for anyone but an
+        // There is no existence check: an unknown league team has no league to match, so it is a 403 for anyone but an
         // operator, who gets an empty list.
-        await _clubAccess.EnsureCanManageClubAsync(request.LeagueTeamId);
+        await _clubAccess.EnsureCanViewClubAsync(request.LeagueTeamId);
 
         var rows = await _leagueTeamRepository.GetSquadMembersAsync(request.LeagueTeamId);
 

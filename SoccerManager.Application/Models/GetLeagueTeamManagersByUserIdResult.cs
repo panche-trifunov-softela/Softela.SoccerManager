@@ -20,7 +20,7 @@ public class GetLeagueTeamManagersByUserIdResult
 
     /// <summary>
     /// The identifier of the league the appointment belongs to, joined in through its roster entry.
-    /// MyLeagueTeamManagerDto does not expose it; the application validators use it to find a manager's club in a league.
+    /// The application validators and the club access check use it to find a manager's club in a league, and the Dto exposes it.
     /// </summary>
     public int LeagueId { get; set; }
 

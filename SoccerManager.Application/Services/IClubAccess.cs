@@ -4,11 +4,19 @@ using SoccerManager.Application.Core.Exceptions;
 namespace SoccerManager.Application.Services;
 
 /// <summary>
-/// Decides whether the current caller may change a club's squad, tactics and lineups, so every handler that
-/// guards a club applies one definition of who that is.
+/// Decides whether the current caller may change a club's squad, tactics and lineups, or view its squad, so every
+/// handler that guards a club applies one definition of who that is.
 /// </summary>
 public interface IClubAccess
 {
+    /// <summary>
+    /// Ensures the caller may view the given club: an operator always may, anyone else must be the current manager of
+    /// a club in the same league as the given club, the given club or another one.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league roster entry (the club in its league) being viewed.</param>
+    /// <exception cref="ForbiddenAccessException">Thrown when the caller is not an operator and manages no club in the club's league, or when the club does not exist.</exception>
+    Task EnsureCanViewClubAsync(int leagueTeamId);
+
     /// <summary>
     /// Ensures the caller is an operator or the current manager of the given club.
     /// </summary>

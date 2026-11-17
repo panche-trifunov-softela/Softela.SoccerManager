@@ -11,7 +11,8 @@ namespace SoccerManager.API.Controllers;
 
 /// <summary>
 /// Creates, changes and releases league team players. They are read through GET api/league-teams/{id}/squad, which only
-/// the club's current manager or an operator may call, because a registration holds the player's wage, morale and condition.
+/// an operator or a current manager of a club in the same league may call, because a registration holds the player's wage,
+/// morale and condition.
 /// </summary>
 [ApiController]
 [Authorize]

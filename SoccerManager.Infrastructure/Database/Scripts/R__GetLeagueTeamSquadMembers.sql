@@ -1,4 +1,4 @@
--- The squad of one league team for its manager, behind GET /api/league-teams/{id}/squad: each squad entry with the player's
+-- The squad of one league team for the managers of its league, behind GET /api/league-teams/{id}/squad: each squad entry with the player's
 -- date of birth, current rating, main position and national team, and the entry's squad number, value, weekly wage, morale
 -- and condition. It does not check access: the query handler does that first, through IClubAccess.
 -- Id is the squad entry (dbo.LeagueTeamPlayers.Id) and PlayerId the player, so a player registered twice (which V1_0_0_37

@@ -17,6 +17,11 @@ public sealed record MyLeagueTeamManagerDto
     public int LeagueTeamId { get; init; }
 
     /// <summary>
+    /// The identifier of the league the appointment belongs to.
+    /// </summary>
+    public int LeagueId { get; init; }
+
+    /// <summary>
     /// The name of the league the appointment belongs to.
     /// </summary>
     public required string LeagueName { get; init; }
