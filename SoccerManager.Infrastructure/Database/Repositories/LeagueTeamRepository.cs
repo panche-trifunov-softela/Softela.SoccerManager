@@ -105,6 +105,23 @@ public class LeagueTeamRepository : ILeagueTeamRepository
     }
 
     /// <summary>
+    /// Retrieves a league team's profile: its identifier, its league's identifier and name, and its team's name and logo.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose profile to retrieve.</param>
+    /// <returns>The profile row, or <see langword="null"/> when none exists.</returns>
+    public async Task<GetLeagueTeamProfileResult?> GetProfileAsync(int leagueTeamId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+
+        return await _dapperDataContext.Connection.QueryFirstOrDefaultAsync<GetLeagueTeamProfileResult>(
+            "dbo.GetLeagueTeamProfile",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Retrieves every team on the roster of the given league.
     /// </summary>
     /// <param name="leagueId">The identifier of the league whose roster to retrieve.</param>

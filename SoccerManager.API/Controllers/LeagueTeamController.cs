@@ -15,6 +15,7 @@ using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerProfile;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerTransfers;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamById;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamNextMatch;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamProfile;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquad;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquadMembers;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeams;
@@ -95,16 +96,32 @@ public class LeagueTeamController : ControllerBase
     /// <summary>
     /// Returns the squad entries of the given league team, each player with their date of birth, squad number, main
     /// position, national team and current rating, and the entry's value, weekly wage, morale and condition, ordered by
-    /// line and position. Allowed for an operator or the club's current manager.
+    /// line and position. Allowed for an operator or a current manager of a club in the same league as the league team.
     /// </summary>
     /// <param name="id">The identifier of the league team whose squad to return.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The squad entries, empty when the league team has none.</returns>
+    /// <returns>The squad entries, empty when the league team has none; a 400 when the id is not positive, a 403 when the caller manages no club of the league team's league, or an empty list for an operator's unknown league team.</returns>
     [HttpGet("{id}/squad")]
     public async Task<IActionResult> GetLeagueTeamSquadMembers(int id, CancellationToken cancellationToken)
     {
         // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
         var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamSquadMembersRequest { LeagueTeamId = id }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the profile of the given league team: the league it plays in, and its team's name and logo. Allowed for
+    /// every signed-in user, as the league and team names are already public.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose profile to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The league team's profile; a 400 when the id is not positive, or a 404 when the league team does not exist.</returns>
+    [HttpGet("{id}/profile")]
+    public async Task<IActionResult> GetLeagueTeamProfile(int id, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline.
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamProfileRequest { LeagueTeamId = id }, cancellationToken);
 
         return Ok(result.Data);
     }
