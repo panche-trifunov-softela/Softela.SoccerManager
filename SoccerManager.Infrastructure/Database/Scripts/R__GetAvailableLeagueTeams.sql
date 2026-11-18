@@ -3,7 +3,7 @@
 -- HasPendingApplication is set when the caller (@UserId, through their manager profile) has a pending application (Status 1) for the
 -- club; another manager's does not count. The NULL default keeps a caller that passes no @UserId (an older API build on the shared
 -- database) working, with the flag 0 for every club.
--- UQ_LeagueTeams_LeagueId_TeamId serves the roster lookup, UX_LeagueTeamManagers_LeagueTeamId_Current the current-manager check,
+-- IX_LeagueTeams_LeagueId serves the roster lookup, UX_LeagueTeamManagers_LeagueTeamId_Current the current-manager check,
 -- and UX_LeagueTeamManagerApplications_LeagueTeamId_ManagerId_Pending covers the pending-application check.
 CREATE OR ALTER PROCEDURE dbo.GetAvailableLeagueTeams
     @LeagueId INT,

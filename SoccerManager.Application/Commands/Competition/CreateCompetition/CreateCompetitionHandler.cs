@@ -10,6 +10,7 @@ namespace SoccerManager.Application.Commands.Competition.CreateCompetition;
 public class CreateCompetitionHandler : IRequestHandler<CreateCompetitionRequest, int>
 {
     private readonly ICompetitionRepository _competitionRepository;
+    private readonly ILeagueTeamRepository _leagueTeamRepository;
     private readonly ICurrentUser _currentUser;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -17,11 +18,13 @@ public class CreateCompetitionHandler : IRequestHandler<CreateCompetitionRequest
     /// Initializes a new instance of the <see cref="CreateCompetitionHandler"/> class.
     /// </summary>
     /// <param name="competitionRepository">The repository used to persist competitions.</param>
+    /// <param name="leagueTeamRepository">The repository used to put national teams on the league's roster.</param>
     /// <param name="currentUser">The currently authenticated user.</param>
     /// <param name="unitOfWork">The unit of work used to group the write into one transaction.</param>
-    public CreateCompetitionHandler(ICompetitionRepository competitionRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
+    public CreateCompetitionHandler(ICompetitionRepository competitionRepository, ILeagueTeamRepository leagueTeamRepository, ICurrentUser currentUser, IUnitOfWork unitOfWork)
     {
         _competitionRepository = competitionRepository;
+        _leagueTeamRepository = leagueTeamRepository;
         _currentUser = currentUser;
         _unitOfWork = unitOfWork;
     }
@@ -43,6 +46,12 @@ public class CreateCompetitionHandler : IRequestHandler<CreateCompetitionRequest
         try
         {
             var id = await _competitionRepository.CreateAsync(competition);
+
+            // A League's national teams join its roster with its national competition, the World Cup.
+            if (competition.IsNational)
+            {
+                await _leagueTeamRepository.CreateNationalTeamsAsync(competition.LeagueId, now, _currentUser.UserId);
+            }
 
             await _unitOfWork.CommitAsync(cancellationToken);
 

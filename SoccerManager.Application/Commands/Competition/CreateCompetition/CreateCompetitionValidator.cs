@@ -28,5 +28,15 @@ public sealed class CreateCompetitionValidator : AbstractValidator<CreateCompeti
         RuleFor(x => x.TeamsPromoted).GreaterThanOrEqualTo(0);
         RuleFor(x => x.TeamsRelegated).GreaterThanOrEqualTo(0);
         RuleFor(x => x.TeamsInPlayoffs).GreaterThanOrEqualTo(0);
+
+        // Mirrors CK_Competitions_NationalIsCup, so a breach is a 400 rather than a database error.
+        RuleFor(x => x.Order).Equal(0)
+            .When(x => x.IsNational)
+            .WithMessage("A national competition is a cup, so its Order is 0.");
+
+        // Mirrors CK_Competitions_NationalIsCup, so a breach is a 400 rather than a database error.
+        RuleFor(x => x.IsDomestic).Equal(false)
+            .When(x => x.IsNational)
+            .WithMessage("A national competition is not domestic.");
     }
 }

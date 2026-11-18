@@ -24,7 +24,7 @@
 -- only looked up for the rows returned. An unknown @LeagueTeamId leaves @LeagueId NULL: the players filter is false and the
 -- roster join matches nothing, so all four sets still come back, with counts of 0 and no rows.
 -- Every player name is scanned (nothing indexes Name and CHARINDEX cannot seek), as dbo.SearchPlayers does. The club lookup
--- is served by IX_LeagueTeamPlayers_PlayerId, the roster by UQ_LeagueTeams_LeagueId_TeamId.
+-- is served by IX_LeagueTeamPlayers_PlayerId, the roster by IX_LeagueTeams_LeagueId.
 CREATE OR ALTER PROCEDURE dbo.SearchLeaguePlayersAndTeams
     @LeagueTeamId INT,
     @SearchTerm   NVARCHAR(100),

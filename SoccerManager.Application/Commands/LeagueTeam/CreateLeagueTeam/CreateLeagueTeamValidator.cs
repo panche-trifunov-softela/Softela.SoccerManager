@@ -38,7 +38,7 @@ public sealed class CreateLeagueTeamValidator : AbstractValidator<CreateLeagueTe
     /// <returns><see langword="true"/> when the team is not yet part of the league.</returns>
     private async Task<bool> NotAlreadyOnRosterAsync(CreateLeagueTeamRequest request)
     {
-        // UQ_LeagueTeams_LeagueId_TeamId is the real guarantee; this only turns a duplicate into a 400 instead of a failed insert.
+        // UX_LeagueTeams_LeagueId_TeamId is the real guarantee; this only turns a duplicate into a 400 instead of a failed insert.
         return await _leagueTeamRepository.GetByLeagueAndTeamAsync(request.LeagueId, request.TeamId) is null;
     }
 }

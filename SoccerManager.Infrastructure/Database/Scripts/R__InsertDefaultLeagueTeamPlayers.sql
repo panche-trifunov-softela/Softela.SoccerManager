@@ -18,6 +18,8 @@ BEGIN
     SELECT lt.Id, lt.LeagueId, lt.TeamId
     FROM dbo.LeagueTeams lt
     WHERE lt.LeagueId = @LeagueId
+      -- National team rows (V1_0_0_68) have no squad and no TeamId.
+      AND lt.TeamId IS NOT NULL
       AND (lt.IsGuest = 1 OR @IncludeDivisionClubs = 1)
       AND NOT EXISTS (SELECT 1 FROM dbo.LeagueTeamPlayers ltp WHERE ltp.LeagueTeamId = lt.Id);
 

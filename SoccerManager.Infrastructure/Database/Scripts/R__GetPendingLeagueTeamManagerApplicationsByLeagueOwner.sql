@@ -7,7 +7,7 @@
 -- The user's own applications are skipped: dbo.GetPendingLeagueTeamManagerApplicationsByUserId lists them. So are the two
 -- kinds that procedure skips because accepting them is refused: an application to a club with a current manager, and one in
 -- a league where the applicant already manages a club.
--- UQ_Managers_UserId, IX_Leagues_OwnerManagerId, UQ_LeagueTeams_LeagueId_TeamId,
+-- UQ_Managers_UserId, IX_Leagues_OwnerManagerId, IX_LeagueTeams_LeagueId,
 -- IX_LeagueTeamManagerApplications_LeagueTeamId, UX_LeagueTeamManagers_LeagueTeamId_Current and
 -- IX_LeagueTeamManagers_ManagerId serve the lookups.
 CREATE OR ALTER PROCEDURE dbo.GetPendingLeagueTeamManagerApplicationsByLeagueOwner
