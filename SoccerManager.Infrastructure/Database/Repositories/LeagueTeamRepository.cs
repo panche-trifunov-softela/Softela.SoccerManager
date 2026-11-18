@@ -320,6 +320,33 @@ public class LeagueTeamRepository : ILeagueTeamRepository
     }
 
     /// <summary>
+    /// Retrieves the pending and accepted transfer and loan bids on a player at any club of the league of the given league
+    /// team, accepted deals first, then newest first, and whether the player is registered at any club of that league. No
+    /// term of a bid is read.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="playerId">The identifier of the player whose bidders to retrieve.</param>
+    /// <returns>Whether the player is registered at any club of the league, and the bids on the player, returned whatever that says.</returns>
+    public async Task<(bool IsRegistered, List<GetLeaguePlayerBiddersResult> Bidders)> GetLeaguePlayerBiddersAsync(int leagueTeamId, int playerId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+        parameters.Add("@PlayerId", playerId, DbType.Int32);
+
+        // The procedure returns the registration flag first and the bids second.
+        using var results = await _dapperDataContext.Connection.QueryMultipleAsync(
+            "dbo.GetLeaguePlayerBidders",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        var isRegistered = await results.ReadFirstAsync<bool>().ConfigureAwait(false);
+        var bidders = await results.ReadAsync<GetLeaguePlayerBiddersResult>().ConfigureAwait(false);
+
+        return (isRegistered, bidders.ToList());
+    }
+
+    /// <summary>
     /// Retrieves a player's injuries recorded on the player's registration at a club of the league of the given league
     /// team, newest first, and whether the player is registered at any club of that league.
     /// </summary>
