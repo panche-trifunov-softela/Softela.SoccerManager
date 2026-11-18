@@ -68,7 +68,6 @@ public static class BuilderExtensions
         services.AddScoped<IMatchFormationPlayerPositionSubstitutionRepository, MatchFormationPlayerPositionSubstitutionRepository>();
         services.AddScoped<ICompetitionRepository, CompetitionRepository>();
         services.AddScoped<INationalTeamRepository, NationalTeamRepository>();
-        services.AddScoped<INationalTeamMatchRepository, NationalTeamMatchRepository>();
         services.AddScoped<IRefereeRepository, RefereeRepository>();
         services.AddScoped<IManagerPlayerRatingVoteRepository, ManagerPlayerRatingVoteRepository>();
         services.AddScoped<IPlayerRatingRepository, PlayerRatingRepository>();
