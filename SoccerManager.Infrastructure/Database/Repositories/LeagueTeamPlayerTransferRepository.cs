@@ -2,6 +2,7 @@ using System.Data;
 using Dapper;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Entities;
+using SoccerManager.Domain.Enums;
 using SoccerManager.Infrastructure.Database.Dapper;
 
 namespace SoccerManager.Infrastructure.Database.Repositories;
@@ -75,6 +76,39 @@ public class LeagueTeamPlayerTransferRepository : ILeagueTeamPlayerTransferRepos
             parameters,
             transaction: _dapperDataContext.Transaction,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Answers a pending transfer bid on a player of the given club, by accepting or rejecting it. Accepting also rejects
+    /// every other pending bid that involves a player of the deal, but moves nobody. It locks the league team rows of both
+    /// clubs of the deal, the seller's and the bidder's, in Id order inside the caller's transaction, so two answers whose
+    /// deals share a club cannot both pass or wait on each other.
+    /// </summary>
+    /// <param name="id">The identifier of the transfer bid to answer.</param>
+    /// <param name="leagueTeamId">The identifier of the league team that holds the player and sells him.</param>
+    /// <param name="playerId">The identifier of the player the bid is for.</param>
+    /// <param name="status">The answer: <see cref="TransferStatus.Accepted"/> or <see cref="TransferStatus.Rejected"/>.</param>
+    /// <param name="modifiedAt">The UTC date and time to stamp on the answered and rejected bids.</param>
+    /// <param name="modifiedBy">The identifier of the user answering, to stamp on the answered and rejected bids.</param>
+    /// <returns><see langword="true"/> when the answer was recorded, <see langword="false"/> when the bid does not exist, is no longer pending, is not a bid on this player at this club, or the club is not its seller.</returns>
+    public async Task<bool> AnswerBidAsync(int id, int leagueTeamId, int playerId, TransferStatus status, DateTime modifiedAt, Guid modifiedBy)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@Id", id, DbType.Int32);
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+        parameters.Add("@PlayerId", playerId, DbType.Int32);
+        parameters.Add("@Status", (byte)status, DbType.Byte);
+        parameters.Add("@ModifiedAt", modifiedAt, DbType.DateTime2);
+        parameters.Add("@ModifiedBy", modifiedBy, DbType.Guid);
+
+        // The procedure returns the bid's identifier when it recorded the answer and 0 when it answered nothing.
+        var answeredId = await _dapperDataContext.Connection.QuerySingleAsync<int>(
+            "dbo.AnswerLeagueTeamPlayerTransferBid",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        return answeredId != 0;
     }
 
     /// <summary>
