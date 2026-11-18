@@ -12,6 +12,7 @@ using SoccerManager.Application.Commands.LeagueTeamPlayerTransfer.PlaceLeagueTea
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.LeagueTeam.GetAvailableLeagueTeams;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerBidders;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerBids;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerInjuries;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerProfile;
@@ -221,6 +222,25 @@ public class LeagueTeamController : ControllerBase
     {
         // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
         var result = await _queryDispatcher.QueryAsync(new GetLeaguePlayerBidsRequest { LeagueTeamId = id, PlayerId = playerId }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns who has bid for a player in the league of the given league team, accepted deals first, then newest first: the
+    /// bidding club, its current manager, the season, the day, whether the bid is a transfer or a loan and whether it is
+    /// pending or accepted, never the terms. The player may be registered at any club of that league, rival clubs included.
+    /// Allowed for an operator or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="playerId">The identifier of the player whose bidders to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The player's bidders, empty when there are none; a 400 when an identifier is not positive, a 403 when the caller may not manage the club, or a 404 when the player is not registered at any club of the league.</returns>
+    [HttpGet("{id}/league-players/{playerId}/bidders")]
+    public async Task<IActionResult> GetLeaguePlayerBidders(int id, int playerId, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var result = await _queryDispatcher.QueryAsync(new GetLeaguePlayerBiddersRequest { LeagueTeamId = id, PlayerId = playerId }, cancellationToken);
 
         return Ok(result.Data);
     }
