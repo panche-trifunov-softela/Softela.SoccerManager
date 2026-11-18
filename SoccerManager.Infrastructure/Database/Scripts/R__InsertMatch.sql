@@ -15,6 +15,10 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    -- A national competition's matches carry a World Cup stage, which only dbo.InsertStagedMatch writes (V1_0_0_69).
+    IF EXISTS (SELECT 1 FROM dbo.Competitions WHERE Id = @CompetitionId AND IsNational = 1)
+        THROW 50000, 'A national competition''s matches are written with their World Cup stage.', 1;
+
     INSERT INTO dbo.Matches (SeasonId, CompetitionId, RefereeId, StartDateTime, Commentary, Attendance, IsStarted, CreatedAt, ModifiedAt, CreatedBy, ModifiedBy)
     OUTPUT INSERTED.Id
     VALUES (@SeasonId, @CompetitionId, @RefereeId, @StartDateTime, @Commentary, @Attendance, @IsStarted, @CreatedAt, @ModifiedAt, @CreatedBy, @ModifiedBy);
