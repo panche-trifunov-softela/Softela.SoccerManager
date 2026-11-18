@@ -1,3 +1,4 @@
+using SoccerManager.Application.Models;
 using SoccerManager.Domain.Entities;
 
 namespace SoccerManager.Application.Repositories;
@@ -22,10 +23,15 @@ public interface INationalTeamRepository
     Task<int> UpdateAsync(NationalTeam nationalTeam);
 
     /// <summary>
-    /// Removes a national team by its identifier.
+    /// Removes a national team by its identifier, but only when no league still has standings, match rows or deals for it.
+    /// The check and the delete are atomic inside the stored procedure.
     /// </summary>
     /// <param name="id">The identifier of the national team to delete.</param>
-    Task DeleteAsync(int id);
+    /// <returns>
+    /// Whether the national team was removed and, when it was not, which kinds of record still block it.
+    /// When nothing is flagged as blocking, the national team did not exist.
+    /// </returns>
+    Task<DeleteNationalTeamResult> DeleteAsync(int id);
 
     /// <summary>
     /// Retrieves a national team by its identifier.

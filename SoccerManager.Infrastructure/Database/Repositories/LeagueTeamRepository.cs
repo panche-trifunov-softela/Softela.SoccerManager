@@ -67,6 +67,27 @@ public class LeagueTeamRepository : ILeagueTeamRepository
     }
 
     /// <summary>
+    /// Adds every national team that is not yet on the given league's roster to it, stamping created and modified
+    /// with the given time and user. A national team joins the roster to play the league's national competition.
+    /// </summary>
+    /// <param name="leagueId">The identifier of the league whose roster to complete.</param>
+    /// <param name="createdAt">The UTC timestamp to stamp on the created and modified fields.</param>
+    /// <param name="createdBy">The identifier of the user to stamp on the created and modified fields.</param>
+    public async Task CreateNationalTeamsAsync(int leagueId, DateTime createdAt, Guid createdBy)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueId", leagueId, DbType.Int32);
+        parameters.Add("@CreatedAt", createdAt, DbType.DateTime2);
+        parameters.Add("@CreatedBy", createdBy, DbType.Guid);
+
+        await _dapperDataContext.Connection.ExecuteAsync(
+            "dbo.InsertNationalLeagueTeams",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Removes a league team by its identifier, but only when nothing is still attached to the club in
     /// that league. The check and the delete are atomic inside the stored procedure.
     /// </summary>

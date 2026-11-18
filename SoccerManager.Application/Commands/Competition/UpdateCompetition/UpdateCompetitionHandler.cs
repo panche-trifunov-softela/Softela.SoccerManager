@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using SoccerManager.Application.Core.User;
 using SoccerManager.Application.Repositories;
@@ -33,6 +35,7 @@ public class UpdateCompetitionHandler : IRequestHandler<UpdateCompetitionRequest
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns><see langword="true"/> when the update succeeds.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when no competition with the given identifier exists.</exception>
+    /// <exception cref="ValidationException">Thrown when the competition is national and the request gives it an Order other than 0 or makes it domestic.</exception>
     public async Task<bool> Handle(UpdateCompetitionRequest request, CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -41,6 +44,28 @@ public class UpdateCompetitionHandler : IRequestHandler<UpdateCompetitionRequest
         {
             var competition = await _competitionRepository.GetByIdAsync(request.Id)
                 ?? throw new KeyNotFoundException($"Competition {request.Id} not found.");
+
+            // Mirrors CK_Competitions_NationalIsCup for a competition created national, so a breach is a 400 rather than a
+            // database error.
+            if (competition.IsNational)
+            {
+                var failures = new List<ValidationFailure>();
+
+                if (request.Order != 0)
+                {
+                    failures.Add(new ValidationFailure("Order", "A national competition is a cup, so its Order is 0."));
+                }
+
+                if (request.IsDomestic)
+                {
+                    failures.Add(new ValidationFailure("IsDomestic", "A national competition is not domestic."));
+                }
+
+                if (failures.Count > 0)
+                {
+                    throw new ValidationException(failures);
+                }
+            }
 
             var now = DateTime.UtcNow;
 

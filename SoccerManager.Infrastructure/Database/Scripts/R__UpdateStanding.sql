@@ -15,6 +15,14 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    -- A national team is on a League's roster to play its national competition (V1_0_0_68); a national standing waits for national team management.
+    IF EXISTS (SELECT 1 FROM dbo.LeagueTeams WHERE Id = @LeagueTeamId AND NationalTeamId IS NOT NULL)
+        THROW 50000, 'A national team has no standings.', 1;
+
+    -- A national competition's group tables are worked out from its matches; nothing stores them as standings.
+    IF EXISTS (SELECT 1 FROM dbo.Competitions WHERE Id = @CompetitionId AND IsNational = 1)
+        THROW 50000, 'A national competition has no standings.', 1;
+
     -- The same guard as dbo.InsertStanding: an update can move the row to another competition, season or club.
     IF NOT EXISTS (
         SELECT 1

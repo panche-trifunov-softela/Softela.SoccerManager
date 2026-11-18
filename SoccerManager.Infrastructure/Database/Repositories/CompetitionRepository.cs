@@ -35,6 +35,7 @@ public class CompetitionRepository : ICompetitionRepository
         parameters.Add("@LogoUrl", competition.LogoUrl, DbType.String);
         parameters.Add("@IsDomestic", competition.IsDomestic, DbType.Boolean);
         parameters.Add("@Format", (byte)competition.Format, DbType.Byte);
+        parameters.Add("@IsNational", competition.IsNational, DbType.Boolean);
         parameters.Add("@MaxAgeAllowed", competition.MaxAgeAllowed, DbType.Int32);
         parameters.Add("@Order", competition.Order, DbType.Int32);
         parameters.Add("@TeamsPromoted", competition.TeamsPromoted, DbType.Int32);

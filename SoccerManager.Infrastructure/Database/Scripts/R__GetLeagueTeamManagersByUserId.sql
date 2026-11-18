@@ -1,5 +1,5 @@
 -- The join through dbo.Managers is how a Keycloak user id reaches an appointment: LeagueTeamManagers carries only ManagerId, never UserId.
--- The league and team come through the appointment's roster entry (dbo.LeagueTeams). Every join is INNER because LeagueTeamManagers.ManagerId and LeagueTeamId, and LeagueTeams.LeagueId and TeamId, are all NOT NULL foreign keys, so a user with no manager profile simply yields no rows rather than an error.
+-- The league and team come through the appointment's roster entry (dbo.LeagueTeams). Every join is INNER: LeagueTeamManagers.ManagerId and LeagueTeamId and LeagueTeams.LeagueId are NOT NULL foreign keys, so a user with no manager profile simply yields no rows rather than an error, and the join to dbo.Teams leaves out a national team row (V1_0_0_68), which has no TeamId and no manager yet.
 -- LeagueId is returned for the application validators ("already manages a club in this league"), for IClubAccess.EnsureCanViewClubAsync, and in the API response beside LeagueTeamId.
 -- Ordered by IsCurrent DESC, StartDate DESC so current appointments come back first, then the most recently started.
 CREATE OR ALTER PROCEDURE dbo.GetLeagueTeamManagersByUserId

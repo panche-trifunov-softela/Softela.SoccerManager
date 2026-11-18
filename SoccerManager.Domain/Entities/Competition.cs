@@ -33,6 +33,12 @@ public class Competition : BaseEntity
     public CompetitionFormat Format { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the competition is for national teams, a League's World Cup. Set only
+    /// when the competition is created; a national competition is a cup (Order 0) that is not domestic.
+    /// </summary>
+    public bool IsNational { get; set; }
+
+    /// <summary>
     /// Gets or sets the maximum age allowed to compete in the competition, or <see langword="null"/> when it has no
     /// age limit. When set, the value is between 16 and 23.
     /// </summary>

@@ -38,6 +38,11 @@ public sealed record CompetitionDto
     public CompetitionFormat Format { get; init; }
 
     /// <summary>
+    /// A value indicating whether the competition is for national teams, a League's World Cup.
+    /// </summary>
+    public bool IsNational { get; init; }
+
+    /// <summary>
     /// The maximum age allowed to compete in the competition, or <see langword="null"/> when it has no age limit.
     /// </summary>
     public int? MaxAgeAllowed { get; init; }

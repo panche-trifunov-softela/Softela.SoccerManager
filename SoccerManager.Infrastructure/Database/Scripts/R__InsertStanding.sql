@@ -16,6 +16,14 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    -- A national team is on a League's roster to play its national competition (V1_0_0_68); a national standing waits for national team management.
+    IF EXISTS (SELECT 1 FROM dbo.LeagueTeams WHERE Id = @LeagueTeamId AND NationalTeamId IS NOT NULL)
+        THROW 50000, 'A national team has no standings.', 1;
+
+    -- A national competition's group tables are worked out from its matches; nothing stores them as standings.
+    IF EXISTS (SELECT 1 FROM dbo.Competitions WHERE Id = @CompetitionId AND IsNational = 1)
+        THROW 50000, 'A national competition has no standings.', 1;
+
     -- The club, the season and the competition must all belong to one league. A row for another league's
     -- club would block that league's delete, since FK_Standings_LeagueTeams cannot cascade, and so would a
     -- row for another league's competition, through FK_Standings_Competitions.

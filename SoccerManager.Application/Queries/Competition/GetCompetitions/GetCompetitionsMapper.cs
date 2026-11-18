@@ -22,6 +22,7 @@ public static class GetCompetitionsMapper
             LogoUrl = competition.LogoUrl,
             IsDomestic = competition.IsDomestic,
             Format = competition.Format,
+            IsNational = competition.IsNational,
             MaxAgeAllowed = competition.MaxAgeAllowed,
             Order = competition.Order,
             TeamsPromoted = competition.TeamsPromoted,

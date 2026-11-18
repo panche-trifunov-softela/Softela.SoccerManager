@@ -34,6 +34,12 @@ public sealed record CreateCompetitionRequest : IRequest<int>
     public CompetitionFormat Format { get; init; }
 
     /// <summary>
+    /// Whether the competition is for national teams, a League's World Cup. A national competition is a cup, so its
+    /// Order is 0, and it is not domestic.
+    /// </summary>
+    public bool IsNational { get; init; }
+
+    /// <summary>
     /// The maximum age allowed to participate in the competition, if one has been set. Null means no age limit.
     /// </summary>
     public int? MaxAgeAllowed { get; init; }

@@ -21,6 +21,7 @@ public static class CreateCompetitionMapper
             LogoUrl = request.LogoUrl,
             IsDomestic = request.IsDomestic,
             Format = request.Format,
+            IsNational = request.IsNational,
             MaxAgeAllowed = request.MaxAgeAllowed,
             Order = request.Order,
             TeamsPromoted = request.TeamsPromoted,
