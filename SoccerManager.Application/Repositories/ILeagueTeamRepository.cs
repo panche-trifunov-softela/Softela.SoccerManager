@@ -115,6 +115,16 @@ public interface ILeagueTeamRepository
     Task<(bool IsRegistered, List<GetLeaguePlayerTransfersResult> Transfers, List<GetLeaguePlayerTransferSwapPlayersResult> SwapPlayers)> GetLeaguePlayerTransfersAsync(int leagueTeamId, int playerId);
 
     /// <summary>
+    /// Retrieves the pending transfer and loan bids on a player's registration at the given league team, newest first, the
+    /// players offered in swaps in those transfer bids, and whether the player is registered at that league team. The
+    /// transfer bids are read once, so the swapped players always belong to the bids returned.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team that holds the player.</param>
+    /// <param name="playerId">The identifier of the player whose pending bids to retrieve.</param>
+    /// <returns>Whether the player is registered at the league team, and the player's pending transfer bids, the players offered in them and the pending loan bids, returned whatever that says.</returns>
+    Task<(bool IsRegistered, List<GetLeaguePlayerTransferBidsResult> TransferBids, List<GetLeaguePlayerTransferBidSwapPlayersResult> SwapPlayers, List<GetLeaguePlayerLoanBidsResult> LoanBids)> GetLeaguePlayerBidsAsync(int leagueTeamId, int playerId);
+
+    /// <summary>
     /// Retrieves a player's injuries recorded on the player's registration at a club of the league of the given league
     /// team, newest first, and whether the player is registered at any club of that league.
     /// </summary>

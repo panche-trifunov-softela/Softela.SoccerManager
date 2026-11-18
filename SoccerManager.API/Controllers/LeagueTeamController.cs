@@ -5,11 +5,14 @@ using SoccerManager.API.RateLimiting;
 using SoccerManager.API.Security;
 using SoccerManager.Application.Commands.LeagueTeam.CreateLeagueTeam;
 using SoccerManager.Application.Commands.LeagueTeam.DeleteLeagueTeam;
+using SoccerManager.Application.Commands.LeagueTeamPlayerLoan.AnswerLeagueTeamPlayerLoanBid;
 using SoccerManager.Application.Commands.LeagueTeamPlayerLoan.PlaceLeagueTeamPlayerLoanBid;
+using SoccerManager.Application.Commands.LeagueTeamPlayerTransfer.AnswerLeagueTeamPlayerTransferBid;
 using SoccerManager.Application.Commands.LeagueTeamPlayerTransfer.PlaceLeagueTeamPlayerTransferBid;
 using SoccerManager.Application.Core.Command;
 using SoccerManager.Application.Core.Query;
 using SoccerManager.Application.Queries.LeagueTeam.GetAvailableLeagueTeams;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerBids;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerInjuries;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerProfile;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerTransfers;
@@ -24,7 +27,8 @@ using SoccerManager.Application.Queries.LeagueTeam.SearchLeaguePlayersAndTeams;
 namespace SoccerManager.API.Controllers;
 
 /// <summary>
-/// Exposes create, read and delete operations for the rosters of leagues.
+/// Exposes create, read and delete operations for the rosters of leagues, and the placing, reading and answering of
+/// transfer and loan bids on the players of a club.
 /// </summary>
 [ApiController]
 [Authorize]
@@ -203,10 +207,30 @@ public class LeagueTeamController : ControllerBase
     }
 
     /// <summary>
+    /// Returns the pending transfer and loan bids on a player of the given league team, each newest first: the bids on the
+    /// player's registration at that club, with the bidding club and its current manager, the fee, the buyback or the option
+    /// to buy, and the players a transfer bid offers in a swap. Here <c>{id}</c> is the club that holds the player and
+    /// answers the bids. Allowed for an operator or the current manager of the club that holds the player.
+    /// </summary>
+    /// <param name="id">The identifier of the league team that holds the player.</param>
+    /// <param name="playerId">The identifier of the player whose pending bids to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The pending transfer and loan bids, both lists empty when there are none; a 400 when an identifier is not positive, a 403 when the caller may not manage the club, or a 404 when the player is not registered at the club.</returns>
+    [HttpGet("{id}/league-players/{playerId}/bids")]
+    public async Task<IActionResult> GetLeaguePlayerBids(int id, int playerId, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var result = await _queryDispatcher.QueryAsync(new GetLeaguePlayerBidsRequest { LeagueTeamId = id, PlayerId = playerId }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
     /// Places a pending transfer bid by the given league team for a player of another club of its league, optionally with a
     /// buyback and with up to 2 of the bidding club's own players offered in a swap. The selling club is the club the player
     /// is registered at, and the bid is placed in the league's latest season. A club has one pending bid per player, whether
-    /// a transfer or a loan. Allowed for an operator or the club's current manager.
+    /// a transfer or a loan. Here <c>{id}</c> is the bidding club, not the club that holds the player. Allowed for an operator
+    /// or the club's current manager.
     /// </summary>
     /// <param name="id">The identifier of the league team that bids.</param>
     /// <param name="playerId">The identifier of the player to bid for.</param>
@@ -226,10 +250,35 @@ public class LeagueTeamController : ControllerBase
     }
 
     /// <summary>
+    /// Answers a pending transfer bid on a player of the given league team by accepting or rejecting it. Here <c>{id}</c> is
+    /// the club that holds the player and sells him, not the bidding club. An answer only records the agreement: nobody moves,
+    /// and a later step completes accepted deals. Accepting also rejects every other pending bid that involves a player of
+    /// the deal: the bids on the sold player, the bids that offer him in a swap, and the bids on the players this bid offers
+    /// in its swap. Allowed for an operator or the current manager of the club that holds the player.
+    /// </summary>
+    /// <param name="id">The identifier of the league team that holds the player.</param>
+    /// <param name="playerId">The identifier of the player the bid is for.</param>
+    /// <param name="bidId">The identifier of the transfer bid to answer.</param>
+    /// <param name="request">The answer: Accepted (2) or Rejected (3).</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>Whether the answer was recorded; a 400 when an identifier is not positive, the answer is not Accepted or Rejected, or the bid is no longer available (it does not exist, is no longer pending, is not a bid on this player at this club, or the club is not its seller); or a 403 when the caller may not manage the club.</returns>
+    [HttpPut("{id}/league-players/{playerId}/transfer-bids/{bidId}")]
+    public async Task<IActionResult> AnswerLeagueTeamPlayerTransferBid(int id, int playerId, int bidId, [FromBody] AnswerLeagueTeamPlayerTransferBidRequest request, CancellationToken cancellationToken)
+    {
+        // The route values replace anything the body carries for them. An invalid body or a zero or negative id is
+        // rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var command = request with { LeagueTeamId = id, PlayerId = playerId, BidId = bidId };
+        var result = await _commandDispatcher.SendAsync<bool, AnswerLeagueTeamPlayerTransferBidRequest>(command, cancellationToken);
+
+        return Ok(new { success = result });
+    }
+
+    /// <summary>
     /// Places a pending loan bid by the given league team for a player of another club of its league, for 1 or 2 seasons and
     /// optionally with an option to buy. The lending club is the club the player is registered at, the bid is placed in the
     /// league's latest season, and the loan club pays all of the player's wage. A club has one pending bid per player, whether
-    /// a transfer or a loan. Allowed for an operator or the club's current manager.
+    /// a transfer or a loan. Here <c>{id}</c> is the bidding club, not the club that holds the player. Allowed for an
+    /// operator or the club's current manager.
     /// </summary>
     /// <param name="id">The identifier of the league team that bids.</param>
     /// <param name="playerId">The identifier of the player to bid for.</param>
@@ -246,6 +295,30 @@ public class LeagueTeamController : ControllerBase
 
         // The overload that names the controller is needed: the loan is read in another controller, which the three-argument form cannot reach.
         return CreatedAtAction(nameof(LeagueTeamPlayerLoanController.GetLeagueTeamPlayerLoanById), "LeagueTeamPlayerLoan", new { id = newId }, new { id = newId });
+    }
+
+    /// <summary>
+    /// Answers a pending loan bid on a player of the given league team by accepting or rejecting it. Here <c>{id}</c> is the
+    /// club that holds the player and lends him, not the bidding club. An answer only records the agreement: the player
+    /// stays, and a later step completes accepted deals. Accepting also rejects every other pending bid on the player: the
+    /// other loan bids, the transfer bids on him and the transfer bids that offer him in a swap. Allowed for an operator or
+    /// the current manager of the club that holds the player.
+    /// </summary>
+    /// <param name="id">The identifier of the league team that holds the player.</param>
+    /// <param name="playerId">The identifier of the player the bid is for.</param>
+    /// <param name="bidId">The identifier of the loan bid to answer.</param>
+    /// <param name="request">The answer: Accepted (2) or Rejected (3).</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>Whether the answer was recorded; a 400 when an identifier is not positive, the answer is not Accepted or Rejected, or the bid is no longer available (it does not exist, is no longer pending, or is not a bid on this player at this club); or a 403 when the caller may not manage the club.</returns>
+    [HttpPut("{id}/league-players/{playerId}/loan-bids/{bidId}")]
+    public async Task<IActionResult> AnswerLeagueTeamPlayerLoanBid(int id, int playerId, int bidId, [FromBody] AnswerLeagueTeamPlayerLoanBidRequest request, CancellationToken cancellationToken)
+    {
+        // The route values replace anything the body carries for them. An invalid body or a zero or negative id is
+        // rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var command = request with { LeagueTeamId = id, PlayerId = playerId, BidId = bidId };
+        var result = await _commandDispatcher.SendAsync<bool, AnswerLeagueTeamPlayerLoanBidRequest>(command, cancellationToken);
+
+        return Ok(new { success = result });
     }
 
     /// <summary>
