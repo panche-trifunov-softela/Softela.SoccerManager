@@ -12,7 +12,7 @@
 -- The set is ordered pending first, then newest first (CreatedAt DESC, Id DESC). LeagueTeamId, TeamName and TeamLogoUrl are the
 -- OTHER club's, ManagerName is that club's current manager's Managers.FullName (UX_LeagueTeamManagers_LeagueTeamId_Current allows
 -- at most one), NULL when the club has none or the manager has no name. SeasonNumber is the number of the loan's season within
--- its league. PlayerId and PlayerName are the player the bid is for.
+-- its league. PlayerId and PlayerName are the player the bid is for and PlayerImageUrl is his photo, NULL when he has none.
 -- The deal tables count separately, so a loan and a transfer can share an Id: the handler keeps the two lists apart.
 CREATE OR ALTER PROCEDURE dbo.GetLeagueTeamLoanBids
     @LeagueTeamId INT
@@ -70,6 +70,7 @@ BEGIN
            b.Status,
            p.Id AS PlayerId,
            p.Name AS PlayerName,
+           p.ImageUrl AS PlayerImageUrl,
            b.OtherLeagueTeamId AS LeagueTeamId,
            tm.Name AS TeamName,
            tm.LogoUrl AS TeamLogoUrl,
