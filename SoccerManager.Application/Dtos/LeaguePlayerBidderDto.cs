@@ -22,7 +22,7 @@ public sealed record LeaguePlayerBidderDto
 
     /// <summary>
     /// Where the bid stands: <see cref="TransferStatus.Pending"/>, or <see cref="TransferStatus.Accepted"/> for a deal agreed
-    /// but not completed yet.
+    /// but not carried out yet. A completed deal (<see cref="TransferStatus.Completed"/>) is not listed.
     /// </summary>
     public TransferStatus Status { get; init; }
 

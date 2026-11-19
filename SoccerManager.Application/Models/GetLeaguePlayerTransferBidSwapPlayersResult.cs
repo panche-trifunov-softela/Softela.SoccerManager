@@ -1,8 +1,9 @@
 namespace SoccerManager.Application.Models;
 
 /// <summary>
-/// One row of the third result set returned by the <c>dbo.GetLeaguePlayerBids</c> stored procedure: a player the bidding
-/// club offers in a pending transfer bid, with the main position and the current rating. Kept separate from
+/// One row of the swapped-player result set returned by the <c>dbo.GetLeaguePlayerBids</c> stored procedure (its third) and
+/// by the <c>dbo.GetLeagueTeamTransferBids</c> stored procedure (its second): a player the bidding club offers in a transfer
+/// bid the procedure lists, with the main position and the current rating. Kept separate from
 /// <see cref="Dtos.LeaguePlayerBidSwapPlayerDto"/> because Dapper populates a result by setting properties, and the Dto is an
 /// init-only record that cannot be a Dapper target.
 /// </summary>

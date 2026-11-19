@@ -17,9 +17,9 @@ public sealed class AnswerLeagueTeamPlayerTransferBidValidator : AbstractValidat
         RuleFor(x => x.PlayerId).GreaterThan(0);
         RuleFor(x => x.BidId).GreaterThan(0);
 
-        // A zero fails IsInEnum, and Pending is not an answer.
+        // A zero fails IsInEnum, and only Accepted or Rejected is an answer (Pending and Completed are not).
         RuleFor(x => x.Status)
             .IsInEnum()
-            .NotEqual(TransferStatus.Pending).WithMessage("A bid can only be answered with Accepted or Rejected.");
+            .Must(status => status is TransferStatus.Accepted or TransferStatus.Rejected).WithMessage("A bid can only be answered with Accepted or Rejected.");
     }
 }

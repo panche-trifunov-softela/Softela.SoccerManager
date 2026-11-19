@@ -114,9 +114,9 @@ public interface ILeagueTeamRepository
     Task<(GetLeaguePlayerProfileResult? Header, List<GetPlayerProfilePositionsResult> Positions)> GetLeaguePlayerProfileAsync(int leagueTeamId, int playerId);
 
     /// <summary>
-    /// Retrieves a player's accepted transfers and loans in the league of the given league team, including the transfers
-    /// he was swapped in, newest season first, the players swapped in those transfers, and whether the player is registered
-    /// at any club of that league.
+    /// Retrieves a player's accepted and completed transfers and loans in the league of the given league team, including
+    /// the transfers he was swapped in, newest season first, the players swapped in those transfers, and whether the player
+    /// is registered at any club of that league.
     /// </summary>
     /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
     /// <param name="playerId">The identifier of the player whose transfers and loans to retrieve.</param>
@@ -142,6 +142,23 @@ public interface ILeagueTeamRepository
     /// <param name="playerId">The identifier of the player whose bidders to retrieve.</param>
     /// <returns>Whether the player is registered at any club of the league, and the bids on the player, returned whatever that says.</returns>
     Task<(bool IsRegistered, List<GetLeaguePlayerBiddersResult> Bidders)> GetLeaguePlayerBiddersAsync(int leagueTeamId, int playerId);
+
+    /// <summary>
+    /// Retrieves the pending, accepted and completed transfer bids a league team placed and received, pending first, then
+    /// newest first, and the players offered in swaps in those bids. Rejected bids are not returned. The bids are read once,
+    /// so the swapped players always belong to the bids returned.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose transfer bids to retrieve.</param>
+    /// <returns>The league team's transfer bids and the players offered in them, both empty for an unknown league team.</returns>
+    Task<(List<GetLeagueTeamTransferBidsResult> Bids, List<GetLeaguePlayerTransferBidSwapPlayersResult> SwapPlayers)> GetLeagueTeamTransferBidsAsync(int leagueTeamId);
+
+    /// <summary>
+    /// Retrieves the pending, accepted and completed loan bids a league team placed and received, pending first, then newest
+    /// first. Rejected bids are not returned.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose loan bids to retrieve.</param>
+    /// <returns>The league team's loan bids, empty for an unknown league team.</returns>
+    Task<List<GetLeagueTeamLoanBidsResult>> GetLeagueTeamLoanBidsAsync(int leagueTeamId);
 
     /// <summary>
     /// Retrieves a player's injuries recorded on the player's registration at a club of the league of the given league
@@ -170,11 +187,23 @@ public interface ILeagueTeamRepository
 
     /// <summary>
     /// Checks whether the given league team has a pending transfer or loan bid for the given player, whichever club the
-    /// player is registered at. It locks the league team's row inside the caller's transaction, so two bids from one club
-    /// cannot both pass the check.
+    /// player is registered at. It locks the rows of the bidding club and of the selling club inside the caller's
+    /// transaction, so two bids from one club cannot both pass the check, and a bid and an accept on the same player run
+    /// one after the other.
     /// </summary>
     /// <param name="leagueTeamId">The identifier of the league team (the club in its league) that bids.</param>
+    /// <param name="sellerLeagueTeamId">The identifier of the league team (the club in its league) the player is registered at.</param>
     /// <param name="playerId">The identifier of the player the bid is for.</param>
     /// <returns><see langword="true"/> when the club has a pending transfer or loan for the player.</returns>
-    Task<bool> HasPendingBidAsync(int leagueTeamId, int playerId);
+    Task<bool> HasPendingBidAsync(int leagueTeamId, int sellerLeagueTeamId, int playerId);
+
+    /// <summary>
+    /// Checks whether the given squad row is in an agreed deal: a transfer with the accepted status on it, a swap row of
+    /// an accepted transfer naming it, or an accepted loan on it. A completed deal does not count, the player has moved.
+    /// It takes no lock, so it is meant to run after <see cref="HasPendingBidAsync"/> has locked the clubs in the same
+    /// transaction.
+    /// </summary>
+    /// <param name="leagueTeamPlayerId">The identifier of the squad row (the player at a club of the league).</param>
+    /// <returns><see langword="true"/> when the squad row is in an agreed deal.</returns>
+    Task<bool> HasAgreedDealAsync(int leagueTeamPlayerId);
 }

@@ -48,7 +48,7 @@ public class PlaceLeagueTeamPlayerTransferBidHandler : IRequestHandler<PlaceLeag
     /// <returns>The identifier of the created transfer.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when the bidding club does not exist.</exception>
     /// <exception cref="ForbiddenAccessException">Thrown when the caller is neither an operator nor the bidding club's current manager.</exception>
-    /// <exception cref="ValidationException">Thrown when the player is in the bidding club's squad or at no club of the league, the league has no season, the club already has a pending bid for the player, or an offered player is not in the bidding club's squad.</exception>
+    /// <exception cref="ValidationException">Thrown when the player is in the bidding club's squad or at no club of the league, the league has no season, the club already has a pending bid for the player, the player already has an agreed deal, an offered player is not in the bidding club's squad, or an offered player already has an agreed deal.</exception>
     public async Task<int> Handle(PlaceLeagueTeamPlayerTransferBidRequest request, CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -67,6 +67,8 @@ public class PlaceLeagueTeamPlayerTransferBidHandler : IRequestHandler<PlaceLeag
                     new ValidationFailure(nameof(request.SwapLeagueTeamPlayerIds), "A swapped player is not in the club's squad."),
                 });
             }
+
+            await _playerDealService.EnsureSwapPlayersHaveNoAgreedDealAsync(request.SwapLeagueTeamPlayerIds);
 
             var now = DateTime.UtcNow;
 

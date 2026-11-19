@@ -9,7 +9,7 @@ namespace SoccerManager.Application.Services;
 /// Holds the rules a transfer, a loan and a swap share, so each is checked by one definition: the clubs and the season
 /// of a deal must exist and belong to the player's league, a swapped player must be one the buying club can give away,
 /// and a club's bid must be for a player of another club of its league, in the league's latest season, while the club
-/// has no other pending bid for that player.
+/// has no other pending bid for that player and the player, like every player offered in a swap, has no agreed deal.
 /// </summary>
 public class PlayerDealService : IPlayerDealService
 {
@@ -113,16 +113,16 @@ public class PlayerDealService : IPlayerDealService
 
     /// <summary>
     /// Resolves what a club's bid for a player is aimed at, and ensures the bid can be placed: the player is not in the
-    /// bidding club's squad, is registered at another club of the league, the league has a season to bid in, and the club has
-    /// no pending bid for the player yet. The bid is placed in the league's latest season. Either club may be a guest. It runs
-    /// for every caller, operators included, and takes a lock on the bidding club's row, so it belongs inside the caller's
-    /// transaction.
+    /// bidding club's squad, is registered at another club of the league, the league has a season to bid in, the club has
+    /// no pending bid for the player yet, and the player has no agreed deal. The bid is placed in the league's latest
+    /// season. Either club may be a guest. It runs for every caller, operators included, and takes a lock on the rows of
+    /// the bidding club and of the selling club, so it belongs inside the caller's transaction.
     /// </summary>
     /// <param name="leagueTeamId">The identifier of the league team (the club in its league) that bids.</param>
     /// <param name="playerId">The identifier of the player the club bids for.</param>
     /// <returns>The resolved target of the bid.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when the bidding club does not exist.</exception>
-    /// <exception cref="ValidationException">Thrown when the player is already in the bidding club's squad, is registered at no club of the league, the league has no season yet, or the club already has a pending bid for the player.</exception>
+    /// <exception cref="ValidationException">Thrown when the player is already in the bidding club's squad, is registered at no club of the league, the league has no season yet, the club already has a pending bid for the player, or the player already has an agreed deal.</exception>
     public async Task<BidTarget> GetBidTargetAsync(int leagueTeamId, int playerId)
     {
         var leagueTeam = await _leagueTeamRepository.GetByIdAsync(leagueTeamId)
@@ -159,12 +159,22 @@ public class PlayerDealService : IPlayerDealService
             });
         }
 
-        // The check takes the lock on the bidding club's row, so a second bid from the club waits for this transaction.
-        if (await _leagueTeamRepository.HasPendingBidAsync(leagueTeamId, playerId))
+        // The check takes the lock on the rows of the bidding club and of the selling club, so a second bid from the club, and
+        // an accept on the player, wait for this transaction.
+        if (await _leagueTeamRepository.HasPendingBidAsync(leagueTeamId, sellerRow.LeagueTeamId, playerId))
         {
             throw new ValidationException(new[]
             {
                 new ValidationFailure(nameof(LeagueTeamPlayer.PlayerId), "The club already has a pending bid for this player."),
+            });
+        }
+
+        // A player whose deal is agreed takes no new bid. The clubs are locked by now, so no accept can change the answer.
+        if (await _leagueTeamRepository.HasAgreedDealAsync(sellerRow.Id))
+        {
+            throw new ValidationException(new[]
+            {
+                new ValidationFailure(nameof(LeagueTeamPlayer.PlayerId), "This player already has an agreed deal."),
             });
         }
 
@@ -175,5 +185,26 @@ public class PlayerDealService : IPlayerDealService
             SeasonId = season.Id,
             SquadLeagueTeamPlayerIds = squad.Select(member => member.Id).ToList(),
         };
+    }
+
+    /// <summary>
+    /// Ensures none of the players offered in a swap already has an agreed deal. It takes no lock of its own, so it belongs
+    /// inside the caller's transaction after <see cref="GetBidTargetAsync"/>, which has locked the bidding club the
+    /// swapped players belong to.
+    /// </summary>
+    /// <param name="leagueTeamPlayerIds">The identifiers of the squad rows (the players at the bidding club) that are offered in the swap.</param>
+    /// <exception cref="ValidationException">Thrown when a swapped player already has an agreed deal.</exception>
+    public async Task EnsureSwapPlayersHaveNoAgreedDealAsync(IReadOnlyCollection<int> leagueTeamPlayerIds)
+    {
+        foreach (var leagueTeamPlayerId in leagueTeamPlayerIds)
+        {
+            if (await _leagueTeamRepository.HasAgreedDealAsync(leagueTeamPlayerId))
+            {
+                throw new ValidationException(new[]
+                {
+                    new ValidationFailure(nameof(LeagueTeamPlayerTransferSwap.LeagueTeamPlayerId), "A swapped player already has an agreed deal."),
+                });
+            }
+        }
     }
 }

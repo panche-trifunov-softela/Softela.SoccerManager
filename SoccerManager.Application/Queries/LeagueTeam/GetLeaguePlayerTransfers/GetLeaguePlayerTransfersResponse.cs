@@ -8,7 +8,7 @@ namespace SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerTransfers;
 public sealed record GetLeaguePlayerTransfersResponse
 {
     /// <summary>
-    /// The requested player's accepted transfers and loans in the league, newest season first.
+    /// The requested player's accepted and completed transfers and loans in the league, newest season first.
     /// </summary>
     public required List<PlayerTransferDto> Data { get; init; }
 }

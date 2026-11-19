@@ -25,9 +25,9 @@ public class GetLeaguePlayerTransfersHandler : IRequestHandler<GetLeaguePlayerTr
     }
 
     /// <summary>
-    /// Retrieves the requested player's accepted transfers and loans in the league of the league team, including the
-    /// transfers he was swapped in, newest season first. The player may be registered at any club of that league, rival
-    /// clubs included.
+    /// Retrieves the requested player's accepted and completed transfers and loans in the league of the league team,
+    /// including the transfers he was swapped in, newest season first. The player may be registered at any club of that
+    /// league, rival clubs included.
     /// </summary>
     /// <param name="request">The query request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
