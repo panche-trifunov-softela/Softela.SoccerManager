@@ -44,6 +44,7 @@ public static class GetLeagueTeamLoanBidsMapper
             Status = row.Status,
             PlayerId = row.PlayerId,
             PlayerName = row.PlayerName,
+            PlayerImageUrl = row.PlayerImageUrl,
             LeagueTeamId = row.LeagueTeamId,
             TeamName = row.TeamName,
             TeamLogoUrl = row.TeamLogoUrl,

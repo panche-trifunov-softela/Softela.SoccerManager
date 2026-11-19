@@ -37,6 +37,11 @@ public class GetLeagueTeamTransferBidsResult
     public string PlayerName { get; set; } = string.Empty;
 
     /// <summary>
+    /// The URL of the player's photo, or <see langword="null"/> when he has none.
+    /// </summary>
+    public string? PlayerImageUrl { get; set; }
+
+    /// <summary>
     /// The identifier of the other league team: the bidder for a received bid, the selling club for a placed one.
     /// </summary>
     public int LeagueTeamId { get; set; }

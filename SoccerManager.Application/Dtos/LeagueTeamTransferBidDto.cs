@@ -35,6 +35,11 @@ public sealed record LeagueTeamTransferBidDto
     public required string PlayerName { get; init; }
 
     /// <summary>
+    /// The URL of the player's photo, or <see langword="null"/> when he has none.
+    /// </summary>
+    public string? PlayerImageUrl { get; init; }
+
+    /// <summary>
     /// The identifier of the other league team: the bidder for a received bid, the selling club for a placed one.
     /// </summary>
     public int LeagueTeamId { get; init; }

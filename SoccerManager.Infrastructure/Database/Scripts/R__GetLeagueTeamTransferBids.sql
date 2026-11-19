@@ -14,7 +14,8 @@
 -- The first result set is the bids, pending first, then newest first (CreatedAt DESC, Id DESC). LeagueTeamId, TeamName and
 -- TeamLogoUrl are the OTHER club's, ManagerName is that club's current manager's Managers.FullName
 -- (UX_LeagueTeamManagers_LeagueTeamId_Current allows at most one), NULL when the club has none or the manager has no name.
--- SeasonNumber is the number of the bid's season within its league. PlayerId and PlayerName are the player the bid is for.
+-- SeasonNumber is the number of the bid's season within its league. PlayerId and PlayerName are the player the bid is for and
+-- PlayerImageUrl is his photo, NULL when he has none.
 -- The second result set is the players swapped in those bids, in swap-row order, so the handler can list them under the bid that
 -- carries them. PositionShortName is the main position's short name and Rating the current rating (the dbo.PlayerRatings row
 -- with IsCurrent = 1), both as in dbo.GetLeagueTeamSquadMembers; a player without a current rating gets NULL.
@@ -71,6 +72,7 @@ BEGIN
            b.Status,
            p.Id AS PlayerId,
            p.Name AS PlayerName,
+           p.ImageUrl AS PlayerImageUrl,
            b.OtherLeagueTeamId AS LeagueTeamId,
            tm.Name AS TeamName,
            tm.LogoUrl AS TeamLogoUrl,
