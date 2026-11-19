@@ -18,10 +18,12 @@ using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerInjuries;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerProfile;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeaguePlayerTransfers;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamById;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamLoanBids;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamNextMatch;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamProfile;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquad;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquadMembers;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamTransferBids;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeams;
 using SoccerManager.Application.Queries.LeagueTeam.SearchLeaguePlayersAndTeams;
 
@@ -172,9 +174,10 @@ public class LeagueTeamController : ControllerBase
     }
 
     /// <summary>
-    /// Returns a player's accepted transfers and loans in the league of the given league team, including the transfers he
-    /// was swapped in, newest season first. The player may be registered at any club of that league, rival clubs included,
-    /// and only deals into clubs of that league are listed. Allowed for an operator or the club's current manager.
+    /// Returns a player's accepted and completed transfers and loans in the league of the given league team, including the
+    /// transfers he was swapped in, newest season first. The player may be registered at any club of that league, rival
+    /// clubs included, and only deals into clubs of that league are listed. Allowed for an operator or the club's current
+    /// manager.
     /// </summary>
     /// <param name="id">The identifier of the league team whose league is the one to look in.</param>
     /// <param name="playerId">The identifier of the player whose transfers and loans to return.</param>
@@ -249,14 +252,14 @@ public class LeagueTeamController : ControllerBase
     /// Places a pending transfer bid by the given league team for a player of another club of its league, optionally with a
     /// buyback and with up to 2 of the bidding club's own players offered in a swap. The selling club is the club the player
     /// is registered at, and the bid is placed in the league's latest season. A club has one pending bid per player, whether
-    /// a transfer or a loan. Here <c>{id}</c> is the bidding club, not the club that holds the player. Allowed for an operator
-    /// or the club's current manager.
+    /// a transfer or a loan, and a player with an agreed deal takes no bid, nor can he be offered in a swap. Here <c>{id}</c>
+    /// is the bidding club, not the club that holds the player. Allowed for an operator or the club's current manager.
     /// </summary>
     /// <param name="id">The identifier of the league team that bids.</param>
     /// <param name="playerId">The identifier of the player to bid for.</param>
     /// <param name="request">The bid: the fee, the optional buyback value and seasons, and the swapped squad players.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The identifier of the created transfer, with its location; a 400 when a value is invalid, the player is already in the club's squad or at no club of the league, the league has no season yet, the club already has a pending bid for the player, or a swapped player is not in the club's squad; a 403 when the caller may not manage the club; or a 404 when the league team does not exist, which only an operator can reach.</returns>
+    /// <returns>The identifier of the created transfer, with its location; a 400 when a value is invalid, the player is already in the club's squad or at no club of the league, the league has no season yet, the club already has a pending bid for the player, the player already has an agreed deal ("This player already has an agreed deal."), a swapped player already has an agreed deal ("A swapped player already has an agreed deal."), or a swapped player is not in the club's squad; a 403 when the caller may not manage the club; or a 404 when the league team does not exist, which only an operator can reach.</returns>
     [HttpPost("{id}/league-players/{playerId}/transfer-bids")]
     public async Task<IActionResult> PlaceLeagueTeamPlayerTransferBid(int id, int playerId, [FromBody] PlaceLeagueTeamPlayerTransferBidRequest request, CancellationToken cancellationToken)
     {
@@ -281,7 +284,7 @@ public class LeagueTeamController : ControllerBase
     /// <param name="bidId">The identifier of the transfer bid to answer.</param>
     /// <param name="request">The answer: Accepted (2) or Rejected (3).</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>Whether the answer was recorded; a 400 when an identifier is not positive, the answer is not Accepted or Rejected, or the bid is no longer available (it does not exist, is no longer pending, is not a bid on this player at this club, or the club is not its seller); or a 403 when the caller may not manage the club.</returns>
+    /// <returns>Whether the answer was recorded; a 400 when an identifier is not positive, the answer is not Accepted or Rejected, or the bid is no longer available (it does not exist, is no longer pending, is not a bid on this player at this club, the club is not its seller, or an accept is refused because a player of the deal already has an agreed deal); or a 403 when the caller may not manage the club.</returns>
     [HttpPut("{id}/league-players/{playerId}/transfer-bids/{bidId}")]
     public async Task<IActionResult> AnswerLeagueTeamPlayerTransferBid(int id, int playerId, int bidId, [FromBody] AnswerLeagueTeamPlayerTransferBidRequest request, CancellationToken cancellationToken)
     {
@@ -297,14 +300,14 @@ public class LeagueTeamController : ControllerBase
     /// Places a pending loan bid by the given league team for a player of another club of its league, for 1 or 2 seasons and
     /// optionally with an option to buy. The lending club is the club the player is registered at, the bid is placed in the
     /// league's latest season, and the loan club pays all of the player's wage. A club has one pending bid per player, whether
-    /// a transfer or a loan. Here <c>{id}</c> is the bidding club, not the club that holds the player. Allowed for an
-    /// operator or the club's current manager.
+    /// a transfer or a loan, and a player with an agreed deal takes no bid. Here <c>{id}</c> is the bidding club, not the
+    /// club that holds the player. Allowed for an operator or the club's current manager.
     /// </summary>
     /// <param name="id">The identifier of the league team that bids.</param>
     /// <param name="playerId">The identifier of the player to bid for.</param>
     /// <param name="request">The bid: the fee, the number of seasons and the optional buy option value.</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>The identifier of the created loan, with its location; a 400 when a value is invalid, the player is already in the club's squad or at no club of the league, the league has no season yet, or the club already has a pending bid for the player; a 403 when the caller may not manage the club; or a 404 when the league team does not exist, which only an operator can reach.</returns>
+    /// <returns>The identifier of the created loan, with its location; a 400 when a value is invalid, the player is already in the club's squad or at no club of the league, the league has no season yet, the club already has a pending bid for the player, or the player already has an agreed deal ("This player already has an agreed deal."); a 403 when the caller may not manage the club; or a 404 when the league team does not exist, which only an operator can reach.</returns>
     [HttpPost("{id}/league-players/{playerId}/loan-bids")]
     public async Task<IActionResult> PlaceLeagueTeamPlayerLoanBid(int id, int playerId, [FromBody] PlaceLeagueTeamPlayerLoanBidRequest request, CancellationToken cancellationToken)
     {
@@ -329,7 +332,7 @@ public class LeagueTeamController : ControllerBase
     /// <param name="bidId">The identifier of the loan bid to answer.</param>
     /// <param name="request">The answer: Accepted (2) or Rejected (3).</param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
-    /// <returns>Whether the answer was recorded; a 400 when an identifier is not positive, the answer is not Accepted or Rejected, or the bid is no longer available (it does not exist, is no longer pending, or is not a bid on this player at this club); or a 403 when the caller may not manage the club.</returns>
+    /// <returns>Whether the answer was recorded; a 400 when an identifier is not positive, the answer is not Accepted or Rejected, or the bid is no longer available (it does not exist, is no longer pending, is not a bid on this player at this club, or an accept is refused because the player already has an agreed deal); or a 403 when the caller may not manage the club.</returns>
     [HttpPut("{id}/league-players/{playerId}/loan-bids/{bidId}")]
     public async Task<IActionResult> AnswerLeagueTeamPlayerLoanBid(int id, int playerId, int bidId, [FromBody] AnswerLeagueTeamPlayerLoanBidRequest request, CancellationToken cancellationToken)
     {
@@ -339,6 +342,43 @@ public class LeagueTeamController : ControllerBase
         var result = await _commandDispatcher.SendAsync<bool, AnswerLeagueTeamPlayerLoanBidRequest>(command, cancellationToken);
 
         return Ok(new { success = result });
+    }
+
+    /// <summary>
+    /// Returns the transfer bids of the given league team, both the ones it placed and the ones it received on its own
+    /// players: the pending ones first, then the completed ones (accepted or completed), each newest first. Rejected bids
+    /// are never returned. Each bid carries the player, the other club and its current manager, the fee, the buyback and
+    /// the players a bid offers in a swap. Here <c>{id}</c> is that club. Allowed for an operator or the club's current
+    /// manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose transfer bids to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The pending and completed transfer bids, both lists empty when there are none; a 400 when the id is not positive, a 403 when the caller may not manage the club, or two empty lists for an operator's unknown league team.</returns>
+    [HttpGet("{id}/transfer-bids")]
+    public async Task<IActionResult> GetLeagueTeamTransferBids(int id, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamTransferBidsRequest { LeagueTeamId = id }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns the loan bids of the given league team, both the ones it placed and the ones it received on its own players:
+    /// the pending ones first, then the completed ones (accepted or completed), each newest first. Rejected bids are never
+    /// returned. Each bid carries the player, the other club and its current manager, the fee, the length of the loan and
+    /// the option to buy. Here <c>{id}</c> is that club. Allowed for an operator or the club's current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose loan bids to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The pending and completed loan bids, both lists empty when there are none; a 400 when the id is not positive, a 403 when the caller may not manage the club, or two empty lists for an operator's unknown league team.</returns>
+    [HttpGet("{id}/loan-bids")]
+    public async Task<IActionResult> GetLeagueTeamLoanBids(int id, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamLoanBidsRequest { LeagueTeamId = id }, cancellationToken);
+
+        return Ok(result.Data);
     }
 
     /// <summary>

@@ -42,7 +42,7 @@ public class AnswerLeagueTeamPlayerTransferBidHandler : IRequestHandler<AnswerLe
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns><see langword="true"/> when the answer is recorded.</returns>
     /// <exception cref="ForbiddenAccessException">Thrown when the caller is neither an operator nor the current manager of the club that holds the player.</exception>
-    /// <exception cref="ValidationException">Thrown when the bid is no longer available: it does not exist, is no longer pending, is not a bid on this player at this club, or the club is not its seller.</exception>
+    /// <exception cref="ValidationException">Thrown when the bid is no longer available: it does not exist, is no longer pending, is not a bid on this player at this club, the club is not its seller, or an accept is refused because a player of the deal already has an agreed deal.</exception>
     public async Task<bool> Handle(AnswerLeagueTeamPlayerTransferBidRequest request, CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync(cancellationToken);

@@ -4,9 +4,10 @@ namespace SoccerManager.Application.Models;
 
 /// <summary>
 /// One row of the second result set returned by the <c>dbo.GetLeaguePlayerBidders</c> stored procedure: a pending or accepted
-/// transfer or loan bid on a player of a league, denormalised with the bidding club's team and current manager and the bid's
-/// season, without any term of the bid. Kept separate from <see cref="Dtos.LeaguePlayerBidderDto"/> because Dapper populates a
-/// result by setting properties, and the Dto is an init-only record that cannot be a Dapper target.
+/// (not yet completed) transfer or loan bid on a player of a league, denormalised with the bidding club's team and current
+/// manager and the bid's season, without any term of the bid. Kept separate from <see cref="Dtos.LeaguePlayerBidderDto"/>
+/// because Dapper populates a result by setting properties, and the Dto is an init-only record that cannot be a Dapper
+/// target.
 /// </summary>
 public class GetLeaguePlayerBiddersResult
 {
@@ -23,7 +24,7 @@ public class GetLeaguePlayerBiddersResult
 
     /// <summary>
     /// Where the bid stands: <see cref="TransferStatus.Pending"/>, or <see cref="TransferStatus.Accepted"/> for a deal agreed
-    /// but not completed yet.
+    /// but not carried out yet. A completed deal (<see cref="TransferStatus.Completed"/>) is not listed.
     /// </summary>
     public TransferStatus Status { get; set; }
 

@@ -1,8 +1,8 @@
 namespace SoccerManager.Application.Dtos;
 
 /// <summary>
-/// Represents one accepted transfer or loan a player is part of in a league: the club the player joined, the season, the fee,
-/// the player the deal is about and the players swapped in it.
+/// Represents one accepted or completed transfer or loan a player is part of in a league: the club the player joined, the
+/// season, the fee, the player the deal is about and the players swapped in it.
 /// </summary>
 public sealed record PlayerTransferDto
 {

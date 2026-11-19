@@ -44,7 +44,7 @@ public class PlaceLeagueTeamPlayerLoanBidHandler : IRequestHandler<PlaceLeagueTe
     /// <returns>The identifier of the created loan.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when the bidding club does not exist.</exception>
     /// <exception cref="ForbiddenAccessException">Thrown when the caller is neither an operator nor the bidding club's current manager.</exception>
-    /// <exception cref="ValidationException">Thrown when the player is in the bidding club's squad or at no club of the league, the league has no season, or the club already has a pending bid for the player.</exception>
+    /// <exception cref="ValidationException">Thrown when the player is in the bidding club's squad or at no club of the league, the league has no season, the club already has a pending bid for the player, or the player already has an agreed deal.</exception>
     public async Task<int> Handle(PlaceLeagueTeamPlayerLoanBidRequest request, CancellationToken cancellationToken)
     {
         await _unitOfWork.BeginTransactionAsync(cancellationToken);

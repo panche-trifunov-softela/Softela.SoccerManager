@@ -1,21 +1,23 @@
--- One player's accepted transfers and loans in a league, behind GET /api/league-teams/{id}/league-players/{playerId}/transfers,
--- as three result sets: whether the player is registered in the league, then the deals the player is part of, then the
--- players swapped in those deals. It does not check access: the query handler does that first, through IClubAccess.
+-- One player's accepted and completed transfers and loans in a league, behind
+-- GET /api/league-teams/{id}/league-players/{playerId}/transfers, as three result sets: whether the player is registered in
+-- the league, then the deals the player is part of, then the players swapped in those deals. It does not check access: the
+-- query handler does that first, through IClubAccess.
 -- The league is the league of @LeagueTeamId, found as in dbo.GetLeaguePlayerProfile. @PlayerRows holds the player's squad rows
 -- (dbo.LeagueTeamPlayers) at every club of that league, rival clubs included, because a deal points at a squad row, not at a
 -- player, and the player can hold several rows in a league over time.
 -- The first result set is one row with one column, IsRegistered: 1 when @PlayerRows holds a row, else 0. An unknown
--- @LeagueTeamId gives 0. The handler answers a 0 with a 404, as the profile read does. The other two sets are returned whatever
--- the first one says.
--- The second result set is every ACCEPTED deal (Status 2 is TransferStatus.Accepted; a pending or rejected one is no history),
--- newest season first, then newest saved. One row says where the player joined: a sold player joined the buying club
+-- @LeagueTeamId gives 0. The handler answers a 0 with a 404, as the profile read does. The other two sets are returned
+-- whatever the first one says.
+-- The second result set is every ACCEPTED or COMPLETED deal (Status 2 is TransferStatus.Accepted, agreed and not carried out
+-- yet, and Status 4 is TransferStatus.Completed, carried out; a pending or rejected one is no history), newest season first,
+-- then newest saved. One row says where the player joined: a sold player joined the buying club
 -- (ToLeagueTeamId), a swapped player joined the selling club (FromLeagueTeamId) and a loaned player joined the loan club
--- (ToLeagueTeamId). IsLoan tells a loan from a transfer; their Ids come from two tables and can repeat, so the pair (IsLoan, Id)
--- is the key. Fee is the transfer fee or the loan fee. PlayerId and PlayerName are the player the deal is about, the sold or
--- the loaned one, so a swapped player's row names the player he was swapped for. TeamName and TeamLogoUrl are the joined club's
--- team's, as in the profile.
--- The third result set is the swapped players of every accepted transfer in the second one, in swap-row order, so the handler
--- can list them under the transfer that carried them.
+-- (ToLeagueTeamId). IsLoan tells a loan from a transfer; their Ids come from two tables and can repeat, so the pair
+-- (IsLoan, Id) is the key. Fee is the transfer fee or the loan fee. PlayerId and PlayerName are the player the deal is about,
+-- the sold or the loaned one, so a swapped player's row names the player he was swapped for. TeamName and TeamLogoUrl are the
+-- joined club's team's, as in the profile.
+-- The third result set is the swapped players of every accepted or completed transfer in the second one, in swap-row order,
+-- so the handler can list them under the transfer that carried them.
 CREATE OR ALTER PROCEDURE dbo.GetLeaguePlayerTransfers
     @LeagueTeamId INT,
     @PlayerId INT
@@ -53,7 +55,7 @@ BEGIN
                tr.LeagueTeamPlayerId AS DealLeagueTeamPlayerId,
                tr.CreatedAt
         FROM dbo.LeagueTeamPlayerTransfers tr
-        WHERE tr.Status = 2
+        WHERE tr.Status IN (2, 4)
           AND tr.LeagueTeamPlayerId IN (SELECT Id FROM @PlayerRows)
 
         UNION ALL
@@ -67,7 +69,7 @@ BEGIN
                tr.CreatedAt
         FROM dbo.LeagueTeamPlayerTransferSwaps sw
             INNER JOIN dbo.LeagueTeamPlayerTransfers tr ON tr.Id = sw.LeagueTeamPlayerTransferId
-        WHERE tr.Status = 2
+        WHERE tr.Status IN (2, 4)
           AND sw.LeagueTeamPlayerId IN (SELECT Id FROM @PlayerRows)
 
         UNION ALL
@@ -80,7 +82,7 @@ BEGIN
                lo.LeagueTeamPlayerId,
                lo.CreatedAt
         FROM dbo.LeagueTeamPlayerLoans lo
-        WHERE lo.Status = 2
+        WHERE lo.Status IN (2, 4)
           AND lo.LeagueTeamPlayerId IN (SELECT Id FROM @PlayerRows)
     ) d
         INNER JOIN dbo.LeagueTeams jlt ON jlt.Id = d.LeagueTeamId
@@ -99,7 +101,7 @@ BEGIN
         INNER JOIN dbo.LeagueTeamPlayerTransfers tr ON tr.Id = sw.LeagueTeamPlayerTransferId
         INNER JOIN dbo.LeagueTeamPlayers ltp ON ltp.Id = sw.LeagueTeamPlayerId
         INNER JOIN dbo.Players p ON p.Id = ltp.PlayerId
-    WHERE tr.Status = 2
+    WHERE tr.Status IN (2, 4)
       AND (tr.LeagueTeamPlayerId IN (SELECT Id FROM @PlayerRows)
            OR EXISTS (SELECT 1
                       FROM dbo.LeagueTeamPlayerTransferSwaps own

@@ -2,8 +2,8 @@ namespace SoccerManager.Application.Models;
 
 /// <summary>
 /// One row of the third result set returned by the <c>dbo.GetLeaguePlayerTransfers</c> stored procedure: a player swapped in
-/// an accepted transfer. Kept separate from <see cref="Dtos.PlayerTransferSwapPlayerDto"/> because Dapper populates a
-/// result by setting properties, and the Dto is an init-only record that cannot be a Dapper target.
+/// an accepted or completed transfer. Kept separate from <see cref="Dtos.PlayerTransferSwapPlayerDto"/> because Dapper
+/// populates a result by setting properties, and the Dto is an init-only record that cannot be a Dapper target.
 /// </summary>
 public class GetLeaguePlayerTransferSwapPlayersResult
 {

@@ -1,13 +1,18 @@
 -- Answers one pending loan bid on a player of @LeagueTeamId, behind PUT /api/league-teams/{id}/league-players/{playerId}/
 -- loan-bids/{bidId}. @Status is a TransferStatus value: 2 Accepted or 3 Rejected (1 is Pending). It gives the bid's Id when the
--- answer was recorded and 0 when nothing was answered: no such bid, a bid that is no longer pending, or a bid on another
--- player's squad row or at another club. dbo.LeagueTeamPlayerLoans has no lender column, so the squad row alone says whose
--- player it is. It does not check access: the command handler does that first, through IClubAccess.
+-- answer was recorded and 0 when nothing was answered: no such bid, a bid that is no longer pending, a bid on another
+-- player's squad row or at another club, or an accept while the player already has an agreed deal.
+-- dbo.LeagueTeamPlayerLoans has no lender column, so the squad row alone says whose player it is. It does not check access: the
+-- command handler does that first, through IClubAccess.
 -- An accepted bid only records the agreement: the player stays and no squad row, lineup or other table changes. A later
 -- Generator step completes accepted deals. Accepting does reject (Status 3) every OTHER pending bid on the player: the other
 -- pending loans on the squad row, the pending transfers on it, and the pending transfers that offer it in a swap. That covers
--- the bids pending at that moment only: a bid placed later is not refused here, and a later step that completes accepted deals
--- settles that. The answered bid is left out of the loans' rejection; it is no longer pending anyway.
+-- the bids pending at that moment only; a bid placed later is refused when it is placed, because a player whose deal is agreed
+-- takes no new bid (dbo.GetLeagueTeamPlayerHasAgreedDeal). For the same reason an accept is refused while the player already has
+-- an agreed deal (a transfer with Status 2 on his squad row, a swap row of a transfer with Status 2 naming it, or a loan with
+-- Status 2 on it): the check runs after the two locks and before the answer is written, so nothing changes and 0 is returned.
+-- A pending bid like that can no longer arise, and a migration rejected the ones that existed. The answered bid is left out of
+-- the loans' rejection; it is no longer pending anyway.
 -- It runs inside the caller's transaction and first locks the LeagueTeams rows of both clubs of the deal, the lending club
 -- (@LeagueTeamId) and the bidding club (the bid's ToLeagueTeamId, read before the lock; NULL when there is no such bid), each
 -- WITH (UPDLOCK, HOLDLOCK), as dbo.GetLeagueTeamHasPendingBid does for a bidder. Every squad row of a deal belongs to its
@@ -55,6 +60,34 @@ BEGIN
         WHERE Id = @SecondLockId;
     END
 
+    -- A second accept is refused: the deal's only squad row, the loaned player's, may not already be in an agreed deal. Status 2
+    -- is TransferStatus Accepted.
+    IF @Status = 2
+    BEGIN
+        SELECT @DealLeagueTeamPlayerId = LeagueTeamPlayerId
+        FROM dbo.LeagueTeamPlayerLoans
+        WHERE Id = @Id;
+
+        IF EXISTS (SELECT 1
+                   FROM dbo.LeagueTeamPlayerTransfers a
+                   WHERE a.Status = 2
+                     AND a.LeagueTeamPlayerId = @DealLeagueTeamPlayerId)
+           OR EXISTS (SELECT 1
+                      FROM dbo.LeagueTeamPlayerTransferSwaps asw
+                          INNER JOIN dbo.LeagueTeamPlayerTransfers a ON a.Id = asw.LeagueTeamPlayerTransferId
+                      WHERE a.Status = 2
+                        AND asw.LeagueTeamPlayerId = @DealLeagueTeamPlayerId)
+           OR EXISTS (SELECT 1
+                      FROM dbo.LeagueTeamPlayerLoans al
+                      WHERE al.Status = 2
+                        AND al.LeagueTeamPlayerId = @DealLeagueTeamPlayerId)
+        BEGIN
+            SELECT 0;
+
+            RETURN;
+        END
+    END
+
     -- Only a pending bid on this player's squad row at this club can be answered, and only while the bidder that was locked is
     -- still its bidder; 0 rows means it is none of those, or someone else answered it in between.
     UPDATE l
@@ -80,13 +113,8 @@ BEGIN
 
     IF @Status = 2
     BEGIN
-        -- The deal's only squad row is the loaned player's.
-        SELECT @DealLeagueTeamPlayerId = LeagueTeamPlayerId
-        FROM dbo.LeagueTeamPlayerLoans
-        WHERE Id = @Id;
-
-        -- Status 1 is TransferStatus Pending and 3 is Rejected. The Id <> @Id test belongs to the loans only: a transfer can
-        -- carry the same number.
+        -- @DealLeagueTeamPlayerId, the deal's only squad row, was read before the answer was written. Status 1 is TransferStatus
+        -- Pending and 3 is Rejected. The Id <> @Id test belongs to the loans only: a transfer can carry the same number.
         UPDATE l
         SET Status     = 3,
             ModifiedAt = @ModifiedAt,

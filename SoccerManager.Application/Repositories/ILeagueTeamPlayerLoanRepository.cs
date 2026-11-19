@@ -34,7 +34,7 @@ public interface ILeagueTeamPlayerLoanRepository
     /// <param name="status">The answer: <see cref="TransferStatus.Accepted"/> or <see cref="TransferStatus.Rejected"/>.</param>
     /// <param name="modifiedAt">The UTC date and time to stamp on the answered and rejected bids.</param>
     /// <param name="modifiedBy">The identifier of the user answering, to stamp on the answered and rejected bids.</param>
-    /// <returns><see langword="true"/> when the answer was recorded, <see langword="false"/> when the bid does not exist, is no longer pending, or is not a bid on this player at this club.</returns>
+    /// <returns><see langword="true"/> when the answer was recorded, <see langword="false"/> when the bid does not exist, is no longer pending, is not a bid on this player at this club, or an accept is refused because the player already has an agreed deal.</returns>
     Task<bool> AnswerBidAsync(int id, int leagueTeamId, int playerId, TransferStatus status, DateTime modifiedAt, Guid modifiedBy);
 
     /// <summary>
