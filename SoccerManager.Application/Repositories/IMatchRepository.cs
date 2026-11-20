@@ -48,4 +48,12 @@ public interface IMatchRepository
     /// <param name="leagueTeamId">The identifier of the league team (the club in its league) whose next match to retrieve.</param>
     /// <returns>The club's next match, or <see langword="null"/> when it has none to come.</returns>
     Task<GetNextMatchByLeagueTeamResult?> GetNextByLeagueTeamAsync(int leagueTeamId);
+
+    /// <summary>
+    /// Retrieves every match of the given club in its League's latest season, earliest first, with whether the club plays at
+    /// home, the competition and round, the opponent and each side's score.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) whose schedule to retrieve.</param>
+    /// <returns>The club's matches of the season, empty for an unknown league team or a League with no season.</returns>
+    Task<List<GetScheduleByLeagueTeamResult>> GetScheduleByLeagueTeamAsync(int leagueTeamId);
 }

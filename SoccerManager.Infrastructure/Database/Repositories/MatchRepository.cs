@@ -142,4 +142,24 @@ public class MatchRepository : IMatchRepository
             transaction: _dapperDataContext.Transaction,
             commandType: CommandType.StoredProcedure).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Retrieves every match of the given club in its League's latest season, earliest first, with whether the club plays at
+    /// home, the competition and round, the opponent and each side's score.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team (the club in its league) whose schedule to retrieve.</param>
+    /// <returns>The club's matches of the season, empty for an unknown league team or a League with no season.</returns>
+    public async Task<List<GetScheduleByLeagueTeamResult>> GetScheduleByLeagueTeamAsync(int leagueTeamId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+
+        var rows = await _dapperDataContext.Connection.QueryAsync<GetScheduleByLeagueTeamResult>(
+            "dbo.GetScheduleByLeagueTeam",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        return rows.ToList();
+    }
 }
