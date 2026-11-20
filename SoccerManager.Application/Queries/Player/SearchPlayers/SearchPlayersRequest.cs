@@ -1,4 +1,5 @@
 using MediatR;
+using SoccerManager.Application.Core.PlayerSearch;
 
 namespace SoccerManager.Application.Queries.Player.SearchPlayers;
 
@@ -6,7 +7,7 @@ namespace SoccerManager.Application.Queries.Player.SearchPlayers;
 /// Represents a request to retrieve one page of the players matching a search, filters and sort order.
 /// Every member is optional; the handler fills in the defaults.
 /// </summary>
-public sealed record SearchPlayersRequest : IRequest<SearchPlayersResponse>
+public sealed record SearchPlayersRequest : IRequest<SearchPlayersResponse>, IPlayerSearchFilters
 {
     /// <summary>
     /// The text a player name must contain, ignoring case and accents, or <see langword="null"/> for no name filter.

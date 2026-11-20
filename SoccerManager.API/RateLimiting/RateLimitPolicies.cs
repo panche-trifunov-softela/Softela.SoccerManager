@@ -6,8 +6,8 @@ namespace SoccerManager.API.RateLimiting;
 public static class RateLimitPolicies
 {
     /// <summary>
-    /// The policy for player search and league search, the endpoints an eager user calls most often. Both count against one
-    /// per-caller budget.
+    /// The policy for player search, league search and league player search, the endpoints an eager user calls most often.
+    /// All count against one per-caller budget.
     /// </summary>
     public const string Search = "Search";
 
@@ -27,7 +27,7 @@ public static class RateLimitPolicies
     public const int AnonymousPerMinute = 10;
 
     /// <summary>
-    /// Searches a caller may make per minute, player searches and league searches together.
+    /// Searches a caller may make per minute, player searches, league searches and league player searches together.
     /// </summary>
     public const int SearchPerMinute = 60;
 

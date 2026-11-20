@@ -1,6 +1,8 @@
 using System.Data;
 using Dapper;
 using SoccerManager.Application.Models;
+using SoccerManager.Application.Models.SearchPlayers;
+using SoccerManager.Application.Models.SearchPlayersInLeague;
 using SoccerManager.Application.Repositories;
 using SoccerManager.Domain.Entities;
 using SoccerManager.Infrastructure.Database.Dapper;
@@ -254,6 +256,43 @@ public class LeagueTeamRepository : ILeagueTeamRepository
         var teams = await results.ReadAsync<SearchLeagueTeamsResult>().ConfigureAwait(false);
 
         return (playerTotalCount, players.ToList(), teamTotalCount, teams.ToList());
+    }
+
+    /// <summary>
+    /// Retrieves one page of the players matching a search, seen from the league of the given league team. Players are every
+    /// player in the game: the club shown is the one registered at in that league (the league team's own first, else the
+    /// lowest registration), none for a free agent. A registered player's value and wage are his in-game ones, a free
+    /// agent's his real-world ones, and a player without a current rating is listed, last when ordering by rating.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="criteria">The filters, sort order and page to apply; the club filter matches the club of the registration shown for a player (the league team's own first, else his lowest).</param>
+    /// <returns>The requested page of players, empty past the last page, and the total match count; both empty or zero when the league team is unknown.</returns>
+    public async Task<SearchPlayersInLeaguePage> SearchPlayersInLeagueAsync(int leagueTeamId, SearchPlayersCriteria criteria)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@LeagueTeamId", leagueTeamId, DbType.Int32);
+        parameters.Add("@SearchTerm", criteria.SearchTerm, DbType.String, size: 100);
+        parameters.Add("@PositionId", criteria.PositionId, DbType.Int32);
+        parameters.Add("@TeamId", criteria.TeamId, DbType.Int32);
+        parameters.Add("@NationalTeamId", criteria.NationalTeamId, DbType.Int32);
+        parameters.Add("@MinRating", criteria.MinRating, DbType.Int32);
+        parameters.Add("@MaxRating", criteria.MaxRating, DbType.Int32);
+        parameters.Add("@SortBy", (byte)criteria.SortBy, DbType.Byte);
+        parameters.Add("@SortDescending", criteria.SortDescending, DbType.Boolean);
+        parameters.Add("@Page", criteria.Page, DbType.Int32);
+        parameters.Add("@PageSize", criteria.PageSize, DbType.Int32);
+
+        // The procedure returns the match count first and the page second.
+        using var results = await _dapperDataContext.Connection.QueryMultipleAsync(
+            "dbo.SearchPlayersInLeague",
+            parameters,
+            transaction: _dapperDataContext.Transaction,
+            commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+
+        var totalCount = await results.ReadSingleAsync<int>().ConfigureAwait(false);
+        var rows = await results.ReadAsync<SearchPlayersInLeagueResult>().ConfigureAwait(false);
+
+        return new SearchPlayersInLeaguePage { Rows = rows.ToList(), TotalCount = totalCount };
     }
 
     /// <summary>

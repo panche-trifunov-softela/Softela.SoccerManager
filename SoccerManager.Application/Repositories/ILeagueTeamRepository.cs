@@ -1,4 +1,6 @@
 using SoccerManager.Application.Models;
+using SoccerManager.Application.Models.SearchPlayers;
+using SoccerManager.Application.Models.SearchPlayersInLeague;
 using SoccerManager.Domain.Entities;
 
 namespace SoccerManager.Application.Repositories;
@@ -102,6 +104,17 @@ public interface ILeagueTeamRepository
     /// <param name="take">The most players, and the most clubs, to return.</param>
     /// <returns>The number of matching players and the best of them, then the number of matching clubs and the best of them; all empty or zero when the league team is unknown.</returns>
     Task<(int PlayerTotalCount, List<SearchLeaguePlayersResult> Players, int TeamTotalCount, List<SearchLeagueTeamsResult> Teams)> SearchLeaguePlayersAndTeamsAsync(int leagueTeamId, string searchTerm, int take);
+
+    /// <summary>
+    /// Retrieves one page of the players matching a search, seen from the league of the given league team. Players are every
+    /// player in the game: the club shown is the one registered at in that league (the league team's own first, else the
+    /// lowest registration), none for a free agent. A registered player's value and wage are his in-game ones, a free
+    /// agent's his real-world ones, and a player without a current rating is listed, last when ordering by rating.
+    /// </summary>
+    /// <param name="leagueTeamId">The identifier of the league team whose league is the one to look in.</param>
+    /// <param name="criteria">The filters, sort order and page to apply; the club filter matches the club of the registration shown for a player (the league team's own first, else his lowest).</param>
+    /// <returns>The requested page of players, empty past the last page, and the total match count; both empty or zero when the league team is unknown.</returns>
+    Task<SearchPlayersInLeaguePage> SearchPlayersInLeagueAsync(int leagueTeamId, SearchPlayersCriteria criteria);
 
     /// <summary>
     /// Retrieves a player's profile in the league of the given league team: the player's registration at the

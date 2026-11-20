@@ -1,4 +1,5 @@
 using MediatR;
+using SoccerManager.Application.Core.PlayerSearch;
 using SoccerManager.Application.Core.User;
 using SoccerManager.Application.Dtos.PlayerSearch;
 using SoccerManager.Application.Repositories;
@@ -33,7 +34,7 @@ public class SearchPlayersHandler : IRequestHandler<SearchPlayersRequest, Search
     /// <returns>The response carrying the page of players, the total match count, and the page and page size applied.</returns>
     public async Task<SearchPlayersResponse> Handle(SearchPlayersRequest request, CancellationToken cancellationToken)
     {
-        var criteria = SearchPlayersMapper.ToCriteria(request);
+        var criteria = PlayerSearchFiltersMapper.ToCriteria(request);
 
         var result = await _playerRepository.SearchAsync(criteria, _currentUser.UserId);
 
