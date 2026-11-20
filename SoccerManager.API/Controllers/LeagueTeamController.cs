@@ -26,6 +26,7 @@ using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquadMembers;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamTransferBids;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeams;
 using SoccerManager.Application.Queries.LeagueTeam.SearchLeaguePlayersAndTeams;
+using SoccerManager.Application.Queries.LeagueTeam.SearchPlayersInLeague;
 
 namespace SoccerManager.API.Controllers;
 
@@ -150,6 +151,63 @@ public class LeagueTeamController : ControllerBase
     {
         // A zero or negative id and a missing, too short or too long term are rejected as a 400 by the Application layer's validation pipeline, before the access check.
         var result = await _queryDispatcher.QueryAsync(new SearchLeaguePlayersAndTeamsRequest { LeagueTeamId = id, SearchTerm = searchTerm }, cancellationToken);
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns one page of the players of the league of the given league team matching the given search, filters and sort
+    /// order. Players are every player in the game: the club shown is the one registered at in that league (the league
+    /// team's own first), and a player registered at no club of it is a free agent, with no club. A registered player's
+    /// value and wage are his in-game ones, a free agent's his real-world ones. Allowed for an operator or the club's
+    /// current manager.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose league is the one to search.</param>
+    /// <param name="searchTerm">Text a player name must contain, ignoring case and accents; omitted or blank means no name filter.</param>
+    /// <param name="positionId">The identifier of the main position a player must have.</param>
+    /// <param name="teamId">The identifier of the club of the registration shown for a player in the league (the league team's own first, else his lowest); a free agent never matches.</param>
+    /// <param name="nationalTeamId">The identifier of the national team a player must have.</param>
+    /// <param name="minRating">The lowest rating to include, from 1 to 100.</param>
+    /// <param name="maxRating">The highest rating to include, from 1 to 100 and not below <paramref name="minRating"/>.</param>
+    /// <param name="sortBy">The column to order by: name, rating, age (ascending is youngest first), value or wage, in any case; rating when omitted.</param>
+    /// <param name="sortDescending">Whether to order in descending order; descending when omitted.</param>
+    /// <param name="page">The 1-based page to return; the first when omitted.</param>
+    /// <param name="pageSize">The number of players per page, from 1 to 100; 25 when omitted.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The page of players, the total match count, and the page and page size applied; a 400 when the id is not positive or a parameter is invalid, a 403 when the caller may not manage the club, or an empty page for an operator's unknown league team.</returns>
+    [HttpGet("{id}/league-players")]
+    [EnableRateLimiting(RateLimitPolicies.Search)]
+    public async Task<IActionResult> SearchPlayersInLeague(
+        int id,
+        [FromQuery] string? searchTerm,
+        [FromQuery] int? positionId,
+        [FromQuery] int? teamId,
+        [FromQuery] int? nationalTeamId,
+        [FromQuery] int? minRating,
+        [FromQuery] int? maxRating,
+        [FromQuery] string? sortBy,
+        [FromQuery] bool? sortDescending,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
+        CancellationToken cancellationToken)
+    {
+        // A zero or negative id and an invalid filter, sort or page are rejected as a 400 by the Application layer's validation pipeline, before the access check.
+        var request = new SearchPlayersInLeagueRequest
+        {
+            LeagueTeamId = id,
+            SearchTerm = searchTerm,
+            PositionId = positionId,
+            TeamId = teamId,
+            NationalTeamId = nationalTeamId,
+            MinRating = minRating,
+            MaxRating = maxRating,
+            SortBy = sortBy,
+            SortDescending = sortDescending,
+            Page = page,
+            PageSize = pageSize,
+        };
+
+        var result = await _queryDispatcher.QueryAsync(request, cancellationToken);
 
         return Ok(result.Data);
     }

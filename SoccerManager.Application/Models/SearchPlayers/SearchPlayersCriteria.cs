@@ -18,7 +18,9 @@ public sealed record SearchPlayersCriteria
     public int? PositionId { get; init; }
 
     /// <summary>
-    /// The identifier of the current real-life club a player must have, or <see langword="null"/> for any club.
+    /// The identifier of the club a player must have, or <see langword="null"/> for any club: the current real-life club
+    /// for the players search; for the league player search, the club of the registration shown for him in the league
+    /// (the searching club's own first, else his lowest), so a free agent never matches.
     /// </summary>
     public int? TeamId { get; init; }
 
