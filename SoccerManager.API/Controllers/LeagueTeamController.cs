@@ -21,6 +21,7 @@ using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamById;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamLoanBids;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamNextMatch;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamProfile;
+using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSchedule;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquad;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamSquadMembers;
 using SoccerManager.Application.Queries.LeagueTeam.GetLeagueTeamTransferBids;
@@ -454,6 +455,23 @@ public class LeagueTeamController : ControllerBase
 
         // 204 rather than 200 with a null body: the club having no match to come is not an error.
         return result.Data is null ? NoContent() : Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Returns every match of the given league team in its League's latest season, earliest first, finished or not, each
+    /// with the competition and round, the opponent and, once finished, the score and how it ended for the club. Allowed
+    /// for every signed-in user, as every match is already public through GET /api/matches.
+    /// </summary>
+    /// <param name="id">The identifier of the league team whose schedule to return.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <returns>The season's matches earliest first; a 400 when the id is not positive; empty for an unknown league team or a League with no season.</returns>
+    [HttpGet("{id}/schedule")]
+    public async Task<IActionResult> GetLeagueTeamSchedule(int id, CancellationToken cancellationToken)
+    {
+        // A zero or negative id is rejected as a 400 by the Application layer's validation pipeline.
+        var result = await _queryDispatcher.QueryAsync(new GetLeagueTeamScheduleRequest { LeagueTeamId = id }, cancellationToken);
+
+        return Ok(result.Data);
     }
 
     /// <summary>
